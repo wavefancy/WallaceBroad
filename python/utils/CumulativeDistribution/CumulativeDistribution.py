@@ -95,6 +95,7 @@ if __name__ == '__main__':
             if title:
                 title_data = ss
                 title = False
+                continue
 
             try:
                 if d_column == -100: #for all columns.
