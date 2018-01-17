@@ -46,7 +46,7 @@ if (system.args.length < 3 || system.args.length > 5) {
         var mynotes = system.args[4];
     }
     page.open(address, function (status) {
-        console.log(mynotes);
+        // console.log(mynotes);
         if (status !== 'success') {
             console.log('Unable to load the address!');
             phantom.exit(1);
@@ -64,6 +64,7 @@ if (system.args.length < 3 || system.args.length > 5) {
                     var d = document.createElement("span")
                         d.appendChild(t);
                         d.setAttribute("style", "color: 02C6FA;");
+                        x.setAttribute("style", "font-size:12;color:#2C3E50;padding-top:10px;");
                         x.appendChild(d)
 
                     // text from the paramter.
