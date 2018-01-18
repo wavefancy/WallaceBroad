@@ -98,6 +98,7 @@ if __name__ == '__main__':
                     for x in ['00','01','11']:
                         out.append('errorRate_'+x)
 
+                    out.append('errorRateNonREFHOMO')
                     out.append('errorRateTotal')
                     sys.stdout.write('%s\n'%('\t'.join(out)))
 
@@ -183,6 +184,11 @@ if __name__ == '__main__':
                 else:
                     out.append('%.4e'%(n*1.0/(m+n)))
 
+            #errorRate non ref homo.
+            wrong1 = wrong[1:]
+            corr1 = corr[1:]
+            out.append('%.4e'%(sum(wrong1)*1.0/(sum(wrong1)+sum(corr1))))
+            #errorRate total
             out.append('%.4e'%(sum(wrong)*1.0/(sum(wrong)+sum(corr))))
             sys.stdout.write('%s\n'%('\t'.join(out)))
 
