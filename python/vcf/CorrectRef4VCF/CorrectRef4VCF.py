@@ -42,30 +42,30 @@ if __name__ == '__main__':
     if args['-f']:
         '''File format example'''
         print('''
-        #input vcf example:
-        ------------------------
-        #CHROM  POS ID  REF ALT QUAL    FILTER  INFO    FORMAT  Sample_M_FG-NY14_006_006
-        chr1    1   .   G   A   111.66  PASS    .   GT:AD:DP:GQ:PL  0/0:31,0:31:78:0,78,1170
-        chr1    2   .   GGGT    G   85.53   PASS    .   GT:AD:DP:GQ:PL  0/0:34,0:34:81:0,81,1215
-        chr1    3   .   G   C   74.96   PASS    .   GT:AD:DP:GQ:PGT:PID:PL  0/0:36,0:36:99:.:.:0,99,1485
-        chr1    4   .   T   G   3319.08 PASS    .   GT:AD:DP:GQ:PL  0/0:44,0:44:99:0,99,1485
-        chr1    5  .   C   T   4145.15 PASS    .   GT:AD:DP:GQ:PGT:PID:PL  0/0:17,0:17:51:.:.:0,51,573
-        chr1    6  .   C   G   6211.15 PASS    .   GT:AD:DP:GQ:PGT:PID:PL  0/0:17,0:17:0:.:.:0,0,450
-        #input refGenome
-        ------------------------
-        >chr1
-        AAGAAA
-        #output vcf.
-        ------------------------
-        #CHROM  POS ID  REF ALT QUAL    FILTER  INFO    FORMAT  Sample_M_FG-NY14_006_006
-        chr1    1       .       A       G       111.66  PASS    .       GT:AD:DP:GQ:PL  1/1:31,0:31:78:0,78,1170
-        chr1    3       .       G       C       74.96   PASS    .       GT:AD:DP:GQ:PGT:PID:PL  0/0:36,0:36:99:.:.:0,99,1485
-        chr1    4       .       A       C       3319.08 PASS    .       GT:AD:DP:GQ:PL  0/0:44,0:44:99:0,99,1485
-        chr1    5       .       A       G       4145.15 PASS    .       GT:AD:DP:GQ:PGT:PID:PL  1/1:17,0:17:51:.:.:0,51,573
-        #output error.
-        ------------------------
-        WARNING: Skip non-biallelic site: chr1  2       .       GGGT
-        WARNING: failed even after flipping strand: chr1        6       .       C       G
+#input vcf example:
+------------------------
+#CHROM  POS ID  REF ALT QUAL    FILTER  INFO    FORMAT  Sample_M_FG-NY14_006_006
+chr1    1   .   G   A   111.66  PASS    .   GT:AD:DP:GQ:PL  0/0:31,0:31:78:0,78,1170
+chr1    2   .   GGGT    G   85.53   PASS    .   GT:AD:DP:GQ:PL  0/0:34,0:34:81:0,81,1215
+chr1    3   .   G   C   74.96   PASS    .   GT:AD:DP:GQ:PGT:PID:PL  0/0:36,0:36:99:.:.:0,99,1485
+chr1    4   .   T   G   3319.08 PASS    .   GT:AD:DP:GQ:PL  0/0:44,0:44:99:0,99,1485
+chr1    5  .   C   T   4145.15 PASS    .   GT:AD:DP:GQ:PGT:PID:PL  0/0:17,0:17:51:.:.:0,51,573
+chr1    6  .   C   G   6211.15 PASS    .   GT:AD:DP:GQ:PGT:PID:PL  0/0:17,0:17:0:.:.:0,0,450
+#input refGenome
+------------------------
+>chr1
+AAGAAA
+#output vcf.
+------------------------
+#CHROM  POS ID  REF ALT QUAL    FILTER  INFO    FORMAT  Sample_M_FG-NY14_006_006
+chr1    1       .       A       G       111.66  PASS    .       GT:AD:DP:GQ:PL  1/1:31,0:31:78:0,78,1170
+chr1    3       .       G       C       74.96   PASS    .       GT:AD:DP:GQ:PGT:PID:PL  0/0:36,0:36:99:.:.:0,99,1485
+chr1    4       .       A       C       3319.08 PASS    .       GT:AD:DP:GQ:PL  0/0:44,0:44:99:0,99,1485
+chr1    5       .       A       G       4145.15 PASS    .       GT:AD:DP:GQ:PGT:PID:PL  1/1:17,0:17:51:.:.:0,51,573
+#output error.
+------------------------
+WARNING: Skip non-biallelic site: chr1  2       .       GGGT
+WARNING: failed even after flipping strand: chr1        6       .       C       G
               ''');
         sys.exit(0)
 
@@ -103,12 +103,13 @@ if __name__ == '__main__':
         '''Check consistency of a vcf line, exchange ref/alt if necessary.
            return corrected vcfLine, [] if exchange also failed.
         '''
+        # print(refAllele)
         out = []
         ref = vcfLine[3].upper()
         alt = vcfLine[4].upper()
-        if ref_a == ref:
+        if refAllele == ref:
             out = vcfLine
-        elif ref_a == alt:
+        elif refAllele == alt:
             out = exchangeRefAlt(vcfLine)
         else: #
             out = []
