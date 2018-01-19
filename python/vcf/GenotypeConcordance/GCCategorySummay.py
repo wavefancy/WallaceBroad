@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     #output summary statistics
     import numpy
-    sys.stdout.write('Label\tcorrect_00\tcorrect_01\tcorrect_11\terror_00\terror_01\terror_11\terrorRate_00\terrorRate_01\terrorRate_1\terrorRate_nonREFHomo\terrorRate_Total\n')
+    sys.stdout.write('Label\tcorrect_00\tcorrect_01\tcorrect_11\terror_00\terror_01\terror_11\terrorRate_00\terrorRate_01\terrorRate_11\terrorRate_nonREFHomo\terrorRate_Total\n')
     # print(dataMap)
     for k,v in dataMap.items():
         # print(v)
