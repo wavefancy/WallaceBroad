@@ -134,8 +134,9 @@ WARNING: failed even after flipping strand: chr1        6       .       C       
                 start = int(ss[1]) -1
                 end = start + 1
                 if end > len(refGenome[ss[0]]):
-                    sys.stderr.write('WARNING: Skiped, POS exceed config size, config:%s, len: %d, call pos: %d\n'%(ss[0], len(refGenome[ss[0]]), end))
-                    continue
+                    sys.stderr.write('ERROR: POS exceed config size, config:%s, len: %d, call pos: %d\n'%(ss[0], len(refGenome[ss[0]]), end))
+                    sys.stderr.write('Did you use the correct the ref genome? Please check!\n')
+                    sys.exit(-1)
 
                 try:
                     #print(ss[0], start, end)
