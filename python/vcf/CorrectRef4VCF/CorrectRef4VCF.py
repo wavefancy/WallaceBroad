@@ -4,6 +4,7 @@
 
     Check reference allele consistency for VCF file. And
     *** Try to correct inconsistent sites****
+    *** BUG for load the gz ref, please plain text ref.****
     @Author: wavefancy@gmail.com
 
     Usage:
@@ -74,6 +75,7 @@ WARNING: failed even after flipping strand: chr1        6       .       C       
     seqStart = 9 #column idex for sequence start.
 
     from pyfaidx import Fasta
+    #default preload 10,000,000, MEM burden: less than 50m.
     read_ahead = int(args['-c']) if args['-c'] else 10000000
     refGenome = Fasta(refFile, sequence_always_upper=True,read_ahead=read_ahead)
 
