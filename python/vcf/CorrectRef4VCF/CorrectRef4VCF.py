@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CorrectRef4VCF.py -r <ref.fa>
+        CorrectRef4VCF.py -r <ref.fa> [-c int]
         CorrectRef4VCF.py -h | --help | -v | --version | -f
 
     Notes:
@@ -24,6 +24,7 @@
 
     Options:
         -r FILE       Indexed(.fai) fasta Reference file.
+        -c int        Change the preload ref cache size, default: 10,000,000.
         -h --help     Show this screen.
         -v --version  Show version.
         -f            Show format example.
@@ -73,7 +74,8 @@ WARNING: failed even after flipping strand: chr1        6       .       C       
     seqStart = 9 #column idex for sequence start.
 
     from pyfaidx import Fasta
-    refGenome = Fasta(refFile, sequence_always_upper=True)
+    read_ahead = int(args['-c']) if args['-c'] else 10000000
+    refGenome = Fasta(refFile, sequence_always_upper=True,read_ahead=read_ahead)
 
     convertMap = {'0':'1','1':'0','.':'.'}
     def exchangeRefAlt(vcfLine):
@@ -129,10 +131,13 @@ WARNING: failed even after flipping strand: chr1        6       .       C       
 
                 start = int(ss[1]) -1
                 end = start + 1
-                # if start == 198044129:
-                    # sys.stderr.write('::::::::::---'+str(end))
+                if end > len(refGenome[ss[0]]):
+                    sys.stderr.write('WARNING: Skiped, POS exceed config size, config:%s, len: %d, call pos: %d\n'%(ss[0], len(refGenome[ss[0]]), end))
+                    continue
+
                 try:
                     #print(ss[0], start, end)
+                    # sys.stderr.write(':::::::::: '+str(start)+'---'+str(end)+'\n')
                     ref_a = str(refGenome[ss[0]][start:end])
                     #print(ref_a)
                     ref = ss[3] #ref allele
@@ -155,6 +160,7 @@ WARNING: failed even after flipping strand: chr1        6       .       C       
                 except KeyError as e:
                     sys.stderr.write('WARNING: Can not find contig [%s] in reference genome\n'%(ss[0]))
                     #sys.exit(-1)
+
 
             else:
                 if line.startswith('#'):
