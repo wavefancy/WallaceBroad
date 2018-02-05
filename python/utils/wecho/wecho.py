@@ -2,7 +2,7 @@
 
 """
 
-    Copy input string argument to stdout.
+    Copy input multiline string to stdout, with the ability to filter comments.
     @Author: wavefancy@gmail.com
 
     Usage:
@@ -17,7 +17,7 @@
 
 
     Options:
-        -d string     Replace default comment delimter(%) as 'string'.
+        -d string     Replace default comment delimter(%%) as 'string'.
         -l string     String for declearing a linecomment, default //.
         -b string     String for linebreaker, start a new line after these characters, default !.
         -h --help     Show this screen.
@@ -36,15 +36,15 @@ def ShowFormat():
     #Input example
     ------------------------
     "
-    123 % comments %
-    456 % multiple
+    123 %% comments %%
+    456 %% multiple %%
     line
-    comments %
+    comments %%
     // line comments
     789
     !new line
     "
-    "123 % comments% 456 789"
+    "123 %% comments% 456 789"
 
     #Output example
     ------------------------
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     #version 2.0
     #1. add function for line comments.
 
-    commentDelimeter = '%'
+    commentDelimeter = '%%'
     linecomment = '//'
     linebreaker = '!'
 
