@@ -76,6 +76,15 @@ if __name__ == '__main__':
             else:
                 vals = [float(x) for x in ss if x != missing]
 
+            #deal with all values are missing.
+            if not vals:
+                out = ['NA'] * 10
+                if label:
+                    sys.stdout.write('%s\n'%('\t'.join([olabel] + out)))
+                else:
+                    sys.stdout.write('%s\n'%('\t'.join(out)))
+                continue
+
             minV = min(vals)
             q1 = np.percentile(vals,1)
             q25 = q1 = np.percentile(vals,25)
