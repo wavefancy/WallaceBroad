@@ -25,7 +25,7 @@
         -v --version  Show version.
 
     Dependency:
-        scipy
+        numpy
 
 """
 import sys
