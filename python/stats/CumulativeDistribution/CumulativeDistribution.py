@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CumulativeDistribution.py -c int [-n int] [-t]
+        CumulativeDistribution.py -c int [-n int] [-t] [-m]
         CumulativeDistribution.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -18,6 +18,7 @@
         -c int        Column index for read data, single int or all.
                       All for estimate the CD for every column.
         -n int        Set the number of bins for estimating cumulative distribution, default 20.
+        -m            Out put the count, rather than the proportion.
         -t            Set the first line as title, default False.
         -f file       Read line index from 'file', one line one index, load all in memory.
         -h --help     Show this screen.
@@ -75,6 +76,8 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     d_column = -1
+    o_count = True if args['-m'] else False
+
     if args['-c']:
         if args['-c'].upper() == 'ALL':
             d_column = -100 # flag for estimate cd for every column.
@@ -117,7 +120,10 @@ if __name__ == '__main__':
         #evaluate the cumulative
         cumulative = np.cumsum(values)
         N = len(inData) * 1.0
-        cumfreqs = cumulative/N
+        if o_count:
+            cumfreqs = cumulative
+        else:
+            cumfreqs = cumulative/N
         #
         o_title = 'COL'+str(i+1)
         if title_data:
