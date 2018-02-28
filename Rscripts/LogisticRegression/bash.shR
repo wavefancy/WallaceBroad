@@ -1,0 +1,2 @@
+cat test.txt | Rscript logisticRegression.R
+
