@@ -17,8 +17,8 @@
 
 
     Options:
-        -d string     Replace default comment delimter(%%) as 'string'.
-        -l string     String for declearing a linecomment, default //.
+        -d string     Replace default pair comment delimter(%%) as 'string'.
+        -l string     String for declearing a linecomment, default '#'.
         -b string     String for linebreaker, start a new line after these characters, default !.
         -h --help     Show this screen.
         -v --version  Show version.
@@ -40,7 +40,7 @@ def ShowFormat():
     456 %% multiple %%
     line
     comments %%
-    // line comments
+    # line comments
     789
     !new line
     "
