@@ -13,7 +13,7 @@
         1. Copy input string argument to stdout.
         2. Remove newline character, combine mutilines to a single line.
         3. Remove comments from input string, comments was surrounded by %, see example by -f.
-            Single line comment can be started by linecomment characters, default //.
+            Single line comment can be started by linecomment characters, default #.
 
 
     Options:
@@ -39,12 +39,11 @@ def ShowFormat():
     123 %% comments %%
     456 %% multiple %%
     line
-    comments %%
+    # comments
     # line comments
     789
     !new line
-    "
-    "123 %% comments% 456 789"
+    123 %% comments%% 456 789"
 
     #Output example
     ------------------------
@@ -57,7 +56,8 @@ if __name__ == '__main__':
     #1. add function for line comments.
 
     commentDelimeter = '%%'
-    linecomment = '//'
+    # linecomment = '//'
+    linecomment = '#'
     linebreaker = '!'
 
     if args['-d']:
