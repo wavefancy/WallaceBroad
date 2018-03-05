@@ -18,7 +18,7 @@
 
     Options:
         -d string     Replace default pair comment delimter(%%) as 'string'.
-        -l string     String for declearing a linecomment, default '#'.
+        -l string     String for declearing a linecomment, default '#' or '//'.
         -b string     String for linebreaker, start a new line after these characters, default !.
         -h --help     Show this screen.
         -v --version  Show version.
@@ -91,7 +91,8 @@ if __name__ == '__main__':
         if x:
             for y in x.splitlines():
                 y = y.strip()
-                if not y.startswith(linecomment): #skip line commented line.
+                # y.startswith('//') make it compatible with old scripts.
+                if not (y.startswith(linecomment) or y.startswith('//')): #skip line commented line.
                     arr1.append(y)
 
     out = ' '.join(arr1)

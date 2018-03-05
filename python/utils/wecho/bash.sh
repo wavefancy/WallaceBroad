@@ -6,4 +6,5 @@ python3 ./wecho.py "
     # line comments
     789
     !new line
+    //comments
     123 %% comments%% 456 789"
