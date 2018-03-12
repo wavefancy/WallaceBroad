@@ -32,4 +32,4 @@ else:
     vdata = hc.import_vcf(vcf)
 vdata = vdata.sample_qc()
 df = vdata.samples_table().to_pandas()
-df.to_csv(outprefix + '.txt', sep='\t',index=False)
+df.to_csv(outprefix + '.txt', sep='\t',index=False,na_rep='NA')
