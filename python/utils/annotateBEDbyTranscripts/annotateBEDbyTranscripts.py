@@ -7,21 +7,21 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        annotateBEDbyTranscripts.py -t file [-l]
+        annotateBEDbyTranscripts.py [-l] -i file
         annotateBEDbyTranscripts.py -h | --help | -v | --version | -f | --format
 
     Notes:
-        1. Read input bed from stdin, and output results to stdout.
+        1. Output results to stdout.
         2. *** Please make sure the chr coding matched between files, e.g. chr1 vs 1.
         3. The input bed file was designed as:
-            cdsStart         -- 1 exon end,
-            2 exon start     -- 2 exon end,
-            3 exon start     -- 3 exon end,
+            cds1Start     -- cds1end,
+            cds2start     -- cds2end,
+            cds3start     -- cds2end,
             ...
-            last exon start --- cds End.
+            lastcdsstart  -- lastcdsend.
 
     Options:
-        -t file       Transcripts annotation file.
+        -i file       Input gtf db file.
         -l            Output matching log to stderr.
         -h --help     Show this screen.
         -v --version  Show version.
@@ -46,32 +46,43 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    anno_map = {} # Annotation map: chr_cdsStart_exon_1_end -> [transcript_annotation, ...]
-                  # transcript_annotation = (name ,n_exons, [cdsStart, exon_1_start, exon_2_stat, exon_2_end ..., last_exon_start, cds_end],genename)
-    with open(args['-t'],'r') as infile:
-        for line in infile:
-            line = line.strip()
-            # print(line)
-            if line:
-                ss = line.split()
-                exonstarts=ss[9][:-1].split(',')[1:] #skip the first exon_1_start
-                exonends = ss[10][:-1].split(',')[:-1] #skip the last_exon_end.
+    anno_map = {} # Annotation map: chr_cds1Start_cds1end -> [transcript_annotation, ...]
+                  # transcript_annotation = (name ,n_cds, [cds1Start, cds1end, cds2start, cds2end ..., lastcdsstart, lastcdsend],genename)
 
-                exonstarts = [ss[6]] + exonstarts #cdsStart
-                exonends = exonends + [ss[7]]     #cds_end
+    # The load inpu should be like the gencode gtf file.
+    # The file should already have genes and transcripts on separate lines.
+    # This means we can avoid the gene and transcript inference, which saves time.
+    # merge_strategy='merge', use this to solve duplicate id issues.
+    import gffutils
+    # db = gffutils.create_db(args['-t'],
+    # ":memory:",
+    # keep_order=True,
+    # merge_strategy="create_unique",
+    # sort_attribute_values=True,
+    # disable_infer_genes=True, disable_infer_transcripts=True)
+    db = gffutils.FeatureDB(args['-i'], keep_order=True)
 
-                # ss[2] = ss[2][3:] if ss[2].lower().startswith('chr') else ss[2]
-                key = '%s_%s_%s'%(ss[2],exonstarts[0],exonends[0])
-                if key not in anno_map:
-                    anno_map[key] = []
-
-                array = []
-                for x,y in zip(exonstarts, exonends):
-                    array.append(x)
-                    array.append(y)
-                anno_map[key].append((ss[1], len(exonstarts),array,ss[12]))
-
+    #Iterate on genes
+    for tt in db.features_of_type('transcript'):
+        # print(tt['ID'])
+        cds = list(db.children(tt, featuretype='CDS', order_by='start'))
+        if cds:
+            c = cds[0]
+            # print(c)
+            key='%s_%d_%s'%(c.seqid, int(c.start)-1, c.end)
+            if key not in anno_map:
+                anno_map[key] = []
+            array = []
+            for c in cds:
+                array.append(int(c.start)-1)
+                array.append(c.end)
+            #add 3 bases for stop codon.
+            array[-1] += 3
+            array = '-'.join(map(str,array))
+            anno_map[key].append((tt['transcript_id'][0],len(cds),array,tt['gene_name'][0]))
     # print(anno_map)
+    # sys.exit(-1)
+
     #load bed file and start compare.
     import numpy
     bed = numpy.genfromtxt(sys.stdin,dtype='str')
@@ -82,8 +93,9 @@ if __name__ == '__main__':
         found = False
 
         if key not in anno_map:
-            sys.stderr.write('ERROR: can not find any transcript start match this bed record, please check! >%s\n'%(key))
-            sys.exit(-1)
+            sys.stderr.write('Failed: %s\n'%(key))
+            i += 1
+            # sys.exit(-1)
         else:
             transcripts = anno_map[key]
             for t in transcripts:
@@ -94,12 +106,13 @@ if __name__ == '__main__':
                     array.append(x[1])
                     array.append(x[2])
                 #output
+                array='-'.join(array)
                 if args['-l']:
-                    sys.stdout.write('bed\t%s\n'%('\t'.join(array)))
-                    sys.stdout.write('tpt\t%s\n'%('\t'.join(t[2])))
+                    sys.stdout.write('bed: %s\n'%(array))
+                    sys.stdout.write('gtf: %s\n'%(t[2]))
                 if t[2] == array: #matched, output results.
                     for x in bed[i:j]:
-                        sys.stdout.write('%s\t%s\t%s\n'%('\t'.join(x),t[0],t[-1]))
+                        sys.stdout.write('%s\t%s\t%s\n'%('\t'.join(x),t[-1],t[0]))
 
                     i = j
                     found = True
@@ -107,8 +120,10 @@ if __name__ == '__main__':
             #Iterate overall possible transcript, no candidate found.
             # print(i)
             if not found:
-                sys.stderr.write('ERROR: can not find any transcript start match this bed record, please check! >%s\n'%(key))
-                sys.exit(-1)
+                sys.stderr.write('Failed: %s\n'%(key))
+                i += 1
+                # sys.stderr.write('ERROR: can not find any transcript start match this bed record, please check! >%s\n'%(key))
+                # sys.exit(-1)
 
 sys.stdout.flush()
 sys.stdout.close()
