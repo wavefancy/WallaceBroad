@@ -49,6 +49,15 @@ if __name__ == '__main__':
     anno_map = {} # Annotation map: chr_cds1Start_cds1end -> [transcript_annotation, ...]
                   # transcript_annotation = (name ,n_cds, [cds1Start, cds1end, cds2start, cds2end ..., lastcdsstart, lastcdsend],genename)
 
+    #load bed file and start compare.
+    import numpy
+    # bed = numpy.genfromtxt(sys.stdin,dtype='str')
+    bed = []
+    for line in sys.stdin:
+        line = line.strip()
+        if line:
+            bed.append(line.split())
+
     # The load inpu should be like the gencode gtf file.
     # The file should already have genes and transcripts on separate lines.
     # This means we can avoid the gene and transcript inference, which saves time.
@@ -83,9 +92,6 @@ if __name__ == '__main__':
     # print(anno_map)
     # sys.exit(-1)
 
-    #load bed file and start compare.
-    import numpy
-    bed = numpy.genfromtxt(sys.stdin,dtype='str')
     i = 0
     while i < len(bed):
         # print('MYI:' + str(i))
