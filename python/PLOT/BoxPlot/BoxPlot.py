@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--rx int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -25,6 +25,7 @@
         --ms msize    Set marker size: float, default 2.
         --bm bmargin  Bottom margin, default 40.
         --rm int      Right margin, default 20.
+        --lm int      left margin, default 50.
         --over        Overlap dot with box.
         --ha hanno    Add horizontal line annotation with text.
                         foramt: x1_x2_y_text,x1_x2_y_text.
@@ -116,6 +117,7 @@ if __name__ == '__main__':
     rx = int(args['--rx']) if args['--rx'] else ''
     xls = int(args['--xls']) if args['--xls'] else 12
     rm = int(args['--rm']) if args['--rm'] else 20
+    lm = int(args['--lm']) if args['--lm'] else 50
 
     format2 = True if args['--c2'] else False
 
@@ -222,7 +224,7 @@ if __name__ == '__main__':
             )
         ),
         margin=dict(
-            l=50,
+            l=lm,
             r=rm,
             b=bmargin,
             t=10,
