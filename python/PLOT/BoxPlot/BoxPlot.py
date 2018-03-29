@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--rx int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--rx int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -35,6 +35,7 @@
         --hat int     Set the horizontal annotation font size, default 12.
         --cl colors   Set the colors of the box plot, eg: '#1F77B4::#2B9D2B'.
         --ydt float   Set the tick distance on y axis.
+        --c2          Set the input data format as 2 columns format.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -50,9 +51,20 @@ signal(SIGPIPE, SIG_DFL)
 def ShowFormat():
     '''Input File format example:'''
     print('''
+# input format 1
+#------------------
 c1  1   10  1
 c2  2   -5  3
 c3  5   3   2
+
+# input format 2: --c2
+#------------------
+c1 1
+c1 10
+c1 3
+c2 2
+c2 5
+c2 -1
     ''');
 
 if __name__ == '__main__':
@@ -105,10 +117,14 @@ if __name__ == '__main__':
     xls = int(args['--xls']) if args['--xls'] else 12
     rm = int(args['--rm']) if args['--rm'] else 20
 
+    format2 = True if args['--c2'] else False
+
     commands = {'vl'}
     data = [] #[[name, val1,val2 ..], [name, val1, val2...]]
     x_data = [] # [name1, name2]
     y_data = [] # [ [val1,val2 ..], [val1,val2 ..] ]
+    from collections import OrderedDict
+    data_map = OrderedDict() # categoryName -> [values]
     for line in sys.stdin:
         line = line.strip()
         if line:
@@ -117,9 +133,23 @@ if __name__ == '__main__':
                 if ss[1] == 'vl':
                     vlines.append(float(ss[2]))
             else:
-                x_data.append(ss[0])
-                y_data.append([float(x) for x in ss[1:]])
+                if not format2:
+                    x_data.append(ss[0])
+                    y_data.append([float(x) for x in ss[1:]])
+                else:
+                    try:
+                        y = float(ss[1])
+                        if ss[0] not in data_map:
+                            data_map[ss[0]] = []
+                        data_map[ss[0]].append(y)
+                    except ValueError:
+                        sys.stderr.write('WARN: Parse ValueError, skipped: %s\n'%(line))
 
+    if format2:
+        # print(data_map)
+        for k,v in data_map.items():
+            x_data.append(k)
+            y_data.append(v)
 
     #colors = ['rgba(93, 164, 214, 1)', 'rgba(255, 65, 54, 1)', 'rgba(44, 160, 101, 1)','rgba(255, 144, 14, 1)', 'rgba(207, 114, 255, 1)', 'rgba(127, 96, 0, 1)', 'rgba(255, 140, 184, 1)', 'rgba(79, 90, 117, 1)', 'rgba(222, 223, 0, 1)']
     colors = ['rgba(93, 164, 214,1)', 'rgba(255, 65, 54,1)', 'rgba(44, 160, 101,1)','rgba(255, 144, 14, 1)', 'rgba(207, 114, 255, 1)', 'rgba(127, 96, 0, 1)', 'rgba(255, 140, 184, 1)', 'rgba(79, 90, 117, 1)', 'rgba(222, 223, 0, 1)']
