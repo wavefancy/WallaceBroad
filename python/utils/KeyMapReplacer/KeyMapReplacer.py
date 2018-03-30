@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol> | -a aValue) [-d delimter]
+        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol> | -a aValue) [-d delimter] [-x]
         KeyMapReplace.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -22,6 +22,7 @@
         -a aValue     Add one column at line end, other than replace one column,
                         add 'aValue' if no key matching.
         -d delimter   Delimiter to split columns from stdin.
+        -x            Close output for unmatched records, default output.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -86,8 +87,11 @@ if __name__ == '__main__':
     #Replace one colum
     kcols = [int(x) -1 for x in args['-k'].split(',')]
 
+    keep_unmatch = False if args['-x'] else True
+
     #read key-value pairs
     kv_map = {}
+    n_content = ''
     for line in open(args['-p'],'r'):
         line = line.strip()
         if line:
@@ -95,6 +99,9 @@ if __name__ == '__main__':
             k = '-'.join(ss[0:len(kcols)])
             if k not in kv_map:
                 kv_map[k] = ss[len(kcols):]
+
+                if not n_content:
+                    n_content = len(kv_map[k])
             else:
                 sys.stderr.write('Warning: Duplicate keys, only keep first entry. Skip: %s\n'%(line))
 
@@ -108,11 +115,14 @@ if __name__ == '__main__':
 
                 k = '-'.join([ss[x] for x in kcols])
                 if k in kv_map:
-                    ss[rcol] = kv_map[k]
-                sys.stdout.write('%s\n'%('\t'.join(ss)))
+                    ss[rcol] = '\t'.join(kv_map[k])
+                    sys.stdout.write('%s\n'%('\t'.join(ss)))
+                else:
+                    if keep_unmatch:
+                        sys.stdout.write('%s\n'%('\t'.join(ss)))
 
     if args['-a']:
-        val = args['-a']
+        val = [args['-a'] for x in range(n_content)]
         for line in sys.stdin:
             line = line.strip()
             if line:
@@ -122,7 +132,8 @@ if __name__ == '__main__':
                 if k in kv_map:
                     sys.stdout.write('%s\t%s\n'%('\t'.join(ss), '\t'.join(kv_map[k])))
                 else:
-                    sys.stdout.write('%s\t%s\n'%('\t'.join(ss), val))
+                    if keep_unmatch:
+                        sys.stdout.write('%s\t%s\n'%('\t'.join(ss), '\t'.join(val)))
 
 sys.stdout.flush()
 sys.stdout.close()
