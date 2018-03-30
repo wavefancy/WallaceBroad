@@ -3,6 +3,7 @@
 """
 
     Replace content according to key map values.
+
     @Author: wavefancy@gmail.com
 
     Usage:
@@ -15,15 +16,12 @@
 
     Options:
         -p <key-map-pair-file>  Key value pairs, one entry one line.
-                                [1,(n-1)] columns as key, last column(n) as value.
+                                [1,n] columns as key, n is the number of keys '-k'.
         -k <kcol>     Colums as key in stdin, column index starts from 1, eg 1|1,3
         -r <rcol>     Colum to replace in stdin, column index starts from 1.
         -a aValue     Add one column at line end, other than replace one column,
                         add 'aValue' if no key matching.
-        -d delimter   Delimter to split key from stdin,
-                        *** Can only set one column by -k option.
-                        *** NA will be set up if no key matching [different behavior as no this option].
-                        *** if -a model is open, 'aValue' will be set up instead.
+        -d delimter   Delimiter to split columns from stdin.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -63,7 +61,7 @@ def ShowFormat():
           ''');
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='3.0')
+    args = docopt(__doc__, version='4.0')
     #version 3.0
     # 1. Add function to support multiple columns as key.
     #    Treat all the columns except the last one in the key-map-pair-file as key.
@@ -81,9 +79,12 @@ if __name__ == '__main__':
     if args['-a'] and args['-r']:
         sys.stderr.write('ERROR: option -a|-r can only be applied by one of them.\n')
         sys.exit(-1)
-    delimter = ''
+    delimiter = None
     if args['-d']:
-        delimter = args['-d']
+        delimiter = args['-d']
+
+    #Replace one colum
+    kcols = [int(x) -1 for x in args['-k'].split(',')]
 
     #read key-value pairs
     kv_map = {}
@@ -91,58 +92,37 @@ if __name__ == '__main__':
         line = line.strip()
         if line:
             ss = line.split()
-            k = '-'.join(ss[0:-1])
+            k = '-'.join(ss[0:len(kcols)])
             if k not in kv_map:
-                kv_map[k] = ss[-1]
+                kv_map[k] = ss[len(kcols):]
             else:
                 sys.stderr.write('Warning: Duplicate keys, only keep first entry. Skip: %s\n'%(line))
 
-    #Replace one colum
-    kcols = [int(x) -1 for x in args['-k'].split(',')]
+
     if args['-r']:
         rcol = int(args['-r']) -1
         for line in sys.stdin:
             line = line.strip()
             if line:
-                ss = line.split()
-                if delimter:
-                    keys = ss[kcols[0]].split(delimter)
-                    out = []
-                    for k in keys:
-                        if k in kv_map:
-                            out.append(kv_map[k])
-                        else:
-                            out.append('NA')
-                    ss[rcol] = delimter.join(out)
-                    sys.stdout.write('%s\n'%('\t'.join(ss)))
-                else:
-                    k = '-'.join([ss[x] for x in kcols])
-                    if k in kv_map:
-                        ss[rcol] = kv_map[k]
-                    sys.stdout.write('%s\n'%('\t'.join(ss)))
+                ss = line.split(delimiter)
+
+                k = '-'.join([ss[x] for x in kcols])
+                if k in kv_map:
+                    ss[rcol] = kv_map[k]
+                sys.stdout.write('%s\n'%('\t'.join(ss)))
 
     if args['-a']:
         val = args['-a']
         for line in sys.stdin:
             line = line.strip()
             if line:
-                ss = line.split()
-                if delimter:
-                    keys = ss[kcols[0]].split(delimter)
-                    out = []
-                    for k in keys:
-                        if k in kv_map:
-                            out.append(kv_map[k])
-                        else:
-                            out.append(val)
-                    sys.stdout.write('%s\t%s\n'%('\t'.join(ss), delimter.join(out)))
+                ss = line.split(delimiter)
 
+                k = '-'.join([ss[x] for x in kcols])
+                if k in kv_map:
+                    sys.stdout.write('%s\t%s\n'%('\t'.join(ss), '\t'.join(kv_map[k])))
                 else:
-                    k = '-'.join([ss[x] for x in kcols])
-                    if k in kv_map:
-                        sys.stdout.write('%s\t%s\n'%('\t'.join(ss), kv_map[k]))
-                    else:
-                        sys.stdout.write('%s\t%s\n'%('\t'.join(ss), val))
+                    sys.stdout.write('%s\t%s\n'%('\t'.join(ss), val))
 
 sys.stdout.flush()
 sys.stdout.close()
