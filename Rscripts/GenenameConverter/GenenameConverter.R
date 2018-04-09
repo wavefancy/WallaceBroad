@@ -9,12 +9,14 @@
 # biocLite("clusterProfiler")
 # install.packages('docopt')
 #
-
+# Ref: https://bioconductor.org/packages/3.7/bioc/vignettes/clusterProfiler/inst/doc/clusterProfiler.html
 '
 =======================================================================================
 Convert genename between different annotations.
 
-Usage: GenenameConverter.R [-f <from> -t <to>]
+Usage:
+    GenenameConverter.R -f <from> -t <to>
+    GenenameConverter.R -h [--help]
 
 Options:
  -f   <from>     fromType, one type from supported types, eg. UNIPROT.
