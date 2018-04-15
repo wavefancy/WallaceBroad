@@ -1,0 +1,7 @@
+prestige	census	type
+68.8	1113	prof
+69.1	1130	great
+63.4	1171	prof
+56.8	1175	great
+73.5	2111	prof
+
