@@ -15,14 +15,14 @@
         3. See example by -f.
 
     Options:
-        -p int        Column index for position in stdin.
+        -p int        Column index for value in stdin.
         -g int        The column index for group name in stdin.
                         If this option is on, check the annotion within each group.
         -a file       Range annotation file.
                         If -g is off, three columns: range_start, end, annotion_name
                         If -g is on,   four columns: group name, start, end, annotion_name.
         -n string     Title name for the annotation.
-                        Add this string for those lines can be parsed
+                        Add this string for those lines can not be parsed
                         as float in the position column. Default: ANN.
         -h --help     Show this screen.
         -v --version  Show version.

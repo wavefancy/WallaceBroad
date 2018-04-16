@@ -1,0 +1,4 @@
+0.35    1       MZT/Duplicates
+0.17    0.34999 PO/FullSib
+0.088   0.16999 2nd
+0.04    0.08799 3rd
