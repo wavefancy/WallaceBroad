@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BasicStatistics4Category.py [-t] [-m] [--mv string]
+        BasicStatistics4Category.py [-t] [-m] [--mv string] [-c]
         BasicStatistics4Category.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -18,6 +18,7 @@
         -m            Output the proportion of missing for each category.
         --mv string   Value for missing, default 'NA'.
         -l            Treat the first column as label, and output label for each row.
+        -c            Categorize the data in each category, only for 
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -57,7 +58,7 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    oMissing = True if args['-m'] else False
+    oMissing = True if args['-m'] else False #only output missing.
     missing = args['--mv'] if args['--mv'] else 'NA'
 
     if args['-t']:
@@ -87,15 +88,6 @@ if __name__ == '__main__':
     else:
         for k,v in dataMap.items():
             vals = [float(x) for x in v if x != missing]
-
-            # vals = []
-            # olabel = ''
-            # if label:
-            #     vals = [float(x) for x in ss[1:] if x != 'NA']
-            #     olabel = ss[0]
-            # else:
-            #     vals = [float(x) for x in ss if x != 'NA']
-
             minV = min(vals)
             q1 = np.percentile(vals,1)
             q25 = q1 = np.percentile(vals,25)
