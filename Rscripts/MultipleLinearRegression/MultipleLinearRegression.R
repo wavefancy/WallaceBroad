@@ -21,3 +21,9 @@ print(c("FORMULA:",form))
 
 lr = lm(as.formula(form),data = dd)
 summary(lr)
+
+# Calculate 95CI.
+x= confint(lr)
+y = as.data.frame(x)
+y$CI='95CI'
+y
