@@ -94,7 +94,7 @@ if __name__ == '__main__':
             sys.stdout.write('%s\t%s\n'%(k,';'.join(set(v))))
     elif args['--sum']:
         for k,v in gMap.items():
-            sys.stdout.write('%s\t%.4e\n'%(k,sum(map(float,v))))
+            sys.stdout.write('%s\t%e\n'%(k,sum(map(float,v))))
 
 sys.stdout.flush()
 sys.stdout.close()
