@@ -57,5 +57,13 @@ print(form)
 
 lr = glm(as.formula(form),data = dd, family = binomial(link="logit"))
 summary(lr)
+
+# Calculate 95CI.
+x= confint(lr)
+y = as.data.frame(x)
+y$CI='95CI'
+y
+
+# Calculate R2
 r2 = RsqGLM(model=lr)
 str(r2, comp.str = "")
