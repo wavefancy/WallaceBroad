@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Txt2Xls.py -o oname [--rc cindex]
+        Txt2Xls.py -o oname [--rc cindex] [-d string]
         Txt2Xls.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -15,7 +15,8 @@
         2. Line index start from 1.
 
     Options:
-        -o string     output file name.
+        -o string     Output file name.
+        -d string     Set the column delimiter, default whitespace+. tab for '\\t'.
         --rc cindex   Format row color by the value at column 'cindex'.
         -e index      Set end line index, (inclusive).
         -a number     Set the end line as '-n index' + 'number', (inclusive).
@@ -89,6 +90,9 @@ if __name__ == '__main__':
         global rc_temp
         rc_temp = rc_temp + 1
         return formats[rc_temp % len(formats)]
+    delimiter = args['-d'] if args['-d'] else None
+    if delimiter.upper() == 'TAB':
+        delimiter = '\t'
 
     row = 0
     col = 0
@@ -98,7 +102,7 @@ if __name__ == '__main__':
     for line in sys.stdin:
         line = line.strip()
         if line:
-            ss = line.split()
+            ss = line.split(delimiter)
             col = 0
             for x in ss:
                 if rc >= 0:  #change row color if value change.
