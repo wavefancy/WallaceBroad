@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        TransvarP2G.py
+        TransvarP2G.py [--vep]
         TransvarP2G.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -84,8 +84,12 @@ if __name__ == '__main__':
             if candiates:
                 gg = gg + candiates.split(',')
 
-            for g in gg:
-                sys.stdout.write('%s\t%s\n'%(coor1[-1], convertG(g)))
+            if args['--vep']:
+                for g in gg:
+                    sys.stdout.write('%s\n'%(g))
+            else:
+                for g in gg:
+                    sys.stdout.write('%s\t%s\n'%(coor1[-1], convertG(g)))
 
 sys.stdout.flush()
 sys.stdout.close()
