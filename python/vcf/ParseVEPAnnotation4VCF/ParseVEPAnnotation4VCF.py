@@ -48,6 +48,7 @@ if __name__ == '__main__':
         line = line.strip()
         if line:
             if indata:  #Parse each variant.
+                line = line.replace(' ','_')
                 ss = line.split()
                 out = ss[:num_meta]
                 data = ss[7].split('CSQ=')[1].split(';')[0].split(',')
