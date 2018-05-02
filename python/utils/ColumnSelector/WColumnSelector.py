@@ -99,6 +99,7 @@ if __name__ == '__main__':
                     COL = INDEXMAP[args['-t']]
                 #copy title line
                 sys.stdout.write('%s\n'%(line))
+                continue
 
             ss = line.split(None,COL+1)
 
