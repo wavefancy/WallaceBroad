@@ -42,7 +42,7 @@ K 4  1  2  5  6  7  8  9  7  8  7  8  7  7  7  7  7  7  6  6  4  4  4
 #cat test.txt | wcut -f2- | python3 PCA.py -n 3
 ------------------------
 ExplainedVar    0.5660  0.2364  0.1976
-Sample  PC0     PC1     PC2
+Sample  PC1     PC2     PC3
 0       5.5742e+00      -1.4207e+00     1.0485e+00
 1       7.9032e-01      3.3549e+00      -2.0023e+00
 2       -3.4264e+00     8.5029e-01      2.9886e+00
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     sys.stdout.write('%s\n'%('\t'.join(out)))
 
     out = ['Sample']
-    [out.append('PC%d'%(x)) for x in range(NUM_PC)]
+    [out.append('PC%d'%(x+1)) for x in range(NUM_PC)]
 
     sys.stdout.write('%s\n'%('\t'.join(out)))
     for s,dd in zip(data.index,pcs):
