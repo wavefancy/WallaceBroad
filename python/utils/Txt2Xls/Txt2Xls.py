@@ -91,7 +91,7 @@ if __name__ == '__main__':
         rc_temp = rc_temp + 1
         return formats[rc_temp % len(formats)]
     delimiter = args['-d'] if args['-d'] else None
-    if delimiter.upper() == 'TAB':
+    if delimiter and delimiter.upper() == 'TAB':
         delimiter = '\t'
 
     row = 0
