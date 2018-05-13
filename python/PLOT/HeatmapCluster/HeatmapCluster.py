@@ -30,6 +30,8 @@
     REF:
         1. https://seaborn.pydata.org/generated/seaborn.clustermap.html
         2. https://seaborn.pydata.org/generated/seaborn.heatmap.html
+            http://colorbrewer2.org/#
+            https://github.com/dsc/colorbrewer-python
 
 '''
 import sys
