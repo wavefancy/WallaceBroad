@@ -1,0 +1,4 @@
+name1	2	2017-11-07	/medpop/esp2/abick/dbgap/aric/
+name1	3	2018-11-07	/medpop/esp2/abick/dbgap/aric/
+name2	1	2017-11-07	/medpop/esp2/abick/dbgap/aric/
+name3	5	2017-11-07	/medpop/esp2
