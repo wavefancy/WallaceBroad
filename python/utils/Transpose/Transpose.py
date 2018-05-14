@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Transpose.py
+        Transpose.py [-l]
         Transpose.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,6 +16,8 @@
         3. See example by -f.
 
     Options:
+        -l            In line mode. Do not split line by columns,
+                         use the whole line as a single element.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -38,6 +40,10 @@ def ShowFormat():
 1       4
 2       5
 3       6
+
+    #output: -l
+    ------------------------
+1   2   3       4   5   6
     ''');
 
 if __name__ == '__main__':
@@ -49,7 +55,10 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     #load all data into memory.
-    data = [line.strip().split() for line in sys.stdin if line.strip()]
+    if args['-l']:
+        data = [line.strip() for line in sys.stdin if line.strip()]
+    else:
+        data = [line.strip().split() for line in sys.stdin if line.strip()]
     # check the number of fields for each line.
     for v in data[1:]:
         if len(v) != len(data[0]):
@@ -57,8 +66,11 @@ if __name__ == '__main__':
             sys.exit(-1)
 
     #Transpose data and output.
-    for line in zip(*data):
-        sys.stdout.write('%s\n'%('\t'.join(line)))
+    if args['-l']:
+        sys.stdout.write('%s\n'%('\t'.join(data)))
+    else:
+        for line in zip(*data):
+            sys.stdout.write('%s\n'%('\t'.join(line)))
 
 sys.stdout.flush()
 sys.stdout.close()
