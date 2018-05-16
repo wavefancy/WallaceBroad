@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Categorical2Dummy.py -n name
+        Categorical2Dummy.py -n name [-k]
         Categorical2Dummy.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
 
     Options:
         -n name       Column name for the column to be converted.
+        -k            Keep the column which was converted. Default: Skip.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -42,7 +43,7 @@ X1      C
 5       C2
 6       C2
 
-#cat test.txt |  cat test.txt | python3 Categorical2Dummy.py -n C
+#cat test.txt |  cat test.txt | python3 Categorical2Dummy.py -n C -k
 ------------------------
 X1      C       C_C1    C_C2    C_C3
 1       C1      1       0       0
@@ -61,6 +62,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     CNAME = args['-n']
+    KEEP  = True if args['-k'] else False
     import pandas as pd
 
     data = pd.read_table(sys.stdin,header=0,delim_whitespace=True)
@@ -69,7 +71,10 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     dummy = pd.get_dummies(data[(CNAME)],prefix=CNAME)
-    # cols = [x for x in data.columns if x != CNAME]
+    if not KEEP:
+        cols = [x for x in data.columns if x != CNAME]
+        data = data[cols]
+
     results = pd.concat([data,dummy], axis=1)
     results.to_csv(sys.stdout, sep='\t',index=False)
 
