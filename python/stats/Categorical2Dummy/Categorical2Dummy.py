@@ -76,7 +76,7 @@ if __name__ == '__main__':
         data = data[cols]
 
     results = pd.concat([data,dummy], axis=1)
-    results.to_csv(sys.stdout, sep='\t',index=False)
+    results.to_csv(sys.stdout, sep='\t',index=False,na_rep='NA')
 
 sys.stdout.flush()
 sys.stdout.close()
