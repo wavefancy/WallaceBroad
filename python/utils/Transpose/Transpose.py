@@ -59,16 +59,17 @@ if __name__ == '__main__':
         data = [line.strip() for line in sys.stdin if line.strip()]
     else:
         data = [line.strip().split() for line in sys.stdin if line.strip()]
-    # check the number of fields for each line.
-    for v in data[1:]:
-        if len(v) != len(data[0]):
-            sys.stderr.write('ERROR: Not all the input lines have the same number of fields.\n')
-            sys.exit(-1)
 
     #Transpose data and output.
     if args['-l']:
         sys.stdout.write('%s\n'%('\t'.join(data)))
     else:
+        # check the number of fields for each line.
+        for v in data[1:]:
+            if len(v) != len(data[0]):
+                sys.stderr.write('ERROR: Not all the input lines have the same number of fields.\n')
+                sys.exit(-1)
+
         for line in zip(*data):
             sys.stdout.write('%s\n'%('\t'.join(line)))
 
