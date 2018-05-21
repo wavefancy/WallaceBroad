@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CategoryStats.py -c cindex -k vindex (-d|-s|--sum)
+        CategoryStats.py -c cindex -k vindex (-d|-s|--sum|-l)
         CategoryStats.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,7 +17,8 @@
         -c cindex      Column index for category name (column index starts from 1).
         -k vindex      Column index for value of each category.
         -d             Output category value diversity, NumberOfDifferentTypeOfValues/TotalNumberOfValues.
-        -s             Output category value set.
+        -s             Output category value set, uniq element list.
+        -l             List all elements in each category, including repeats.
         --sum          Compute the category value summation.
         -h --help      Show this screen.
         -v --version   Show version.
@@ -47,6 +48,11 @@ C2      0.5000
 --------------------
 C1      X1;Y1
 C2      X
+
+#cat test.txt | python3 CategoryStats.py -c 1 -k 2 -l
+--------------------
+C1      X1;Y1
+C2      X;X
 
 #cat test.txt | python3 CategoryStats.py -c 1 -k 3 --sum
 --------------------
@@ -95,6 +101,9 @@ if __name__ == '__main__':
     elif args['--sum']:
         for k,v in gMap.items():
             sys.stdout.write('%s\t%e\n'%(k,sum(map(float,v))))
+    elif args['-l']:
+        for k,v in gMap.items():
+            sys.stdout.write('%s\t%s\n'%(k,';'.join(v)))
 
 sys.stdout.flush()
 sys.stdout.close()
