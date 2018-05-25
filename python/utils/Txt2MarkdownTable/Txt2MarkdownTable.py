@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Txt2MarkdownTable.py
+        Txt2MarkdownTable.py [--rb int]
         Txt2MarkdownTable.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -15,6 +15,7 @@
         2. See example by -f.
 
     Options:
+        --rb int      Make row as bold format, 1 based. ex. 1|1,3.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -29,18 +30,17 @@ def ShowFormat():
     print('''
     #input:
     ------------------------
-1   2   3
-4   5   6
+T1      T2
+1       2
+2       3
 
-    #output:
+    #output: --rb 2
     ------------------------
-1       4
-2       5
-3       6
+| T1    | T2    |
+| :---  | :---  |
+| **1** | **2** |
+| 2     | 3     |
 
-    #output: -l
-    ------------------------
-1   2   3       4   5   6
     ''');
 
 if __name__ == '__main__':
@@ -50,6 +50,8 @@ if __name__ == '__main__':
     if(args['--format']):
         ShowFormat()
         sys.exit(-1)
+
+    rb = [int(x)-1 for x in args['--rb'].split(',')] if args['--rb'] else []
 
     """MMD Table Formatter.
     # Taken from: https://codereview.stackexchange.com/questions/145262/source-formatting-of-markdown-table
@@ -71,9 +73,11 @@ if __name__ == '__main__':
 
     # For "cleaned" table entries:
     rows = [[el.strip() for el in row.strip().split()] for row in sys.stdin]
+    for x in rb:
+        rows[x] = ['**'+x+'**' for x in rows[x]]
 
-    #add the second align rows
-    rows = [rows[0]] + [['---' for x in rows[0]]] + rows[1:]
+    #add the second align rows, set default left align.
+    rows = [rows[0]] + [[':---' for x in rows[0]]] + rows[1:]
     # print(rows)
 
     # Max length of each "entry" is what we'll use
