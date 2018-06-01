@@ -64,7 +64,7 @@ if __name__ == '__main__':
             elif path.isfile(line):
                 # -n: existing files or objects at the destination will not be overwritten
                 # https://cloud.google.com/storage/docs/gsutil/commands/cp
-                sys.stdout.write('gsutil -m cp -n %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
+                sys.stdout.write('gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
             else:
                 sys.stderr.write('WARN(skipped) not a file or directory: %s\n'%(line))
 
