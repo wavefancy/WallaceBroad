@@ -45,6 +45,12 @@ if __name__ == '__main__':
     if not G_BUCKET.endswith('/'):
         G_BUCKET += '/'
 
+    def trimStart(d):
+        '''Delete the starts / if any'''
+        if d.startswith('/'):
+            d = d[1:]
+        return d
+
     for line in sys.stdin:
         line = line.strip()
         if line:
@@ -54,11 +60,11 @@ if __name__ == '__main__':
             if path.isdir(line):
                 # -r recursively, copy all files within a directory.
                 # https://cloud.google.com/storage/docs/gsutil/commands/rsync
-                sys.stdout.write('gsutil -m rsync -r %s %s%s\n'%(line, G_BUCKET, line))
+                sys.stdout.write('gsutil -m rsync -r %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
             elif path.isfile(line):
                 # -n: existing files or objects at the destination will not be overwritten
                 # https://cloud.google.com/storage/docs/gsutil/commands/cp
-                sys.stdout.write('gsutil -m cp -n %s %s%s\n'%(line, G_BUCKET, line))
+                sys.stdout.write('gsutil -m cp -n %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
             else:
                 sys.stderr.write('WARN(skipped) not a file or directory: %s\n'%(line))
 
