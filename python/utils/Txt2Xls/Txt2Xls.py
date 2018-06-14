@@ -7,23 +7,20 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Txt2Xls.py -o oname [--rc cindex] [-d string]
-        Txt2Xls.py -h | --help | -v | --version | -f | --format
+        Txt2Xls.py -o oname [--rc cindex] [-d string] [--hcl color]
+        Txt2Xls.py -h | --help | -v | --version
 
     Notes:
         1. Read content from stdin, and output selected lines to stdout.
         2. Line index start from 1.
 
     Options:
-        -o string     Output file name.
-        -d string     Set the column delimiter, default whitespace+. tab for '\\t'.
-        --rc cindex   Format row color by the value at column 'cindex'.
-        -e index      Set end line index, (inclusive).
-        -a number     Set the end line as '-n index' + 'number', (inclusive).
-        -r number     From start line, repeatly copy one line then skip 'number' lines, until reach file end.
-        -f file       Read line index from 'file', one line one index, load all in memory.
-        -h --help     Show this screen.
-        -v --version  Show version.
+        -o oname       Output file name.
+        -d string      Set the column delimiter, default whitespace+. tab for '\\t'.
+        --rc cindex    Format row color by the value at column 'cindex'.
+        --hcl color    Set highlight line color.
+        -h --help      Show this screen.
+        -v --version   Show version.
 
     Dependency:
         xlsxwriter
@@ -43,29 +40,13 @@ class P(object):
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
-    # print(args)
-#
-#     if(args['--format']):
-#         ShowFormat()
-#         sys.exit(-1)
-# #
+
     outname = args['-o'] + '.xlsx'
     rc = -1 #row colow column index.
     if args['--rc']:
         rc = int(args['--rc']) -1
 
-    # if args['-n']:
-    #     P.start = int(args['-n'])
-    # if args['-e']:
-    #     P.end = int(args['-e'])
-    # if args['-a']:
-    #     P.end = P.start + int(args['-a'])
-    # if args['-r']:
-    #     P.nskip = int(args['-r'])
-    # if args['-f']:
-    #     ll = [int(x) for x in open(args['-f'], 'r')]
-    #     P.maxLine = max(ll)
-    #     P.lineSet = set(ll)
+    HIGHLIGH_COLOR = args['--hcl'] if args['--hcl'] else '#cceeff'
 
     import xlsxwriter
     from xlsxwriter.utility import xl_rowcol_to_cell
@@ -80,7 +61,7 @@ if __name__ == '__main__':
     # Add a format. Light red fill with dark red text.
     # A2 : col row
     format1 = workbook.add_format()
-    format2 = workbook.add_format({'bg_color': '#EEEEEE',
+    format2 = workbook.add_format({'bg_color': HIGHLIGH_COLOR,
                                #'font_color': '#9C0006'
                                })
     formats = [format1, format2]
