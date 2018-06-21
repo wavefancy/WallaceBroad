@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 if CHECK_GZ:
                     line_gz = line + GZ_END
                     if path.isfile(line_gz):
-                        sys.stdout.write('gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n %s %s%s\n'%(line, G_BUCKET, trimStart(line_gz)))
+                        sys.stdout.write('gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n %s %s%s\n'%(line_gz, G_BUCKET, trimStart(line_gz)))
                         continue
 
                 sys.stderr.write('WARN(skipped) not a file or directory: %s\n'%(line))
