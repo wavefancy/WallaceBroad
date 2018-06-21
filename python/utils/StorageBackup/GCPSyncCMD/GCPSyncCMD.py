@@ -66,14 +66,15 @@ if __name__ == '__main__':
             if line.endswith('/'):
                 line = line[:-1]
 
-            if path.isdir(line):
-                # -r recursively, copy all files within a directory.
-                # https://cloud.google.com/storage/docs/gsutil/commands/rsync
-                sys.stdout.write('gsutil -m rsync -r %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
-            elif path.isfile(line):
+
+            if path.isfile(line):
                 # -n: existing files or objects at the destination will not be overwritten
                 # https://cloud.google.com/storage/docs/gsutil/commands/cp
                 sys.stdout.write('gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
+            elif path.isdir(line):
+                # -r recursively, copy all files within a directory.
+                # https://cloud.google.com/storage/docs/gsutil/commands/rsync
+                sys.stdout.write('gsutil -m rsync -r %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
             else:
                 if CHECK_GZ:
                     line_gz = line + GZ_END
