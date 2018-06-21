@@ -9,7 +9,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        GCPSyncCMD.py -b bucket
+        GCPSyncCMD.py -b bucket [--gz]
         GCPSyncCMD.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,8 @@
 
     Options:
         -b bucket     Google cloud bucket name, eg: gs://2018backup_kathlab.
+        --gz          Test whether a missing file has .gz format file.
+                          IF yes, output the backup command for zipped file.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -30,7 +32,12 @@ import os.path as path
 def ShowFormat():
     '''Input File format example:'''
     print('''
-
+# cat test.txt | python3 GCPSyncCMD.py -b gs:test_gc --gz
+#-----------------------------
+gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n GCPSyncCMD.py gs:test_gc/GCPSyncCMD.py
+gsutil -m rsync -r data gs:test_gc/data
+WARN(skipped) not a file or directory: fake
+gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n test2 gs:test_gc/test2.gz
     ''');
 
 if __name__ == '__main__':
@@ -41,6 +48,8 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
+    GZ_END   = '.gz'
+    CHECK_GZ = True if args['--gz'] else False # checking gzipped files.
     G_BUCKET = args['-b']
     if not G_BUCKET.endswith('/'):
         G_BUCKET += '/'
@@ -66,6 +75,12 @@ if __name__ == '__main__':
                 # https://cloud.google.com/storage/docs/gsutil/commands/cp
                 sys.stdout.write('gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n %s %s%s\n'%(line, G_BUCKET, trimStart(line)))
             else:
+                if CHECK_GZ:
+                    line_gz = line + GZ_END
+                    if path.isfile(line_gz):
+                        sys.stdout.write('gsutil -o GSUtil:parallel_composite_upload_threshold=150M -m cp -n %s %s%s\n'%(line, G_BUCKET, trimStart(line_gz)))
+                        continue
+
                 sys.stderr.write('WARN(skipped) not a file or directory: %s\n'%(line))
 
 sys.stdout.flush()
