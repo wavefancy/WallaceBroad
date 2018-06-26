@@ -1,75 +1,87 @@
 #!/usr/bin/env python
 
-'''
-    Outliers
+"""
+
+    Detect data outliters based on SD.
 
     @Author: wavefancy@gmail.com
-    @Version: 1.0
 
-    @Algorithms:
+    Usage:
+        Outliers.py -c int -t float [--sl file]
+        Outliers.py -h | --help | -v | --version | -f | --format
 
-'''
+    Notes:
+        1. Read from stdin and output to stdout.
+        2. Output "outliters, beyond mean+/- t*sd" from stdout.
+
+    Options:
+        -c int        Column index for computing mean and sd value, 1 based.
+        -t float      SD threshold for declearing as outliters, mean + [-t]*SD.
+        --sl file     Line index for selecting records to estimate mean and sd, 1based.
+        -h --help     Show this screen.
+        -v --version  Show version.
+        -f --format   Show input/output file format example.
+
+"""
+#   Ref:
+#        1. https://towardsdatascience.com/pca-using-python-scikit-learn-e653f8989e60
+#
 import sys
+from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE,SIG_DFL) #prevent IOError: [Errno 32] Broken pipe. If pipe closed by 'head'.
 
-def help():
-    sys.stderr.write('''
-    -------------------------------------
-    Outliers
-    -------------------------------------
+def ShowFormat():
+    '''Input File format example:'''
+    print('''
+    ''');
 
-    @Author: wavefancy@gmail.com
-    @Version: 1.0
-
-    @Usages:
-    para1: [int] Column index for values.
-    para2: [int] the fold for SD. i.e.: 3|6
-
-    @Notes:
-    1. Detect outliers as MEAN (+/-) x*SD.
-    2. Read from stdin and output to stdout.
-    3. Column index starts from 1.
-    -------------------------------------
-    \n''')
-    sys.stderr.close()
-    sys.exit(-1)
-
-class P(object):
-    col = -1
-    fold = -1
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        help()
+    args = docopt(__doc__, version='1.0')
+    # print(args)
+    if(args['--format']):
+        ShowFormat()
+        sys.exit(-1)
 
-    P.col = int(sys.argv[1]) -1
-    P.fold = int(sys.argv[2])
+    COL_INDEX = int(args['-c']) -1
+    THRESHOLD = float(args['-t'])
+    SELECTION = args['--sl'] if args['--sl'] else None
+    SEL_SET   = None
+    if SELECTION:
+        SEL_SET = set()
+        with open(SELECTION,'r') as infile:
+            for line in infile:
+                line = line.strip()
+                if line:
+                    SEL_SET.add(int(line)-1) # shift to 0 based.
 
     content = [] # [(value, line), (value, line),()....]
     values = []
     for line in sys.stdin:
         line = line.strip()
         if line:
-            ss = line.split(None, P.col +1)
+            ss = line.split(None, COL_INDEX +1)
             try:
-                vv = float(ss[P.col])
+                vv = float(ss[COL_INDEX])
                 values.append(vv)
                 content.append((vv, line))
             except ValueError:
                 sys.stderr.write('Warnning: can not parse value from this line: "%s"\n'%(line))
 
     import numpy as np
+    if SEL_SET:
+        values = [v for k,v in enumerate(values) if k in SEL_SET]
+
     std = np.std(values)
     mean = np.mean(values)
-    left = mean - P.fold * std
-    right = mean + P.fold * std
+    left = mean - THRESHOLD * std
+    right = mean + THRESHOLD * std
 
     sys.stderr.write('Mean\tSTD\tLx*STD\tRx*STD\n')
     sys.stderr.write('%.4f\t%.4f\t%.4f\t%.4f\n'%(mean, std, left, right))
 
     for v,l in content:
-        if v < left or v > right:
+        if v <= left or v >= right:
             sys.stdout.write('%s\n'%(l))
 
 sys.stdout.flush()
