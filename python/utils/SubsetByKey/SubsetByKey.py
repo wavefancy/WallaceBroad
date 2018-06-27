@@ -21,7 +21,7 @@
         -c ints       Column index for comparing with keys, eg. 1|1,2. 1 based.
         -t            Indicate first non-comment line as title, no filterring.
         -m            Directly copy comment lines, startswith '#'.
-        -d            Column delimiter, default white-spaces. tab for '\\t'.
+        -d txt        Column delimiter, default white-spaces. tab for '\\t'.
         -h --help     Show this screen.
         -v --version  Show version.
         --format   Show input/output file format example.
