@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        mannWhitneyUtestR.py [-a int]
+        mannWhitneyUtestR.py [-a int] [-l]
         mannWhitneyUtestR.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -18,6 +18,7 @@
     Options:
         -a int        -1|0|1, Alternative test, default 0 for test two.sided.
                       -1 for less, 1 for greater.
+        -l            Indicate the first column in each data set as label, output label also.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -30,13 +31,22 @@ from signal import signal, SIGPIPE, SIG_DFL
 def ShowFormat():
     '''Input File format example:'''
     print('''
-    #input example, each line two samples, separated by ';'
-    ------------------------
+#input example, each line two samples, separated by ';'
+------------------------
 0.80  0.83  1.89  1.04  1.45  1.38  1.91  1.64  0.73  1.46; 1.15  0.88  0.90  0.74  1.21
 
-    #output example (benchmarked with R, wilcox.test)
-    ------------------------
-1.2721e-01
+#output example (benchmarked with R, wilcox.test)
+------------------------
+0.2544122544122544
+
+# first column as label: -l
+------------------------
+X 0.80  0.83  1.89  1.04  1.45  1.38  1.91  1.64  0.73  1.46; Y 1.15  0.88  0.90  0.74  1.21
+
+#output example (benchmarked with R, wilcox.test)
+------------------------
+X       Y       0.2544122544122544
+
     ''');
 
 if __name__ == '__main__':
@@ -51,6 +61,7 @@ if __name__ == '__main__':
         Alternative = 'less'
     elif args['-a'] == '1':
         Alternative = 'greater'
+    WITH_LABEL = True if args['-l'] else False
 
     # Call R function wilcox.test()
     from rpy2.robjects import FloatVector
@@ -66,13 +77,21 @@ if __name__ == '__main__':
     for line in sys.stdin:
         line = line.strip()
         if line:
-            ss = line.split(';')
+            ss = [x.strip() for x in line.split(';')]
             try:
                 # print(ss)
-                x = [float(x) for x in ss[0].split() if x]
-                y = [float(x) for x in ss[1].split() if x]
+                left  = ss[0].split()
+                right = ss[1].split()
+                if WITH_LABEL:
+                    x = [float(x) for x in left[1:] if x]
+                    y = [float(x) for x in right[1:] if x]
+                    sys.stdout.write('%s\t%s\t%s\n'%(left[0],right[0],callRWilcoxTest(x,y)))
 
-                sys.stdout.write('%s\n'%(callRWilcoxTest(x,y)))
+                else:
+                    x = [float(x) for x in left if x]
+                    y = [float(x) for x in right if x]
+                    sys.stdout.write('%s\n'%(callRWilcoxTest(x,y)))
+
             except ValueError:
                 sys.stderr.write('WARNING: parse value error, skip one line: %s\n'%(line))
 
