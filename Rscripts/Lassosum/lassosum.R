@@ -13,6 +13,8 @@ options:
 -c <int>      Number of cpus for computing, default 1.
 ' -> doc
 
+# 10K individuals, 2k LD ref, 3CPUs, 30G memory.
+
 # load the docopt library and parse options.
 library(docopt)
 opts <- docopt(doc)
