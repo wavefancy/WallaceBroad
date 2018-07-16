@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 
@@ -30,6 +30,10 @@
 import sys
 from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
+defaultencoding = 'utf-8'
+if sys.getdefaultencoding() != defaultencoding:
+    reload(sys)
+    sys.setdefaultencoding(defaultencoding)
 
 def ShowFormat():
     '''Input File format example:'''
@@ -54,7 +58,7 @@ if __name__ == '__main__':
 
     #read key sets.
     my_keys = set()
-    with open(KEY_FILE,'r') as kf:
+    with open(KEY_FILE,'r', encoding="utf-8") as kf:
         for line in kf:
             line = line.strip()
             if line:
