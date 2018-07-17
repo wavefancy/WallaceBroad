@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str]
+        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--tm topmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str] [--title txt]
         CategoryPlot2.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,6 +16,7 @@
     Options:
         -x xtitle
         -y ytitle
+        --title txt   Set the title for figure.
         -o outname    Output file name: output.html.
         --yerr yecol  Column index for y error bar. single valure or two values for lower and upper bound.
                         float | float1,float2 (lower,upper bound)
@@ -37,6 +38,7 @@
         --ifs int     X Y title font size, default 12.
         --lm lmargin  Left margin, default 50.
         --bm bmargin  Bottom margin, default 40.
+        --tm topmargin Top margin, default 10.
         --clr int     Column index for color, 1 based.
         --ctxt int    Column index for text. This column can be empty for some group if it's the last column.
                       But all the points in non-empyt group should have text value, example: in.text.txt.
@@ -89,6 +91,7 @@ if __name__ == '__main__':
     errYCol = '' #value column for error bar for Y.
     xtitle = args['-x']
     ytitle = args['-y']
+    ftitle  = args['--title'] if args['--title'] else None  # Figure title.
     outname = args['-o']
     mode = 'markers' #markers or lines
     hlines = [] #location for horizontal lines.
@@ -124,6 +127,7 @@ if __name__ == '__main__':
         lm = float(args['--lm'])
     if args['--bm']:
         bm = float(args['--bm'])
+    tm = float(args['--tm']) if args['--tm'] else 10   # topmargin.
     if args['--ydt']:
         ydt = float(args['--ydt'])
     if args['--xdt']:
@@ -430,12 +434,13 @@ if __name__ == '__main__':
     #print(xticktext)
     #print(xtickvals)
     layout = {
+        'title': ftitle,
         'font': {'family':font},
         'margin': {
             'l' : lm,
             'b' : bm,
             'r' : 10,
-            't' : 10
+            't' : tm
         },
         'xaxis':{
             'dtick'   : xdt,
