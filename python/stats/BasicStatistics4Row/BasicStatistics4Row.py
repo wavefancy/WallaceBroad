@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BasicStatistics4Row.py [-t] [-l]
+        BasicStatistics4Row.py [-t] [-l] [-m string]
         BasicStatistics4Row.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
     Options:
         -t            Output title.
         -l            Treat the first column as label, and output label for each row.
+        -m string     Set the missing value, defualt 'NA'.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -59,6 +60,8 @@ if __name__ == '__main__':
         else:
             sys.stdout.write('Label\tMin\t1%Q\t25%Q\tMean\tMedian\t75%Q\t99%Q\tMax\tSD\tSE\n')
 
+    missing = args['-m'] if args['-m'] else 'NA'
+
     import numpy as np
     from scipy import stats
     for line in sys.stdin:
@@ -68,10 +71,19 @@ if __name__ == '__main__':
             vals = []
             olabel = ''
             if label:
-                vals = [float(x) for x in ss[1:] if x != 'NA']
+                vals = [float(x) for x in ss[1:] if x != missing]
                 olabel = ss[0]
             else:
-                vals = [float(x) for x in ss if x != 'NA']
+                vals = [float(x) for x in ss if x != missing]
+
+            #deal with all values are missing.
+            if not vals:
+                out = ['NA'] * 10
+                if label:
+                    sys.stdout.write('%s\n'%('\t'.join([olabel] + out)))
+                else:
+                    sys.stdout.write('%s\n'%('\t'.join(out)))
+                continue
 
             minV = min(vals)
             q1 = np.percentile(vals,1)
