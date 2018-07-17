@@ -2,13 +2,16 @@
 """
 ****
     This version was modified by wallace(wavefancy@gmail.com) to make LDpred can be run chromosome by chromosome.
+
+    #put this file in the LDpred installation path.
+    # /medpop/esp2/wallace/tools/miniconda3/envs/Python27/lib/python2.7/site-packages/ldpred
 ****
 Implements LDpred, an approximate Gibbs sampler that calculate posterior means of effects, conditional on LD information.
 The method requires the user to have generated a coordinated dataset using coord_genotypes.py
 
 
 Usage:
-ldpred --coord=COORD_DATA_FILE  --ld_radius=LD_RADIUS   --local_ld_file_prefix=LD_FILE_NAME  --PS=FRACTIONS_CAUSAL
+ldpred --coord=COORD_DATA_FILE  --ld_radius=LD_RADIUS   --local_ld_file_prefix=LD_FILE_NAME --local_ld_file=WALLACE_LD_FILE_NAME  --PS=FRACTIONS_CAUSAL
                           --N=SAMPLE_SIZE  --out=OUTPUT_FILE_PREFIX  [ --num_iter=NUM_ITER  --H2=HERTIABILITY  --gm_ld_radius=GEN_MAP_RADIUS]
 
  - COORD_DATA_FILE: The HDF4 file obtained by running the coord_genotypes.py
@@ -18,6 +21,10 @@ ldpred --coord=COORD_DATA_FILE  --ld_radius=LD_RADIUS   --local_ld_file_prefix=L
 
  - LD_FILE_NAME: A path and filename prefix for the LD file.  If it doesn't exist, it will be generated.  This can take up to several hours,
                  depending on LD radius number of SNPs, etc.  If it does exits, that file will be used.
+
+ - WALLACE_LD_FILE_NAME: A filename store the sample content as 'LD_FILE_NAME', however, this for exact file name, not prefix.
+                      Please set this paremter, other than 'LD_FILE_NAME' if you run this in wallace's modified chr by chr model.
+                      This output is in gz format, please set this file end by .gz.
 
  - FRACTIONS_CAUSAL: A list of comma separated (without space) values between 1 and 0, excluding 0.  1 corresponds to the infinitesimal model and will yield results
                      similar to LDpred-inf.  Default is --PS=1,0.3,0.1,0.03,0.01,0.003,0.001,0.0003,0.0001
@@ -68,11 +75,13 @@ def parse_parameters():
 #        print __doc__
 #        sys.exit(2)
 
-    long_options_list = ['coord=', 'ld_radius=', 'local_ld_file_prefix=', 'PS=', 'out=', 'N=',
+    # - start wallace, add parameter of local_ld_file for exact file.
+    long_options_list = ['coord=', 'ld_radius=', 'local_ld_file_prefix=','local_ld_file=', 'PS=', 'out=', 'N=',
                          'num_iter=', 'H2=','gm_ld_radius=','h','help']
 
-    p_dict = {'coord':None, 'ld_radius':None, 'local_ld_file_prefix':None, 'PS':[1,0.3,0.1,0.03,0.01,0.003,0.001], 'out':None,
+    p_dict = {'coord':None, 'ld_radius':None, 'local_ld_file_prefix':None,'local_ld_file':None, 'PS':[1,0.3,0.1,0.03,0.01,0.003,0.001], 'out':None,
               'N':None, 'num_iter': 60, 'H2':None, 'gm':None, 'gm_ld_radius':None}
+    # -end wallace
 
     if len(sys.argv) > 1:
         try:
@@ -92,6 +101,9 @@ def parse_parameters():
             elif opt =="--coord": p_dict['coord'] = arg
             elif opt =="--ld_radius": p_dict['ld_radius'] = int(arg)
             elif opt == "--local_ld_file_prefix": p_dict['local_ld_file_prefix'] = arg
+            # - start wallace
+            elif opt == "--local_ld_file": p_dict['local_ld_file'] = arg
+            # - end wallace
             elif opt == "--PS": p_dict['PS'] = map(float,arg.split(','))
             elif opt == "--out": p_dict['out'] = arg
             elif opt == "--N": p_dict['N'] = int(arg)
@@ -503,7 +515,10 @@ def ldpred_gibbs(beta_hats, genotypes=None, start_betas=None, h2=None, n=1000, l
 
 def main():
     p_dict = parse_parameters()
-    local_ld_dict_file = '%s_ldradius%d.pickled.gz'%(p_dict['local_ld_file_prefix'], p_dict['ld_radius'])
+    # - start wallace
+    # local_ld_dict_file = '%s_ldradius%d.pickled.gz'%(p_dict['local_ld_file_prefix'], p_dict['ld_radius'])
+    local_ld_dict_file = p_dict['local_ld_file']
+    # - end wallace
 
     print """
 Note: For maximal accuracy all SNPs with LDpred weights should be included in the validation data set.
@@ -566,7 +581,7 @@ If they are a subset of the validation data set, then we suggest recalculate LDp
             num_snps += n_snps
 
             # - start Wallace ---
-            # gather data for estiamte heritability.
+            # gather data for estimate heritability
             # ref ldpred_genomewide section:
             betas = g['betas'][...]
             n_betas = len(betas)
@@ -574,7 +589,7 @@ If they are a subset of the validation data set, then we suggest recalculate LDp
 
 
             #WRITE OUT CHROMOSOME LEVEL data.
-            with open('byChrCache_' + chrom_str +'.txt','w') as f:
+            with open(local_ld_dict_file + '_byFileCache' +'.txt','w') as f:
                 f.write(chrom_str +': ld_scores\t%f\tn_snps\t%d\ttotal_beta_square\t%f\tn_betas\t%d\n'%(sp.sum(ld_scores),n_snps,sp.sum(betas ** 2),n_betas))
 
             # - end Wallace ---
@@ -599,6 +614,11 @@ If they are a subset of the validation data set, then we suggest recalculate LDp
 
         print 'LD information is now pickled.'
     else:
+        # - start wallace, should not run into this point in this file.
+        print 'LD file already existed, skip calculation!'
+        print 'LD file: ' + local_ld_dict_file
+        sys.exit(-1)
+        # - end wallace
         print 'Loading LD information from file: %s'%local_ld_dict_file
         f = gzip.open(local_ld_dict_file, 'r')
         ld_dict = cPickle.load(f)
