@@ -298,7 +298,8 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
                                                 h2=h2_chrom, n=n, ld_window_size=2*ld_radius, verbose=False)
             LDpred_inf_chrom_dict[chrom_str]=start_betas
 
-
+    sys.stderr.write('Done LDpred-inf model.\n')
+    sys.stderr.flush()
     for p in ps:
         print 'Starting LDpred with p=%0.4f'%p
         p_str = '%0.4f'%p
@@ -411,6 +412,8 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
             print 'The slope for predictions with P-value derived  effects is:',regression_slope
             results_dict[p_str]['slope_pd']=regression_slope
 
+        sys.stderr.write('Done p%0.4e.\n'%(p))
+        sys.stderr.flush()
         weights_out_file = '%s_LDpred_p%0.4e.txt'%(out_file_prefix, p)
         with open(weights_out_file,'w') as f:
             f.write('chrom    pos    sid    nt1    nt2    raw_beta     ldpred_beta\n')
