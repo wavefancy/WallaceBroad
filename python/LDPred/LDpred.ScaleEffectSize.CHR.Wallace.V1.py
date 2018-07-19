@@ -235,11 +235,15 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
     print 'WALLACE INFO: load chromosome level summary file pattern: ' + loadname
     wallace_chr_summary = []
     print 'WALLACE INFO: *** please make sure all files have been loaded!****'
+    ldfiles = []
     for f in glob.glob(loadname):
-        print 'WALLACE INFO: load chromosome level summary file: ' + f
+        # print 'WALLACE INFO: load chromosome level summary file: ' + f
+        ldfiles.append(str(f))
         with open(f,'r') as rf:
             wallace_chr_summary.append(rf.readline().strip().split())
 
+    for n in sorted(ldfiles):
+         print 'WALLACE INFO: load chromosome level summary file: ' + n
     print 'WALLACE INFO: totally loaded chr: %d'%(len(wallace_chr_summary))
 
     Total_LD_scores = sum([float(x[2]) for x in wallace_chr_summary])
