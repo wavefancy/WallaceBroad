@@ -216,6 +216,7 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
     Total_LD_scores = sum([float(x[2]) for x in wallace_chr_summary])
     Total_SNPS      = sum([int(x[4])   for x in wallace_chr_summary])
     Total_betas     = sum([float(x[6]) for x in wallace_chr_summary])
+    n_snps          = min([int(x[4])   for x in wallace_chr_summary]) # the length for chr22.
     num_snps        = Total_SNPS
     sum_beta2s      = Total_betas
 
@@ -285,9 +286,12 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
             pval_derived_betas = pval_derived_betas[ok_snps_filter]
 
             # - start wallace
+            # *** Latest version: even this is a bug, but keep the results with
+            # *** the original version, use the n_snps as the value of chr22.
+            
             # believe this is a bug in the orginal version of LDpred.
             # in the orginal version, this n_snps is the size on chr22.
-            n_snps = len(pval_derived_betas)
+            # n_snps = len(pval_derived_betas)
             # - end wallace
 
             if h2 is not None:
