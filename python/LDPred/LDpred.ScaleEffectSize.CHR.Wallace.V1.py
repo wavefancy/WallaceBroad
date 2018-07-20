@@ -190,7 +190,49 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
     """
     Calculate LDpred for a genome
     """
+    # Load summary first.
+    # - start wallace
+    # L = ld_scores_dict['avg_gw_ld_score']
+    # chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
 
+    # load and calculate genome wide avg_gw_ld_score and chi_square_lambda
+    # input files, load all the files in ld_file folder end by _byFileCache.txt
+    # print local_ld_dict_file
+    loadname = os.path.dirname(os.path.realpath(local_ld_dict_file)) + '/*_byFileCache.txt'
+    print 'WALLACE INFO: load chromosome level summary file pattern: ' + loadname
+    wallace_chr_summary = []
+    print 'WALLACE INFO: *** please make sure all files have been loaded!****'
+    ldfiles = []
+    for f in glob.glob(loadname):
+        # print 'WALLACE INFO: load chromosome level summary file: ' + f
+        ldfiles.append(str(f))
+        with open(f,'r') as rf:
+            wallace_chr_summary.append(rf.readline().strip().split())
+
+    for temp_n in sorted(ldfiles):
+         print 'WALLACE INFO: load chromosome level summary file: ' + temp_n
+    print 'WALLACE INFO: totally loaded chr: %d'%(len(wallace_chr_summary))
+
+    Total_LD_scores = sum([float(x[2]) for x in wallace_chr_summary])
+    Total_SNPS      = sum([int(x[4])   for x in wallace_chr_summary])
+    Total_betas     = sum([float(x[6]) for x in wallace_chr_summary])
+    num_snps        = Total_SNPS
+    sum_beta2s      = Total_betas
+
+    L = Total_LD_scores / Total_SNPS
+    chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
+
+    # chi_square_lambda = sp.mean(n * Total_betas / Total_SNPS)
+    # load data from cache, and recompute the genome-wide summary statistics
+
+    print 'Genome-wide lambda inflation:', chi_square_lambda,
+    print 'Genome-wide mean LD score:', L
+    gw_h2_ld_score_est = max(0.0001, (max(1, chi_square_lambda) - 1) / (n * (L / num_snps)))
+    print 'Estimated genome-wide heritability:', gw_h2_ld_score_est
+    sys.stdout.flush()
+    # - end wallace
+
+    #- restart computing from here.
     df = h5py.File(data_file,'r')
     has_phenotypes=False
     # - start Wallace, always do not validate phenotype, only rescale effect size.
@@ -223,48 +265,6 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
     #         num_snps += n_snps
     #         sum_beta2s += sp.sum(betas ** 2)
     # - end wallace
-
-    # - start wallace
-    # L = ld_scores_dict['avg_gw_ld_score']
-    # chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
-
-    # load and calculate genome wide avg_gw_ld_score and chi_square_lambda
-    # input files, load all the files in ld_file folder end by _byFileCache.txt
-    # print local_ld_dict_file
-    loadname = os.path.dirname(os.path.realpath(local_ld_dict_file)) + '/*_byFileCache.txt'
-    print 'WALLACE INFO: load chromosome level summary file pattern: ' + loadname
-    wallace_chr_summary = []
-    print 'WALLACE INFO: *** please make sure all files have been loaded!****'
-    ldfiles = []
-    for f in glob.glob(loadname):
-        # print 'WALLACE INFO: load chromosome level summary file: ' + f
-        ldfiles.append(str(f))
-        with open(f,'r') as rf:
-            wallace_chr_summary.append(rf.readline().strip().split())
-
-    for n in sorted(ldfiles):
-         print 'WALLACE INFO: load chromosome level summary file: ' + n
-    print 'WALLACE INFO: totally loaded chr: %d'%(len(wallace_chr_summary))
-
-    Total_LD_scores = sum([float(x[2]) for x in wallace_chr_summary])
-    Total_SNPS      = sum([int(x[4])   for x in wallace_chr_summary])
-    Total_betas     = sum([float(x[6]) for x in wallace_chr_summary])
-    num_snps        = Total_SNPS
-    sum_beta2s      = Total_betas
-
-    L = Total_LD_scores / Total_SNPS
-    chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
-    # chi_square_lambda = sp.mean(n * Total_betas / Total_SNPS)
-
-    # load data from cache, and recompute the genome-wide summary statistics
-    # - end wallace
-
-
-    print 'Genome-wide lambda inflation:', chi_square_lambda,
-    print 'Genome-wide mean LD score:', L
-    gw_h2_ld_score_est = max(0.0001, (max(1, chi_square_lambda) - 1) / (n * (L / num_snps)))
-    print 'Estimated genome-wide heritability:', gw_h2_ld_score_est
-    sys.stdout.flush()
 
     # sys.exit(-1)
 
