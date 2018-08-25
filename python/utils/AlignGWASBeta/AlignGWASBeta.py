@@ -108,8 +108,13 @@ if __name__ == '__main__':
                 continue
 
             # flip strand
-            ss[a_col[-2]] = flip(ss[a_col[-2]])
-            ss[a_col[-1]] = flip(ss[a_col[-1]])
+            try:
+                ss[a_col[-2]] = flip(ss[a_col[-2]])
+                ss[a_col[-1]] = flip(ss[a_col[-1]])
+            except KeyError:
+                sys.stdout.write('%s\tFAIL\n'%(line))
+                continue
+
             if checkAndOutput(ss, a_col, b_col):
                 continue
             sys.stdout.write('%s\tFAIL\n'%(line))
