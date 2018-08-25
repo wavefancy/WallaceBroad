@@ -1,0 +1,6 @@
+A	T	-1	T	A	-1
+A	G	-1	G	A	2
+A	C	-1	T	G	2
+A	C	-1	G	T	2
+# comments
+A	G	-1	T	A	2
