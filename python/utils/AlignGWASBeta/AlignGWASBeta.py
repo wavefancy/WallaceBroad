@@ -5,6 +5,7 @@
     Corrdinate GWAS effect size (beta). Align to the same reference(Effective) allele.
     1. Switch the second effective allele, and then covert the second beta to -1.0 * beta.
     2. Take care strand flip issue.
+    3. Properly deal with one data set is indels, the other represent as R/D or R/I.
 
     @Author: wavefancy@gmail.com
 
@@ -103,6 +104,43 @@ if __name__ == '__main__':
             if temp == AT or temp == CG:
                 sys.stdout.write('%s\tAMBIGUOUS\n'%(line))
                 continue
+
+            #deal with one group with R/I or R/D representation.
+            if 'R' in alleles_left and ('R' not in alleles_right):
+                temp = sorted(alleles_right, key=lambda x: len(x))
+                if 'I' in alleles_left:
+                    for i in range(len(alleles_left)):
+                        if alleles_left[i] == 'R':
+                            alleles_left[i] = temp[0]
+                        if alleles_left[i] == 'I':
+                            alleles_left[i] = temp[1]
+                if 'D' in alleles_left:
+                    for i in range(len(alleles_left)):
+                        if alleles_left[i] == 'R':
+                            alleles_left[i] = temp[1]
+                        if alleles_left[i] == 'D':
+                            alleles_left[i] = temp[0]
+                #update ss array
+                ss[a_col[0]] = alleles_left[0]
+                ss[a_col[1]] = alleles_left[1]
+
+            elif 'R' in alleles_right and ('R' not in alleles_left):
+                temp = sorted(alleles_left, key=lambda x: len(x))
+                if 'I' in alleles_right:
+                    for i in range(len(alleles_right)):
+                        if alleles_right[i] == 'R':
+                            alleles_right[i] = temp[0]
+                        if alleles_right[i] == 'I':
+                            alleles_right[i] = temp[1]
+                if 'D' in alleles_right:
+                    for i in range(len(alleles_right)):
+                        if alleles_right[i] == 'R':
+                            alleles_right[i] = temp[1]
+                        if alleles_right[i] == 'D':
+                            alleles_right[i] = temp[0]
+                #update ss array
+                ss[a_col[-2]] = alleles_right[0]
+                ss[a_col[-1]] = alleles_right[1]
 
             if checkAndOutput(ss, a_col, b_col):
                 continue

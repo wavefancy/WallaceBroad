@@ -4,3 +4,7 @@ A	C	-1	T	G	2
 A	C	-1	G	T	2
 # comments
 A	G	-1	T	A	2
+AT	G	-1	R	D	2
+AT	G	-1	R	I	2
+R	I	-1	AT	T	2
+R	D	-1	T	AT	2
