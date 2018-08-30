@@ -63,8 +63,9 @@ signal(SIGPIPE, SIG_DFL)
 def ShowFormat():
     '''Input File format example:'''
     print('''
-    #Output from: FamilyHitByGene.py
+# Output from: FamilyHitByGene.py
 # groupAnnotation groupname annotationPair
+# mt: marker symbol. https://plot.ly/python/reference/#scatter-marker-symbol
 ----------------------------
 c1  1   10  1
 c2  2   -5  3
@@ -73,7 +74,7 @@ COMMAND vl  3
 COMMAND vl  4
 COMMAND xticktext       chr1    chr2
 COMMAND xtickvals       150     550
-COMMAND groupAnnotation C1 color:red ms:1
+COMMAND groupAnnotation C1 color:red ms:1 mt:'x'
 
     #output:
     ------------------------
@@ -322,6 +323,8 @@ if __name__ == '__main__':
                     marker['size'] = groupAnnotation[k]['ms']
                     line['width'] = groupAnnotation[k]['ms']
                     size = groupAnnotation[k]['ms']
+                if 'mt' in groupAnnotation[k]:
+                    marker['symbol'] = groupAnnotation[k]['mt']
 
             if len(errY[k][0].split(',')) == 2: # two values for error y.
                 TY  = [x.split(',') for x in errY[k]]
@@ -377,6 +380,8 @@ if __name__ == '__main__':
                 if 'ms' in groupAnnotation[k]:
                     marker['size'] = groupAnnotation[k]['ms']
                     line['width'] = groupAnnotation[k]['ms']
+                if 'mt' in groupAnnotation[k]:
+                    marker['symbol'] = groupAnnotation[k]['mt']
             #print(marker)
             #print(line)
             if k in ptxt:
