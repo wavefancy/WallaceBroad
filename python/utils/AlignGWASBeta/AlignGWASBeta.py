@@ -60,6 +60,7 @@ if __name__ == '__main__':
             a_col: column index for alleles.
             b_col: column index for then second beta.
         '''
+        # print(ss)
         alleles = [ss[x].upper() for x in a_col]
 
         alleles_left = alleles[:2]
@@ -86,6 +87,7 @@ if __name__ == '__main__':
 
     AT=['A', 'T']
     CG=['C', 'G']
+    DI=['D', 'I'] # Insertion/deletion representation.
     for line in sys.stdin:
         line = line.strip()
         if line:
@@ -104,6 +106,37 @@ if __name__ == '__main__':
             if temp == AT or temp == CG:
                 sys.stdout.write('%s\tAMBIGUOUS\n'%(line))
                 continue
+
+            if temp == DI: #left DI representation
+                if len(alleles_right[0]) == len(alleles_right[1]):
+                    pass
+                else:
+                    ii = alleles_right[0] if len(alleles_right[0]) > len(alleles_right[1]) else alleles_right[1]
+                    dd = alleles_right[0] if len(alleles_right[0]) < len(alleles_right[1]) else alleles_right[1]
+                    for i in range(len(alleles_left)):
+                        if alleles_left[i] == 'I':
+                            alleles_left[i] = ii
+                        if alleles_left[i] == 'D':
+                            alleles_left[i] = dd
+                    #update ss array
+                    ss[a_col[0]] = alleles_left[0]
+                    ss[a_col[1]] = alleles_left[1]
+
+            temp = sorted(alleles_right)
+            if temp == DI: #right DI representation
+                if len(alleles_left[0]) == len(alleles_left[1]):
+                    pass
+                else:
+                    ii = alleles_left[0] if len(alleles_left[0]) > len(alleles_left[1]) else alleles_left[1]
+                    dd = alleles_left[0] if len(alleles_left[0]) < len(alleles_left[1]) else alleles_left[1]
+                    for i in range(len(alleles_right)):
+                        if alleles_right[i] == 'I':
+                            alleles_right[i] = ii
+                        if alleles_right[i] == 'D':
+                            alleles_right[i] = dd
+                    #update ss array
+                    ss[a_col[-2]] = alleles_right[0]
+                    ss[a_col[-1]] = alleles_right[1]
 
             #deal with one group with R/I or R/D representation.
             if 'R' in alleles_left and ('R' not in alleles_right):

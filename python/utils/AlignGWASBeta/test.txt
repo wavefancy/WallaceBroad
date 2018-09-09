@@ -8,3 +8,5 @@ AT	G	-1	R	D	2
 AT	G	-1	R	I	2
 R	I	-1	AT	T	2
 R	D	-1	T	AT	2
+I	D	-1	T	AT	20
+D	I	-1	T	AT	20
