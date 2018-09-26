@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 Implements LDpred-inf.  The method requires the user to have generated a coordinated dataset using coord_genotypes.py
 
