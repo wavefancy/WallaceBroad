@@ -188,4 +188,5 @@ LDpred_p3.0000e-03
 
 ### Bechmark of this pipeline with LDpred's load as whole approach.
 Please check the chr1.png and all.LDpred_p1.0000e+00.png, the results are identical.
+
 ![Results for chr1](chr1.png)
