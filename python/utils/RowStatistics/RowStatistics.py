@@ -113,7 +113,7 @@ if __name__ == '__main__':
         # print(float_array)
         # print(convert_error)
 
-        if convert_error:
+        if convert_error or len(float_array) == 0:
             if args['--nvalid']:
                 out.append('0')
             if args['--mean']:
