@@ -35,7 +35,9 @@ LDpred_inf.pyc
 ```
 
 #### Download all these .py files hosted here, and put it the same location as ```LDpred.py```
-Put all these .py files in this repository alone with your ```LDpred.py```. Please over-write the ```coord_genotypes.py```, it was just changed the header to point to python2. __Please also aware that LDpred currently only support python2__ . You can easily maintain multiple version of python by [miniconda](https://conda.io/miniconda.html)[https://conda.io/miniconda.html]. If you don't want to put the path for these files every time, you can give them executable permission, and append the path of these files in the $PATH environment variable.
+Put all these .py files in this repository alone with your ```LDpred.py```. [Click here to download as zip files](https://minhaskamal.github.io/DownGit/#/home?url=https:%2F%2Fgithub.com%2Fwavefancy%2FWallaceBroad%2Ftree%2Fmaster%2Fpython%2FLDPred.CHRbyCHR)
+
+Please over-write the ```coord_genotypes.py```, it was just changed the header to point to python2. __Please also aware that LDpred currently only support python2__ . You can easily maintain multiple version of python by [miniconda](https://conda.io/miniconda.html)[https://conda.io/miniconda.html]. If you don't want to put the path for these files every time, you can give them executable permission, and append the path of these files in the $PATH environment variable.
 ```
 chmod +x LDpred.ScaleEffectSize.CHR.Numpy.Wallace.V1.py LDpred.ScaleEffectSize.CHR.Scipy.Wallace.V1.py LDpred.getLocalLDFile.CHR.Wallace.V1.py coord_genotypes.py
 ```
