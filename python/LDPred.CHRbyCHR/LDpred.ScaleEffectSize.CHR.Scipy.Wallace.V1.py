@@ -1,4 +1,4 @@
-#!/medpop/esp2/wallace/tools/miniconda3/envs/Python27/bin/python
+#!/usr/bin/env python2
 """
 ****
     This version was modified by wallace(wavefancy@gmail.com) to make LDpred can be run chromosome by chromosome.

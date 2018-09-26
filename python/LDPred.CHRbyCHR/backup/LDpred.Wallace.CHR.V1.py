@@ -202,6 +202,11 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
             sum_beta2s += sp.sum(betas ** 2)
 
     L = ld_scores_dict['avg_gw_ld_score']
+
+    # load data from cache, and recompute the genome-wide summary statistics.
+    # Replace the code for the
+
+
     chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
     print 'Genome-wide lambda inflation:', chi_square_lambda,
     print 'Genome-wide mean LD score:', L
@@ -559,6 +564,20 @@ If they are a subset of the validation data set, then we suggest recalculate LDp
             chrom_ld_scores_dict[chrom_str] = {'ld_scores':ld_scores, 'avg_ld_score':sp.mean(ld_scores)}
             ld_score_sum += sp.sum(ld_scores)
             num_snps += n_snps
+
+            # - start Wallace ---
+            # gather data for estiamte heritability.
+            # ref ldpred_genomewide section:
+            betas = g['betas'][...]
+            n_betas = len(betas)
+            # sum_beta2s += sp.sum(betas ** 2)
+
+
+            #WRITE OUT CHROMOSOME LEVEL data.
+            with open('byChrCache_' + chrom_str +'.txt','w') as f:
+                f.write(chrom_str +': ld_scores\t%f\tn_snps\t%d\ttotal_beta_square\t%f\tn_betas\t%d\n'%(sp.sum(ld_scores),n_snps,sp.sum(betas ** 2),n_betas))
+
+            # - end Wallace ---
 
         avg_gw_ld_score = ld_score_sum / float(num_snps)
         ld_scores_dict = {'avg_gw_ld_score': avg_gw_ld_score, 'chrom_dict':chrom_ld_scores_dict}
