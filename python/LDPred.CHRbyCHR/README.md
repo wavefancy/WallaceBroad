@@ -1,24 +1,24 @@
-### RUN LDpred by chromosome and chromosome
+## Run LDpred chromosome by chromosome
 
-* This is a ad hoc modification of the source code of the original LDpred code to make it can be run in parallel. Full credit and copyright should be granted to the LDpred author. If there's violation of the copyright of LDpred, please let me know, I will delete all these codes and toturials.
+* This is a ad hoc modification of the source code of the original LDpred code to make it can be run in parallel chr by chr. Full credit and copyright should be granted to the LDpred author. If there's violation of the copyright of LDpred, please let me know, I will delete all these codes and tutorials.
 
 ```
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 ### Philosophy
-This is trying to have a mininal twist to LDpred code to make it can be run in parallel chromsome by chromosme. This is not a gurantee of cleaning code, and full structured and full documented of the modification of the code. However, I will try my best to have a benchmark with original LDpred software to try my best to garantee the results are accuray. If you found any buy related to the discrepancy of this pipeline with original LDpred, please let me know. I am happy to fix that. 
+This is trying to have a minimal twist of the LDpred code to make it can be run in parallel chromosome by chromosome. This is not a guarantee of a cleaning code, and the full structured and full documented of the modification of the code. However, I will try my best to have a benchmark with original LDpred software to try my best to guarantee the results are accuracy. If you found any buy related to the discrepancy of this pipeline with original LDpred, please let me know. I am happy to fix that.
 
-For the original LDpred, it actually runs LD structure estimation and the effect size reweighting step chr by chr, but for the later reweighting step, it needs the global estimation of genome-wide heritability and inflation factor.__In this pipeline, we splited these processes as two steps: 1) Estimate LD structure chr by chr, and also gather the parameters for esimating of genome-wide heritability and inflation factor. 2) Estimate genome-wide heritability and infaltion factor(this is very cheap), and put this parameters for reweighting beta values chr by chr.__ By this way, we can parallel the computing chr by chr. But before we run step 2, __We have to wait all the computing is done in step 1___, as we need the informaton from all chrs to have a global estimation of genome-wide heritability and inflation factor
+For the original LDpred, it actually runs LD structure estimation and the effect size reweighing step chr by chr, but for the later reweighing step, it needs the global estimation of genome-wide heritability and inflation factor.__In this pipeline, we split these processes as two steps: 1) Estimate LD structure chr by chr, and also gather the parameters for estimating of genome-wide heritability and inflation factor. 2) Estimate genome-wide heritability and inflation factor(this is very cheap), and put this parameters for reweighing beta values chr by chr.__ By this way, we can parallel the computing chr by chr, which will dramatically reduce the memory load and the waiting time. But before we run step 2, __We have to wait all the computing is done in step 1___, as we need the information from all chrs to have a global estimation of genome-wide heritability and inflation factor
 
 #### Install the LDpred software
-Please install the LDpred sotware following the struction from [here](https://github.com/bvilhjal/ldpred)[https://github.com/bvilhjal/ldpred], the input and output file format is the same as the LDpred, please read through the instruction from LDpred software. This instruction is detailed at the github respository of LDpred [https://github.com/bvilhjal/ldpred].
+Please install the LDpred software following the instruction from [here](https://github.com/bvilhjal/ldpred)[https://github.com/bvilhjal/ldpred], the input and output file format is the same as the LDpred, please read through the instruction from LDpred software. The instruction is detailed at the github respository of LDpred [https://github.com/bvilhjal/ldpred].
 
 #### Find the location for your LDpred.
 Find the location for your LDpred source code. This is usually where you install your python packages.
@@ -33,7 +33,7 @@ LDpred_inf.pyc
 ```
 
 #### Download all these .py files hosted here, and put it the same location as ```LDpred.py```
-Put all these .py files in this repository alone with your ```LDpred.py```. Please over-write the ```coord_genotypes.py```, it was just changed the header to point to python2. __Please also aware that LDpred currently only support python2__ . You can easily maintain muliple version of python by [miniconda](https://conda.io/miniconda.html)[https://conda.io/miniconda.html]. If you don't want to put the path for these files, you can give them executable permission, and append the path of these files in the $PATH environment variable.
+Put all these .py files in this repository alone with your ```LDpred.py```. Please over-write the ```coord_genotypes.py```, it was just changed the header to point to python2. __Please also aware that LDpred currently only support python2__ . You can easily maintain multiple version of python by [miniconda](https://conda.io/miniconda.html)[https://conda.io/miniconda.html]. If you don't want to put the path for these files every time, you can give them executable permission, and append the path of these files in the $PATH environment variable.
 ```
 chmod +x LDpred.ScaleEffectSize.CHR.Numpy.Wallace.V1.py LDpred.ScaleEffectSize.CHR.Scipy.Wallace.V1.py LDpred.getLocalLDFile.CHR.Wallace.V1.py coord_genotypes.py
 ```
@@ -43,8 +43,8 @@ chmod +x LDpred.ScaleEffectSize.CHR.Numpy.Wallace.V1.py LDpred.ScaleEffectSize.C
 The LD reference panel is in plink bed/fam/bim format, the input summary statistics format please refer LDpred instruction. Please make sure the snp id is consistent between LD reference panel with the summary statistics.
 
 ```
-# parallel is GUN parallel program.
-# wecho is a my python script in this repository, which depends on docopt, 
+# parallel is GUN parallel program [https://www.gnu.org/software/parallel/].
+# wecho is a my python script in this repository, which depends on docopt for parse args,
 # just reformat the command line, skip comments and generate a single line.
 # You can use bash for-loop to replace my style here.
 
@@ -60,7 +60,7 @@ parallel -j 1 -q wecho "
         --gf=data/ldref.chr{}
         # sample size for summary statistics.
         --N=$nsamples
-        # sammary stat.
+        # summary stat.
         --ssf=data/refined.summary.chr{}.txt
         --ssf_format=BASIC
         --out data/coord.file.chr{}
@@ -69,7 +69,7 @@ parallel -j 1 -q wecho "
 
 #------input example------------
 # please make sure the SNP_ID is the same
-head -n 3 ldref.chr5.bim
+head -n 3 data/ldref.chr5.bim
 5       5:12225 0       12225   G       A
 5       5:13018 0       13018   C       A
 5       5:13125 0       13125   G       T
@@ -96,21 +96,21 @@ pp -j 1 -q wecho "
         --ld_radius=$lr
         # generated LD structure file.
         # An extra file of data/ld_file_chr{}.gz_byFileCache.txt will also be genrated,
-        # which store the chr-specific paramter for heritability and inflation factor estimation.
+        # which store the chr-specific parameter for heritability and inflation factor estimation.
         --local_ld_file=data/ld_file_chr{}.gz
     &>log/1-4.chr{}.log
 " :::: chr.sh
 ```
 
-#### 3) Wait all chr done in step 2. Reweight the beta value by LDpred.
+#### 3) Wait all chr done in step 2. Reweigh the beta value by LDpred.
 
 ```
 pp -j 1 -q wecho "
-    # Here wer used numpy version for SVD.
+    # Here we used numpy version for SVD.
     # If you get error as "SVD did not converge in Linear Least Squares".
     # Try the scipy version.
     # This step sometimes is not stable for my version of python.
-    
+
     LDpred.ScaleEffectSize.CHR.Numpy.Wallace.V1.py
         # coord file from step1.
         --coord data/coord.file.chr{}
@@ -120,17 +120,17 @@ pp -j 1 -q wecho "
         --ld_radius=$lr
         # LD structure from step2.
         --local_ld_file=data/ld_file_chr{}.gz
-        # output reweighted beta.
+        # output reweighed beta.
         --out=data/numpy.effect.ldpred.chr{}
     &>log/1-5.chr{}.log
     &&
         gzip data/numpy.effect.ldpred.chr{}_LDpred*
 " :::: chr.sh
 ```
-In this step SVD sometimes is not stable, I usually use Numpy, if failed try scipy again. 
+In this step SVD sometimes is not stable, I usually use Numpy, if failed try scipy again.
 __It's the user's responsibility to make sure all the cached files for the heritability and inflation factor estimation are fully loaded, please check the log information from the last step to confirm it.__ You will find some thing like below.
 ```
-WALLACE INFO: load chromosome level summary file pattern: /medpop/esp2/wallace/projects/Amit/PRS/CAD_1KG/data/*_byFileCache.txt                              [35/581]
+WALLACE INFO: load chromosome level summary file pattern: /medpop/esp2/wallace/projects/Amit/PRS/CAD_1KG/data/*_byFileCache.txt
 WALLACE INFO: *** please make sure all files have been loaded!****
 WALLACE INFO: load chromosome level summary file: /medpop/esp2/wallace/projects/Amit/PRS/CAD_1KG/data/ld_file_chr1.gz_byFileCache.txt
 WALLACE INFO: load chromosome level summary file: /medpop/esp2/wallace/projects/Amit/PRS/CAD_1KG/data/ld_file_chr10.gz_byFileCache.txt
@@ -157,10 +157,10 @@ WALLACE INFO: load chromosome level summary file: /medpop/esp2/wallace/projects/
 WALLACE INFO: totally loaded chr: 22
 ```
 
-#### 4) Combine all the reweighted file together.
-#### 5) Score your samples by the reweighted beta value. I usually use plink.
+#### 4) Combine all the reweighed file together.
+#### 5) Score your samples by the reweighed beta value. I usually use plink.
 ```
-# Validate on india data
+# Validate data
 # --score my.scores 3 2 1 [id,allele,score]
 # reads variant IDs from column 3, allele codes from column 2, and scores from column 1.
 source config.sh
@@ -174,7 +174,7 @@ pp -j 1 -q wecho "
     gzip -f results/score.{}.profile
 " :::: lds.sh
 
-# lds are the proportion of causal seting in LDpred.
+# lds are the proportion of causal setting in LDpred.
 cat lds.sh
 LDpred-inf
 LDpred_p1.0000e+00
@@ -188,7 +188,4 @@ LDpred_p3.0000e-03
 
 ### Bechmark of this pipeline with LDpred's load as whole approach.
 Please check the chr1.png and all.LDpred_p1.0000e+00.png, the results are identical.
-[Results for chr1](chr1.png)
-
-
-
+![Results for chr1](chr1.png)
