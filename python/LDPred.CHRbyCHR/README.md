@@ -44,7 +44,7 @@ chmod +x LDpred.ScaleEffectSize.CHR.Numpy.Wallace.V1.py LDpred.ScaleEffectSize.C
 
 ### Start run LDpred chr by chr
 #### 1) Coordinate the LD reference panel and summary statistics.
-The LD reference panel is in plink bed/fam/bim format, the input summary statistics format please refer LDpred instruction. Please make sure the snp id is consistent between LD reference panel with the summary statistics.
+The LD reference panel is in plink bed/fam/bim format, the input summary statistics format please refer LDpred instruction. Please make sure the snp id is consistent between LD reference panel with the summary statistics. __Please split the LD reference panel and summary statistics chr by chr, we will parallel them starting from here.__
 
 ```
 # parallel is GUN parallel program [https://www.gnu.org/software/parallel/].
@@ -95,7 +95,7 @@ pp -j 1 -q wecho "
         --coord data/coord.file.chr{}
         # sample size for summary statistics.
         --N=$nsamples
-        # about total_num_of_snp/3000, corresponding 1m on each side of the focal snp.
+        # about total_num_of_snp(genome widely)/3000, corresponding 1m on each side of the focal snp.
         # please refer to LDpred instruction.
         --ld_radius=$lr
         # generated LD structure file.
