@@ -13,9 +13,9 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 ### Philosophy
-This is trying to have a minimal twist of the LDpred code to make it can be run in parallel chromosome by chromosome. This is not a guarantee of a cleaning code, and the full structured and full documented of the modification of the code. However, I will try my best to have a benchmark with original LDpred software to try my best to guarantee the results are accuracy. If you found any buy related to the discrepancy of this pipeline with original LDpred, please let me know. I am happy to fix that.
+This is trying to have a minimal twist of the LDpred code to make it can be run in parallel chromosome by chromosome. This is neither a guarantee of a cleaning code nor a full structured or a full documented of the modification of the code. However, I will try my best to have benchmarks with original LDpred software to try my best to guarantee the results are accuracy. If you found any bug related to the discrepancy of this pipeline with original LDpred, please let me know. I am happy to fix that.
 
-For the original LDpred, it actually runs LD structure estimation and the effect size reweighing step chr by chr, but for the later reweighing step, it needs the global estimation of genome-wide heritability and inflation factor.__In this pipeline, we split these processes as two steps: 1) Estimate LD structure chr by chr, and also gather the parameters for estimating of genome-wide heritability and inflation factor. 2) Estimate genome-wide heritability and inflation factor(this is very cheap), and put this parameters for reweighing beta values chr by chr.__ By this way, we can parallel the computing chr by chr, which will dramatically reduce the memory load and the waiting time. But before we run step 2, __We have to wait all the computing is done in step 1___, as we need the information from all chrs to have a global estimation of genome-wide heritability and inflation factor
+For the original LDpred, it actually runs LD structure estimation and the effect size reweighing step chr by chr, but for the later reweighing step, it needs the global estimation of genome-wide heritability and inflation factor.__In this pipeline, we split these processes as two steps: 1) Estimate LD structure chr by chr, and also gather the parameters for estimating of genome-wide heritability and inflation factor. 2) Estimate genome-wide heritability and inflation factor(this is very cheap), and put this parameters for reweighing beta values chr by chr.__ By this way, we can parallel the computing chr by chr, which will dramatically reduce the memory load and the waiting time. But before we run step 2, __We have to wait all the computing is done in step 1__, as we need the information from all chrs to have a global estimation of genome-wide heritability and inflation factor
 
 #### Install the LDpred software
 Please install the LDpred software following the instruction from [here](https://github.com/bvilhjal/ldpred)[https://github.com/bvilhjal/ldpred], the input and output file format is the same as the LDpred, please read through the instruction from LDpred software. The instruction is detailed at the github respository of LDpred [https://github.com/bvilhjal/ldpred].
@@ -23,7 +23,7 @@ Please install the LDpred software following the instruction from [here](https:/
 #### Find the location for your LDpred.
 Find the location for your LDpred source code. This is usually where you install your python packages.
 ```
-# for me, its: /medpop/esp2/wallace/tools/miniconda3/envs/Python27/lib/python2.7/site-packages/ldpred
+# for me, it's: /medpop/esp2/wallace/tools/miniconda3/envs/Python27/lib/python2.7/site-packages/ldpred
 # Where you will found below sources.
 ls LDpred_*
 LDpred.py
@@ -127,7 +127,7 @@ pp -j 1 -q wecho "
         gzip data/numpy.effect.ldpred.chr{}_LDpred*
 " :::: chr.sh
 ```
-In this step SVD sometimes is not stable, I usually use Numpy, if failed try scipy again.
+In this step, SVD sometimes is not stable, I usually use Numpy, if failed try scipy again.
 __It's the user's responsibility to make sure all the cached files for the heritability and inflation factor estimation are fully loaded, please check the log information from the last step to confirm it.__ You will find some thing like below.
 ```
 WALLACE INFO: load chromosome level summary file pattern: /medpop/esp2/wallace/projects/Amit/PRS/CAD_1KG/data/*_byFileCache.txt
