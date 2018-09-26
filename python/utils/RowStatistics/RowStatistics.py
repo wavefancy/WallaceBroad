@@ -40,15 +40,21 @@ from docopt import docopt
 def ShowFormat():
     '''File format example'''
     print('''
-    #Input file format(stdin), first two columns as id pair, ignore other columns.
-    ------------------------
-    ID1 ID2
-    ID3 ID4
+# Input file format(stdin), first column as category name
+------------------------
+N1      1       2       3
+N2      1       NA      4
+N2      1       NA      5
+N3      a       b       c
 
-    #kFile/rFile, one id per line.
-    ------------------------
-    ID2
-    ID3
+# ouput:
+# cat test.txt | python3 ./RowStatistics.py --set 10 --min 2 --max 2 --mean --median --std --nvalid
+------------------------
+NAME    N_VALID MEAN    MEDIAN  STD     MIN_2   MAX_2   SET_10
+N1      3       2.0000e+00      2.0000e+00      8.1650e-01      1.0,2.0 2.0,3.0 1,2,3
+N2      2       2.5000e+00      2.5000e+00      1.5000e+00      1.0,4.0 1.0,4.0 1,4
+N2      2       3.0000e+00      3.0000e+00      2.0000e+00      1.0,5.0 1.0,5.0 1,5
+N3      0       NA      NA      NA      NA      NA      b,c,a
           ''');
 
 if __name__ == '__main__':
