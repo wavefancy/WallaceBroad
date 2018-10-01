@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        wcut.py (-f string | --tf file | -t titles) [-d string] [-c] [-a string]
+        wcut.py (-f string | --tf file | -t titles) [-d string] [-c] [-a string] [--cs txt]
         wcut.py -h | --help | -v | --version | --format
 
     Options:
@@ -16,6 +16,7 @@
         --tf file  Read title columns from file. (eg. -tf filename).
                         columns separated by WHITESPACE.
         -c         Open copy mode, directly copy comment line to stdout, comments started by '#'.
+        --cs txt   Set the comment start string as 'txt', default it's '#'.
         -a string  Set the default value as 'string' if column value is empty.
 
         -h --help     Show this screen.
@@ -88,11 +89,12 @@ def runApp():
         else:
             return P.aVal
 
+    COMMENTS = args['--cs'] if args['--cs'] else '#'
     for line in sys.stdin:
         line = line.strip('\n')
         if line:
             if P.copyComments:
-                if line.startswith('#'):
+                if line.startswith(COMMENTS):
                     sys.stdout.write('%s\n'%(line))
                     continue
 
