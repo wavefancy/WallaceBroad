@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ## @Wallace Wang, wavefancy@gmail.com
 ##
 ## Do multiple linear regression, output summary statistics.
