@@ -57,7 +57,7 @@ import scipy as sp
 from scipy import stats
 import ld
 import cPickle
-import LDpred_inf_scipy
+import LDpred_inf_scipy as LDpred_inf
 
 import glob
 
