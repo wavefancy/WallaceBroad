@@ -22,7 +22,7 @@ rds = opts$r
 
 out.prs =
 test.file =
-rds = 
+rds =
 
 library(lassosum)
 library(data.table)
