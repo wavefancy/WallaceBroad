@@ -1,8 +1,8 @@
 '
-Compute PRS score by lassosum.
+Compute PRS score by lassosum, validation and output the beta and PRS for the best validation.
 ** The default LDblocks information was set as European ancestry.
 
-usage: lassosum.R -s <sfile> -n <int> [-t <tfile>] -r <float> -o <obase> [-c <int>] [-l <lfile>]
+usage: lassosum.R -s <sfile> -n <int> -t <tfile> -r <float> -o <obase> [-c <int>] [-l <lfile>]
 options:
 -s <sfile>    Summary statistics files
 -n <int>      The sample size for the summary statistics.
@@ -39,13 +39,15 @@ RegularizeFactor = opts$r
 summary_sample_size = as.integer(opts$n)
 summary=opts$s
 
-#ncpu=3
-#out.prs="test"
-#test.bfile="data/validate.all"
-#ref.bfile="data/validate.all"
-#RegularizeFactor=0.2
-#summary_sample_size=235705
-#summary="data/summary.all.txt"
+# ------------------------
+# ncpu=3
+# out.prs="test"
+# test.bfile="data/validate.all"
+# ref.bfile="data/validate.all"
+# RegularizeFactor=1
+# summary_sample_size=235705
+# summary="data/summary.all.txt"
+# ------------------------
 
 #dump all variable until now.
 # dump(ls(pattern = '.'), "")
@@ -84,24 +86,17 @@ if (ncpu==1){
              LDblocks = ld, cluster=cl)
 }
 # Do not do validation here, just output the lassosum coefficient scores.
+
+vls <- validate(out)
+print(c('best.validation.result:',vls$best.validation.result))
+print(c('validation.type:',vls$validation.type))
+
 y = out$beta[[RegularizeFactor]]
-x = apply(y,2,"sum")
-t = y[,x!=0]
-r = cbind(ss[out$also.in.refpanel,]$snpid, ss[out$also.in.refpanel,]$a1, ss[out$also.in.refpanel,]$a2,t)
-n = paste('beta',seq(1,dim(t)[2]),sep='')
-m = c(c('snpid','a1','a2'),n)
+r = cbind(ss[out$also.in.refpanel,]$snpid, ss[out$also.in.refpanel,]$a1, ss[out$also.in.refpanel,]$a2,summary(vls$best.beta))
+m = c('snpid','a1','a2','beta')
 colnames(r)=m
 write.table(r,file=paste(out.prs,'_rebeta_',RegularizeFactor,'.txt',sep=""),col.names=T,row.names=F,quote=F)
+write.table(vls$results.table,file=paste(out.prs,'_validation_',RegularizeFactor,'.txt',sep=""),col.names=T,row.names=F,quote=F)
 # only use one threads.
 # library(parallel)
 # cl <- makeCluster(ncpu, type="FORK")
-
-### Validation with phenotype ###
-#v <- validate.lassosum.pipeline(out) # Use the 6th column in .fam file in test dataset for test phenotype
-# In newer version, structure changed from: validate.lassosum.pipeline to validate
-#v <- validate(out) # Use the 6th column in .fam file in test dataset for test phenotype
-#write.table(v$pgs[RegularizeFactor],file=paste(out.prs,'rs_',RegularizeFactor,'.txt',sep=""),col.names=F,row.names=F)
-# write.table(v$pgs$"0.5",file=paste(out.prs,'.d0.5.txt',sep=""),col.names=F,row.names=F)
-# write.table(v$pgs$"0.9",file=paste(out.prs,'.d0.9.txt',sep=""),col.names=F,row.names=F)
-# write.table(v$pgs$"1",file=paste(out.prs,'.d1.0.txt',sep=""),col.names=F,row.names=F)
-#write.table(v$best.pgs,file=paste(out.prs,'rs_',RegularizeFactor,'.best.pgs.txt',sep=""),col.names=F,row.names=F)

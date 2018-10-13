@@ -1,14 +1,17 @@
-'
-Compute PRS score by lassosum.
-** The default LDblocks information was set as European ancestry.
+#!/usr/bin/env Rscript
 
-usage: lassosum.R -s <sfile> -n <int> [-t <tfile>] -r <float> -o <obase> [-c <int>] [-l <lfile>]
+'
+Run lassosum chr by chr, save rds files.
+
+*** The default LDblocks information was set as European ancestry.
+*** Input file should have these columns: "CHR     BP      A1      A2      OR      P"
+
+usage: lassosum.CHR2RDS.R -s <sfile> -n <int> -t <tfile> -o <obase> [-c <int>] [-l <lfile>]
 options:
 -s <sfile>    Summary statistics files
 -n <int>      The sample size for the summary statistics.
 -t <tfile>    Test plink file, validation individuals.
 -l <lfile>    LD reference file, if not set, the same as -t, test file.
--r <float>    Regularize factor, one of 0.2|0.5|0.9|1, suggested by lassosum.
 -o <obase>    Output file name base.
 -c <int>      Number of cpus for computing, default 1.
 ' -> doc
@@ -35,7 +38,6 @@ test.bfile = NULL
 if (is.null(opts$t)==F){
   test.bfile = opts$t
 }
-RegularizeFactor = opts$r
 summary_sample_size = as.integer(opts$n)
 summary=opts$s
 
@@ -62,36 +64,40 @@ ss <- fread(summary)
 #ld <- fread("/medpop/esp2/wallace/tools/lassosum/lassosum/inst/data/Berisa.EUR.hg19.bed")
 #use the ld block from the data packages.
 ld="EUR.hg19"
-cor <- p2cor(p = ss$p, n = summary_sample_size, sign=log(ss$or))
+cor <- p2cor(p = ss$P, n = summary_sample_size, sign=log(ss$OR))
 # n is the sample size
 
 #only fork if we need more than one threads.
 if (ncpu==1){
-  out <- lassosum.pipeline(cor=cor, chr=ss$hg19chrc, pos=ss$bp,
-              A1=ss$a1, A2=ss$a2,
+  out <- lassosum.pipeline(cor=cor, chr=ss$CHR, pos=ss$BP,
+              A1=ss$A1, A2=ss$A2,
               ref.bfile=ref.bfile, test.bfile=test.bfile,
               # ref.bfile=ref.bfile,
-              s = c(as.numeric(RegularizeFactor)),
+              # s = c(as.numeric(RegularizeFactor)),
+             trace=2,
              LDblocks = ld)
 }else{
   library(parallel)
   cl <- makeCluster(ncpu, type="FORK")
-  out <- lassosum.pipeline(cor=cor, chr=ss$hg19chrc, pos=ss$bp,
-              A1=ss$a1, A2=ss$a2,
+  out <- lassosum.pipeline(cor=cor, chr=ss$CHR, pos=ss$BP,
+              A1=ss$A1, A2=ss$A2,
               ref.bfile=ref.bfile, test.bfile=test.bfile,
               # ref.bfile=ref.bfile,
-              s = c(as.numeric(RegularizeFactor)),
+              # s = c(as.numeric(RegularizeFactor)),
+             trace=2,
              LDblocks = ld, cluster=cl)
 }
+
+saveRDS(out, file=paste(out.prs,'.rds',sep=""))
 # Do not do validation here, just output the lassosum coefficient scores.
-y = out$beta[[RegularizeFactor]]
-x = apply(y,2,"sum")
-t = y[,x!=0]
-r = cbind(ss[out$also.in.refpanel,]$snpid, ss[out$also.in.refpanel,]$a1, ss[out$also.in.refpanel,]$a2,t)
-n = paste('beta',seq(1,dim(t)[2]),sep='')
-m = c(c('snpid','a1','a2'),n)
-colnames(r)=m
-write.table(r,file=paste(out.prs,'_rebeta_',RegularizeFactor,'.txt',sep=""),col.names=T,row.names=F,quote=F)
+# y = out$beta[[RegularizeFactor]]
+# x = apply(y,2,"sum")
+# t = y[,x!=0]
+# r = cbind(ss[out$also.in.refpanel,]$snpid, ss[out$also.in.refpanel,]$a1, ss[out$also.in.refpanel,]$a2,t)
+# n = paste('beta',seq(1,dim(t)[2]),sep='')
+# m = c(c('snpid','a1','a2'),n)
+# colnames(r)=m
+# write.table(r,file=paste(out.prs,'_rebeta_',RegularizeFactor,'.txt',sep=""),col.names=T,row.names=F,quote=F)
 # only use one threads.
 # library(parallel)
 # cl <- makeCluster(ncpu, type="FORK")

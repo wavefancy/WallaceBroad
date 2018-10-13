@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ## Calculate of Nagelkerke R2.
 ## Do logistic regression, output summary statistics and also several correlation metrics.
 ## Read data with header from stdin, and output results to stdout.

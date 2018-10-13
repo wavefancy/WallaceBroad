@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ## @Wallace Wang, wavefancy@gmail.com
 ##
 ## Do multiple linear regression, output residuals.
@@ -18,6 +20,7 @@ form = sub('\\+','~',paste(colnames(dd), collapse = '+'))
 
 # print(c("FORMULA:",form))
 # print(form)
+write(c("FORMULA:",form), stderr())
 
 lr = lm(as.formula(form),data = dd)
 write.table(resid(lr),"",row.names=F,col.names=F)

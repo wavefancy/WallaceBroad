@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """
 Implements LDpred-inf.  The method requires the user to have generated a coordinated dataset using coord_genotypes.py
 
 # /medpop/esp2/wallace/tools/miniconda3/envs/Python27/lib/python2.7/site-packages/ldpred/
-# **** change scipy.linalg.pinv to numpy.linalg.pinv. linalg.pinv is not stable,
+# **** change linalg.pinv to linalg.pinv2. linalg.pinv is not stable,
 # **** cause problem of "SVD did not converge in Linear Least Squares".
-# https://docs.scipy.org/doc/numpy-1.14.0/reference/generated/numpy.linalg.pinv.html
+# https://docs.scipy.org/doc/scipy-0.15.1/reference/generated/scipy.linalg.pinv2.html
 # https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.linalg.pinv.html
 
 Usage:
@@ -39,7 +39,6 @@ import traceback
 import h5py
 import scipy as sp
 from scipy import linalg
-import numpy
 import ld
 import cPickle
 import time
@@ -128,7 +127,7 @@ def ldpred_inf(beta_hats, h2=0.1, n=1000, inf_shrink_matrices=None,
             A = ((m / h2) * sp.eye(curr_window_size) + (n / (1)) * D)
             # Change from pinv to pinv2 bt wallace
             # A_inv = linalg.pinv(A)
-            A_inv = numpy.linalg.pinv(A)
+            A_inv = linalg.pinv2(A)
             # - change end.
         updated_betas[start_i: stop_i] = sp.dot(A_inv * n , beta_hats[start_i: stop_i])  # Adjust the beta_hats
 

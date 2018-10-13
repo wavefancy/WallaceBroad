@@ -1,14 +1,17 @@
-#!/medpop/esp2/wallace/tools/miniconda3/envs/Python27/bin/python
+#!/usr/bin/env python2
 """
 ****
     This version was modified by wallace(wavefancy@gmail.com) to make LDpred can be run chromosome by chromosome.
+
+    #put this file in the LDpred installation path.
+    # /medpop/esp2/wallace/tools/miniconda3/envs/Python27/lib/python2.7/site-packages/ldpred
 ****
 Implements LDpred, an approximate Gibbs sampler that calculate posterior means of effects, conditional on LD information.
 The method requires the user to have generated a coordinated dataset using coord_genotypes.py
 
 
 Usage:
-ldpred --coord=COORD_DATA_FILE  --ld_radius=LD_RADIUS   --local_ld_file_prefix=LD_FILE_NAME  --PS=FRACTIONS_CAUSAL
+ldpred --coord=COORD_DATA_FILE  --ld_radius=LD_RADIUS   --local_ld_file_prefix=LD_FILE_NAME --local_ld_file=WALLACE_LD_FILE_NAME  --PS=FRACTIONS_CAUSAL
                           --N=SAMPLE_SIZE  --out=OUTPUT_FILE_PREFIX  [ --num_iter=NUM_ITER  --H2=HERTIABILITY  --gm_ld_radius=GEN_MAP_RADIUS]
 
  - COORD_DATA_FILE: The HDF4 file obtained by running the coord_genotypes.py
@@ -18,6 +21,10 @@ ldpred --coord=COORD_DATA_FILE  --ld_radius=LD_RADIUS   --local_ld_file_prefix=L
 
  - LD_FILE_NAME: A path and filename prefix for the LD file.  If it doesn't exist, it will be generated.  This can take up to several hours,
                  depending on LD radius number of SNPs, etc.  If it does exits, that file will be used.
+
+ - WALLACE_LD_FILE_NAME: A filename store the sample content as 'LD_FILE_NAME', however, this for exact file name, not prefix.
+                      Please set this paremter, other than 'LD_FILE_NAME' if you run this in wallace's modified chr by chr model.
+                      This output is in gz format, please set this file end by .gz.
 
  - FRACTIONS_CAUSAL: A list of comma separated (without space) values between 1 and 0, excluding 0.  1 corresponds to the infinitesimal model and will yield results
                      similar to LDpred-inf.  Default is --PS=1,0.3,0.1,0.03,0.01,0.003,0.001,0.0003,0.0001
@@ -50,7 +57,9 @@ import scipy as sp
 from scipy import stats
 import ld
 import cPickle
-import LDpred_inf
+import LDpred_inf_scipy as LDpred_inf
+
+import glob
 
 
 chromosomes_list = ['chrom_%d'%(x) for x in range(1,23)]
@@ -68,11 +77,13 @@ def parse_parameters():
 #        print __doc__
 #        sys.exit(2)
 
-    long_options_list = ['coord=', 'ld_radius=', 'local_ld_file_prefix=', 'PS=', 'out=', 'N=',
+    # - start wallace, add parameter of local_ld_file for exact file.
+    long_options_list = ['coord=', 'ld_radius=', 'local_ld_file_prefix=','local_ld_file=', 'PS=', 'out=', 'N=',
                          'num_iter=', 'H2=','gm_ld_radius=','h','help']
 
-    p_dict = {'coord':None, 'ld_radius':None, 'local_ld_file_prefix':None, 'PS':[1,0.3,0.1,0.03,0.01,0.003,0.001], 'out':None,
+    p_dict = {'coord':None, 'ld_radius':None, 'local_ld_file_prefix':None,'local_ld_file':None, 'PS':[1,0.3,0.1,0.03,0.01,0.003,0.001], 'out':None,
               'N':None, 'num_iter': 60, 'H2':None, 'gm':None, 'gm_ld_radius':None}
+    # -end wallace
 
     if len(sys.argv) > 1:
         try:
@@ -92,6 +103,9 @@ def parse_parameters():
             elif opt =="--coord": p_dict['coord'] = arg
             elif opt =="--ld_radius": p_dict['ld_radius'] = int(arg)
             elif opt == "--local_ld_file_prefix": p_dict['local_ld_file_prefix'] = arg
+            # - start wallace
+            elif opt == "--local_ld_file": p_dict['local_ld_file'] = arg
+            # - end wallace
             elif opt == "--PS": p_dict['PS'] = map(float,arg.split(','))
             elif opt == "--out": p_dict['out'] = arg
             elif opt == "--N": p_dict['N'] = int(arg)
@@ -166,21 +180,71 @@ def calc_auc(y_true,y_hat, show_plot=False):
         pylab.show()
     return auc
 
+# - start wallace, pass local_ld_dict_file file name.
+# def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_prefix=None, ps=None,
+#                n=None, h2=None, num_iter=None, verbose=False, zero_jump_prob=0.05, burn_in=5):
 
 def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_prefix=None, ps=None,
-               n=None, h2=None, num_iter=None, verbose=False, zero_jump_prob=0.05, burn_in=5):
+               n=None, h2=None, num_iter=None, verbose=False, zero_jump_prob=0.05, burn_in=5, local_ld_dict_file=None):
+# - end wallace
     """
     Calculate LDpred for a genome
     """
+    # Load summary first.
+    # - start wallace
+    # L = ld_scores_dict['avg_gw_ld_score']
+    # chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
 
+    # load and calculate genome wide avg_gw_ld_score and chi_square_lambda
+    # input files, load all the files in ld_file folder end by _byFileCache.txt
+    # print local_ld_dict_file
+    loadname = os.path.dirname(os.path.realpath(local_ld_dict_file)) + '/*_byFileCache.txt'
+    print 'WALLACE INFO: load chromosome level summary file pattern: ' + loadname
+    wallace_chr_summary = []
+    print 'WALLACE INFO: *** please make sure all files have been loaded!****'
+    ldfiles = []
+    for f in glob.glob(loadname):
+        # print 'WALLACE INFO: load chromosome level summary file: ' + f
+        ldfiles.append(str(f))
+        with open(f,'r') as rf:
+            wallace_chr_summary.append(rf.readline().strip().split())
+
+    for temp_n in sorted(ldfiles):
+         print 'WALLACE INFO: load chromosome level summary file: ' + temp_n
+    print 'WALLACE INFO: totally loaded chr: %d'%(len(wallace_chr_summary))
+
+    Total_LD_scores = sum([float(x[2]) for x in wallace_chr_summary])
+    Total_SNPS      = sum([int(x[4])   for x in wallace_chr_summary])
+    Total_betas     = sum([float(x[6]) for x in wallace_chr_summary])
+    # do not set n_snps here, this need to be set chr by chr.confirmed bug by DLpred author.
+    # n_snps          = min([int(x[4])   for x in wallace_chr_summary]) # the length for chr22.
+    num_snps        = Total_SNPS
+    sum_beta2s      = Total_betas
+
+    L = Total_LD_scores / Total_SNPS
+    chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
+
+    # chi_square_lambda = sp.mean(n * Total_betas / Total_SNPS)
+    # load data from cache, and recompute the genome-wide summary statistics
+
+    print 'Genome-wide lambda inflation:', chi_square_lambda,
+    print 'Genome-wide mean LD score:', L
+    gw_h2_ld_score_est = max(0.0001, (max(1, chi_square_lambda) - 1) / (n * (L / num_snps)))
+    print 'Estimated genome-wide heritability:', gw_h2_ld_score_est
+    sys.stdout.flush()
+    # - end wallace
+
+    #- restart computing from here.
     df = h5py.File(data_file,'r')
     has_phenotypes=False
-    if 'y' in df.keys():
-        'Validation phenotypes found.'
-        y = df['y'][...]  # Phenotype
-        num_individs = len(y)
-        risk_scores_pval_derived = sp.zeros(num_individs)
-        has_phenotypes=True
+    # - start Wallace, always do not validate phenotype, only rescale effect size.
+    # if 'y' in df.keys():
+    #     'Validation phenotypes found.'
+    #     y = df['y'][...]  # Phenotype
+    #     num_individs = len(y)
+    #     risk_scores_pval_derived = sp.zeros(num_individs)
+    #     has_phenotypes=True
+    # - end Wallace
 
     ld_scores_dict = ld_dict['ld_scores_dict']
     chrom_ld_dict = ld_dict['chrom_ld_dict']
@@ -189,24 +253,22 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
     print 'Applying LDpred with LD radius: %d' % ld_radius
     results_dict = {}
 
-    num_snps = 0                    # the total number of SNPs across the genome.
-    sum_beta2s = 0                  # the summation of beta_square. beta * beta
     cord_data_g = df['cord_data']   # input coord data.
 
-    for chrom_str in chromosomes_list:
-        if chrom_str in cord_data_g.keys():
-            g = cord_data_g[chrom_str]
-            betas = g['betas'][...]
-            n_snps = len(betas)
-            num_snps += n_snps
-            sum_beta2s += sp.sum(betas ** 2)
+    # - start wallace, chromosome level sum of beta square has been computed.
+    # num_snps = 0                    # the total number of SNPs across the genome.
+    # sum_beta2s = 0                  # the summation of beta_square. beta * beta
+    #
+    # for chrom_str in chromosomes_list:
+    #     if chrom_str in cord_data_g.keys():
+    #         g = cord_data_g[chrom_str]
+    #         betas = g['betas'][...]
+    #         n_snps = len(betas)
+    #         num_snps += n_snps
+    #         sum_beta2s += sp.sum(betas ** 2)
+    # - end wallace
 
-    L = ld_scores_dict['avg_gw_ld_score']
-    chi_square_lambda = sp.mean(n * sum_beta2s / float(num_snps))
-    print 'Genome-wide lambda inflation:', chi_square_lambda,
-    print 'Genome-wide mean LD score:', L
-    gw_h2_ld_score_est = max(0.0001, (max(1, chi_square_lambda) - 1) / (n * (L / num_snps)))
-    print 'Estimated genome-wide heritability:', gw_h2_ld_score_est
+    # sys.exit(-1)
 
     assert chi_square_lambda>1, 'Something is wrong with the GWAS summary statistics.  Perhaps there were issues parsing of them, or the given GWAS sample size (N) was too small. Either way, lambda (the mean Chi-square statistic) is too small.  '
 
@@ -223,6 +285,14 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
             ok_snps_filter = snp_stds>0
             pval_derived_betas = g['betas'][...]
             pval_derived_betas = pval_derived_betas[ok_snps_filter]
+
+            # - start wallace
+            # LDpred author confirmed this is bug,fix this way.
+            # believe this is a bug in the orginal version of LDpred.
+            # in the orginal version, this n_snps is the size on chr22.
+            n_snps = len(pval_derived_betas)
+            # - end wallace
+
             if h2 is not None:
                 h2_chrom = h2 * (n_snps / float(num_snps))
             else:
@@ -231,7 +301,8 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
                                                 h2=h2_chrom, n=n, ld_window_size=2*ld_radius, verbose=False)
             LDpred_inf_chrom_dict[chrom_str]=start_betas
 
-
+    sys.stderr.write('Done LDpred-inf model.\n')
+    sys.stderr.flush()
     for p in ps:
         print 'Starting LDpred with p=%0.4f'%p
         p_str = '%0.4f'%p
@@ -344,6 +415,8 @@ def ldpred_genomewide(data_file=None, ld_radius = None, ld_dict=None, out_file_p
             print 'The slope for predictions with P-value derived  effects is:',regression_slope
             results_dict[p_str]['slope_pd']=regression_slope
 
+        sys.stderr.write('Done p%0.4e.\n'%(p))
+        sys.stderr.flush()
         weights_out_file = '%s_LDpred_p%0.4e.txt'%(out_file_prefix, p)
         with open(weights_out_file,'w') as f:
             f.write('chrom    pos    sid    nt1    nt2    raw_beta     ldpred_beta\n')
@@ -498,7 +571,10 @@ def ldpred_gibbs(beta_hats, genotypes=None, start_betas=None, h2=None, n=1000, l
 
 def main():
     p_dict = parse_parameters()
-    local_ld_dict_file = '%s_ldradius%d.pickled.gz'%(p_dict['local_ld_file_prefix'], p_dict['ld_radius'])
+    # - start wallace
+    # local_ld_dict_file = '%s_ldradius%d.pickled.gz'%(p_dict['local_ld_file_prefix'], p_dict['ld_radius'])
+    local_ld_dict_file = p_dict['local_ld_file']
+    # - end wallace
 
     print """
 Note: For maximal accuracy all SNPs with LDpred weights should be included in the validation data set.
@@ -507,6 +583,10 @@ If they are a subset of the validation data set, then we suggest recalculate LDp
     # wallace:
     # Generate the local_ld_file file.
     if not os.path.isfile(local_ld_dict_file):
+        # - start wallace, should not run into this point in this file.
+        print 'ERROR: can not find LD file, please run "LDpred.getLocalLDFile.CHR.Wallace.V1.py" to get them!'
+        sys.exit(-1)
+        # - end wallace
         df = h5py.File(p_dict['coord'])
 
         chrom_ld_scores_dict = {}
@@ -560,6 +640,20 @@ If they are a subset of the validation data set, then we suggest recalculate LDp
             ld_score_sum += sp.sum(ld_scores)
             num_snps += n_snps
 
+            # - start Wallace ---
+            # gather data for estimate heritability
+            # ref ldpred_genomewide section:
+            betas = g['betas'][...]
+            n_betas = len(betas)
+            # sum_beta2s += sp.sum(betas ** 2)
+
+
+            #WRITE OUT CHROMOSOME LEVEL data.
+            with open(local_ld_dict_file + '_byFileCache' +'.txt','w') as f:
+                f.write(chrom_str +': ld_scores\t%f\tn_snps\t%d\ttotal_beta_square\t%f\tn_betas\t%d\n'%(sp.sum(ld_scores),n_snps,sp.sum(betas ** 2),n_betas))
+
+            # - end Wallace ---
+
         avg_gw_ld_score = ld_score_sum / float(num_snps)
         ld_scores_dict = {'avg_gw_ld_score': avg_gw_ld_score, 'chrom_dict':chrom_ld_scores_dict}
 
@@ -585,10 +679,14 @@ If they are a subset of the validation data set, then we suggest recalculate LDp
         ld_dict = cPickle.load(f)
         f.close()
 
+    # - start wallace
+    # ldpred_genomewide(data_file=p_dict['coord'], out_file_prefix=p_dict['out'], ps=p_dict['PS'], ld_radius=p_dict['ld_radius'],
+    #                   ld_dict = ld_dict, n=p_dict['N'], num_iter=p_dict['num_iter'], h2=p_dict['H2'], verbose=False)
+
     ldpred_genomewide(data_file=p_dict['coord'], out_file_prefix=p_dict['out'], ps=p_dict['PS'], ld_radius=p_dict['ld_radius'],
-                      ld_dict = ld_dict, n=p_dict['N'], num_iter=p_dict['num_iter'], h2=p_dict['H2'], verbose=False)
+                      ld_dict = ld_dict, n=p_dict['N'], num_iter=p_dict['num_iter'], h2=p_dict['H2'], verbose=False, local_ld_dict_file=local_ld_dict_file)
 
-
+    # - end wallace
 
 if __name__ == '__main__':
     main()

@@ -1,10 +1,12 @@
-#!/medpop/esp2/wallace/tools/miniconda3/envs/Python27/bin/python
+#!/usr/bin/env python2
 """
 ****
     This version was modified by wallace(wavefancy@gmail.com) to make LDpred can be run chromosome by chromosome.
 
     #put this file in the LDpred installation path.
     # /medpop/esp2/wallace/tools/miniconda3/envs/Python27/lib/python2.7/site-packages/ldpred
+    # *** use the numpy version of pinv.
+
 ****
 Implements LDpred, an approximate Gibbs sampler that calculate posterior means of effects, conditional on LD information.
 The method requires the user to have generated a coordinated dataset using coord_genotypes.py
@@ -57,7 +59,7 @@ import scipy as sp
 from scipy import stats
 import ld
 import cPickle
-import LDpred_inf
+import LDpred_inf_numpy as LDpred_inf
 
 import glob
 

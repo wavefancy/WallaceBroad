@@ -1,0 +1,5 @@
+N1	1	2	3
+N2	1	NA	4
+N2	1	NA	5
+N3	a	b	c
+N4	NA	NA	NA
