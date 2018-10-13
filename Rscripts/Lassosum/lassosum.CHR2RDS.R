@@ -4,7 +4,7 @@
 Run lassosum chr by chr, save rds files.
 
 *** The default LDblocks information was set as European ancestry.
-*** Input file should have these columns: "CHR     BP      A1      A2      OR      P"
+*** Input file should have these columns: "CHR     BP      A1      A2      OR      P    SNP"
 
 usage: lassosum.CHR2RDS.R -s <sfile> -n <int> -t <tfile> -o <obase> [-c <int>] [-l <lfile>]
 options:
@@ -70,7 +70,7 @@ cor <- p2cor(p = ss$P, n = summary_sample_size, sign=log(ss$OR))
 #only fork if we need more than one threads.
 if (ncpu==1){
   out <- lassosum.pipeline(cor=cor, chr=ss$CHR, pos=ss$BP,
-              A1=ss$A1, A2=ss$A2,
+              A1=ss$A1, A2=ss$A2,snp=ss$SNP,
               ref.bfile=ref.bfile, test.bfile=test.bfile,
               # ref.bfile=ref.bfile,
               # s = c(as.numeric(RegularizeFactor)),
@@ -80,7 +80,7 @@ if (ncpu==1){
   library(parallel)
   cl <- makeCluster(ncpu, type="FORK")
   out <- lassosum.pipeline(cor=cor, chr=ss$CHR, pos=ss$BP,
-              A1=ss$A1, A2=ss$A2,
+              A1=ss$A1, A2=ss$A2,snp=ss$SNP,
               ref.bfile=ref.bfile, test.bfile=test.bfile,
               # ref.bfile=ref.bfile,
               # s = c(as.numeric(RegularizeFactor)),
