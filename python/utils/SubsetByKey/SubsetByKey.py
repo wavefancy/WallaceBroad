@@ -7,8 +7,8 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        SubsetByKey.py -f keyfile (-k|-r) -c ints [-t] [-m] [-d txt]
-        SubsetByKey.py -h | --help | -v | --version | -f | --format
+        SubsetByKey.py (-f keyfile | -v vals) (-k|-r) -c ints [-t] [-m] [-d txt]
+        SubsetByKey.py -h | --help | --version | -f | --format
 
     Notes:
         1. Read from stdin and output to stdout.
@@ -16,6 +16,7 @@
 
     Options:
         -f keyfile    Input key list files.
+        -v vals       Key values, e.g.: txt1,txt2 | txt3.
         -k            Keep key indicated records.
         -r            Remove key indicated records.
         -c ints       Column index for comparing with keys, eg. 1|1,2. 1 based.
@@ -23,13 +24,14 @@
         -m            Directly copy comment lines, startswith '#'.
         -d txt        Column delimiter, default white-spaces. tab for '\\t'.
         -h --help     Show this screen.
-        -v --version  Show version.
+        --version  Show version.
         --format   Show input/output file format example.
 
 """
 import sys
 from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
+signal(SIGPIPE,SIG_DFL) #prevent IOError: [Errno 32] Broken pipe. If pipe closed by 'head'.
 defaultencoding = 'utf-8'
 if sys.getdefaultencoding() != defaultencoding:
     reload(sys)
@@ -58,11 +60,14 @@ if __name__ == '__main__':
 
     #read key sets.
     my_keys = set()
-    with open(KEY_FILE,'r', encoding="utf-8") as kf:
-        for line in kf:
-            line = line.strip()
-            if line:
-                my_keys.add('-'.join(line.split(DELIMITER)))
+    if args['-v']:
+        my_keys = set(args['-v'].split(','))
+    else:
+        with open(KEY_FILE,'r', encoding="utf-8") as kf:
+            for line in kf:
+                line = line.strip()
+                if line:
+                    my_keys.add('-'.join(line.split(DELIMITER)))
 
     maxSplit = max(KEYS) + 2
     for line in sys.stdin:
