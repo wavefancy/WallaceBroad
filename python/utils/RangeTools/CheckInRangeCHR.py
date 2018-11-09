@@ -67,6 +67,7 @@ if __name__ == '__main__':
         title = True
 
     from interval import interval
+    # https://pyinterval.readthedocs.io/en/latest/install.html#installing-from-sources
     itvMap = {} #chr - >intervals.
     #irange = interval()
     with open(args['-r'],'r') as inf:
