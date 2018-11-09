@@ -67,15 +67,22 @@ if __name__ == '__main__':
     if args['-e']:
         keep = False
 
-    from interval import interval
-    irange = interval()
+    # from interval import interval
+    from interlap import InterLap
+    from interlap import Interval # This class can auto merge overlapped regions.
+    # interlap really significantly increased the search speed.
+
+    irange = Interval()
     with open(args['-r'],'r') as inf:
         for line in inf:
             line = line.strip()
             if line:
                 ss = line.split()
-                irange = irange | interval[float(ss[0]), float(ss[1])]
+                irange.add([(float(ss[0]), float(ss[1]))])
 
+
+    inter = InterLap()
+    inter.update(irange._as_tuples(irange))
 #-------------------------------------------------
     for line in sys.stdin:
         line = line.strip()
@@ -84,10 +91,10 @@ if __name__ == '__main__':
             try:
                 v = int(ss[colValue])
                 if keep:
-                    if v in irange:
+                    if inter.__contains__((v,v)):
                         sys.stdout.write('%s\n'%(line))
                 else:
-                    if not (v in irange):
+                    if not (inter.__contains__((v,v))):
                         sys.stdout.write('%s\n'%(line))
 
             except ValueError:

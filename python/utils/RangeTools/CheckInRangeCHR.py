@@ -66,8 +66,15 @@ if __name__ == '__main__':
     if args['-t']:
         title = True
 
-    from interval import interval
+    # from interval import interval
     # https://pyinterval.readthedocs.io/en/latest/install.html#installing-from-sources
+    # change to a a faster version of range search, use interlap.
+    # https://github.com/brentp/interlap
+
+    from interlap import InterLap
+    from interlap import Interval # This class can auto merge overlapped regions.
+    # interlap really significantly increased the search speed.
+
     itvMap = {} #chr - >intervals.
     #irange = interval()
     with open(args['-r'],'r') as inf:
@@ -76,11 +83,19 @@ if __name__ == '__main__':
             if line:
                 ss = line.split()
                 if not (ss[0] in itvMap):
-                    itvMap[ss[0]] = interval()
+                    itvMap[ss[0]] = Interval()
 
-                itvMap[ss[0]] = itvMap[ss[0]] | interval[float(ss[1]), float(ss[2])]
+                itvMap[ss[0]].add([(float(ss[1]), float(ss[2]))]) # auto merge region.
 
+    checkMap = {}
+    for k,v in itvMap.items():
+        inter = InterLap()
+        inter.update(v._as_tuples(v))
+        checkMap[k] = inter # convert inverval to trees.
+        # for i in inter:
+        #     print(i)
 #-------------------------------------------------
+    # print(checkMap)
     for line in sys.stdin:
         line = line.strip()
         if line:
@@ -93,10 +108,10 @@ if __name__ == '__main__':
             try:
                 v = float(ss[colValue])
                 if keep:
-                    if ss[colChr] in itvMap and v in itvMap[ss[colChr]]:
+                    if ss[colChr] in checkMap and checkMap[ss[colChr]].__contains__((v,v)):
                         sys.stdout.write('%s\n'%(line))
                 else:
-                    if (ss[colChr] not in itvMap)  or ( not (v in itvMap[ss[colChr]])):
+                    if (ss[colChr] not in checkMap)  or ( not (checkMap[ss[colChr]].__contains__((v,v)))):
                         sys.stdout.write('%s\n'%(line))
 
             except ValueError:
