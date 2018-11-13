@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        FisherExactTest.py -c cols -t cols [-a alternative] [--ci float]
+        FisherExactTest.py -c cols -t cols [-a alternative] [--ci float] [--pd int]
         FisherExactTest.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -22,6 +22,7 @@
                        1: 'less',     test depletion  of the first element in treat1.
                        2: 'greater',  test enrichment of the first element in treat1.
         --ci float     Confidence interval, default 0.95.
+        --pd int       Print int decimal points.
         -h --help      Show this screen.
         -v --version   Show version.
         -f --format    Show input/output file format example.
@@ -64,6 +65,7 @@ if __name__ == '__main__':
             alternative = 'less'
         elif args['-a'] == '2':
             alternative = 'greater'
+    pdecimal = int(args['--pd']) if args['--pd'] else 4
 
     t1Index = [int(x) -1 for x in args['-c'].split(',')]
     t2Index = [int(x) -1 for x in args['-t'].split(',')]
@@ -76,6 +78,9 @@ if __name__ == '__main__':
     exact = importr("exact2x2")
 
     INF = float('inf')
+    fstring = '%.'+str(pdecimal)+'f'
+    estring = '%.'+str(pdecimal)+'e'
+    # print(fstring)
     for line in sys.stdin:
         line = line.strip()
         if line:
@@ -99,7 +104,8 @@ if __name__ == '__main__':
                     out[1] = oddsratio
 
                 sys.stdout.write('%s\t'%(line))
-                sys.stdout.write('\t'.join(['%.4e'%(x) for x in out]))
+                sys.stdout.write('%s\t'%(estring%(out[0])))
+                sys.stdout.write('\t'.join([fstring%(x) for x in out[1:]]))
                 sys.stdout.write('\n')
             except ValueError:
                 # sys.stderr.write('WARNING: parse int error for line(skipped): %s\n'%(line))
