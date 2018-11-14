@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 
@@ -33,7 +33,7 @@ def ShowFormat():
     print('''
 #input example, each line two samples, separated by ';'
 ------------------------
-0.80  0.83  1.89  1.04  1.45  1.38  1.91  1.64  0.73  1.46; 1.15  0.88  0.90  0.74  1.21
+0.80 0.83 1.89 1.04 1.45 1.38 1.91 1.64 0.73 1.46; 1.15 0.88 0.90 0.74 1.21
 
 #output example (benchmarked with R, wilcox.test)
 ------------------------
@@ -41,7 +41,7 @@ def ShowFormat():
 
 # first column as label: -l
 ------------------------
-X 0.80  0.83  1.89  1.04  1.45  1.38  1.91  1.64  0.73  1.46; Y 1.15  0.88  0.90  0.74  1.21
+X 0.80 0.83 1.89 1.04 1.45 1.38 1.91 1.64 0.73 1.46; Y 1.15 0.88 0.90 0.74 1.21
 
 #output example (benchmarked with R, wilcox.test)
 ------------------------
