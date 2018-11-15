@@ -17,32 +17,42 @@ using LinearAlgebra
 X = readdlm("x.txt",',',Float64,'\n')
 # replace NaN missing as mean.
 # impute row missing as mean.
-for i in 1:size(X,1)
-    m = mean([t for t in X[i,:] if !isnan(t)])
-    for k in 1:size(X[i,:],1)
-        if isnan(X[i,k])
-            X[i,k] = m
+# impute column missing as mean, as each column is a snp.
+for i in 1:size(X,2) #col
+    m = mean([t for t in X[:,i] if !isnan(t)])
+    for k in 1:size(X,1) #row
+        if isnan(X[k,i])
+            X[k,i] = m
         end
+        ## shift allele to mean zero.
+        X[k,i] -= m
     end
 end
 
 # println(X)
 # convert to Z score by row.
-X = zscore(X,2)
+# X = zscore(X,2)
 #println(X)
 #writedlm(Y)
 beta = readdlm("beta.txt",'\t',Float64,'\n')
 
-# compute the the estimated PRS.
-# n*X(X'X)^-1beta
-# the number of samples.
+# compute the the reweighted beta.
+# new_beta = (X'X)^-1(X'Y) = (X'X)^-1 * diag(xi'xi) * old_beta
 # if inv is not stable for real snp data, may try pinv.
-n = size(X)[1]
-t = X'*X
-println(size(t))
-println(det(t))
-#prs = n * X * pinv(t) * beta
-#start with rigous version.
-prs = n * X * inv(t) * beta
 
+# variance co-variance matrix of X.
+cov_m = X'X
+
+# generate diag(xi'xi)
+d_matrix = zeros(size(cov_m,1),size(cov_m,1))
+for i in 1:size(cov_m,1)
+    d_matrix[i,i] = cov_m[i,i]
+end
+
+# new adjusted beta
+new_beta = pinv(cov_m) * d_matrix * beta
+writedlm("new_beta.txt",new_beta)
+
+# new PRS: X * new_beta
+prs = X * new_beta
 writedlm("prs.txt",prs)

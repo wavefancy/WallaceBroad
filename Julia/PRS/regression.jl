@@ -14,15 +14,18 @@ using Statistics
 using LinearAlgebra
 
 #println("hello world")
+# Let X is matrix, nxm, n is the number of samples, m is the number of snps, n>m.
 X = readdlm("x.txt",',',Float64,'\n')
 # replace NaN missing as mean.
-# impute row missing as mean.
-for i in 1:size(X,1)
-    m = mean([t for t in X[i,:] if !isnan(t)])
-    for k in 1:size(X[i,:],1)
-        if isnan(X[i,k])
-            X[i,k] = m
+# impute column missing as mean, as each column is a snp.
+for i in 1:size(X,2) #col
+    m = mean([t for t in X[:,i] if !isnan(t)])
+    for k in 1:size(X,1) #row
+        if isnan(X[k,i])
+            X[k,i] = m
         end
+        ## shift allele to mean zero.
+        X[k,i] -= m
     end
 end
 
@@ -40,7 +43,8 @@ y = y .- mean(y)
 # b = (x'x)^-1X'Y
 B = zeros(size(X,2),1)
 for i in 1:size(X,2)
-    k = X[:,i] .- mean(X[:,i])
+    # k = X[:,i] .- mean(X[:,i])
+    k = X[:,i] # X is already shift to mean zero above, ignore this.
     b = inv(k'*k)*k'* y
     B[i] = b[1]
 end
