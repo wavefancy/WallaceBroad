@@ -42,7 +42,7 @@ t = X'*X
 println(size(t))
 println(det(t))
 #prs = n * X * pinv(t) * beta
-#start with rigous version.
+#start with regious version.
 prs = n * X * inv(t) * beta
 
 writedlm("prs.txt",prs)

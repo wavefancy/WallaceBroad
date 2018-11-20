@@ -99,7 +99,8 @@ if __name__ == '__main__':
                     out[1] = oddsratio
 
                 sys.stdout.write('%s\t'%(line))
-                sys.stdout.write('\t'.join(['%.4e'%(x) for x in out]))
+                sys.stdout.write('%.4e\t'%(out[0]))
+                sys.stdout.write('\t'.join(['%.4f'%(x) for x in out[1:]]))
                 sys.stdout.write('\n')
             except ValueError:
                 # sys.stderr.write('WARNING: parse int error for line(skipped): %s\n'%(line))
