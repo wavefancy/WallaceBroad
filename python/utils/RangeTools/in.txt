@@ -1,0 +1,4 @@
+chr1 0
+chr1 5
+chr2 50
+chr2 20

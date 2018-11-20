@@ -14,9 +14,9 @@ using Statistics
 using LinearAlgebra
 
 #println("hello world")
+# Let X is matrix, nxm, n is the number of samples, m is the number of snps, n>m.
 X = readdlm("x.txt",',',Float64,'\n')
 # replace NaN missing as mean.
-# impute row missing as mean.
 # impute column missing as mean, as each column is a snp.
 for i in 1:size(X,2) #col
     m = mean([t for t in X[:,i] if !isnan(t)])
@@ -31,28 +31,22 @@ end
 
 # println(X)
 # convert to Z score by row.
-# X = zscore(X,2)
+#X = zscore(X,2)
 #println(X)
 #writedlm(Y)
-beta = readdlm("beta.txt",'\t',Float64,'\n')
-
-# compute the the reweighted beta.
-# new_beta = (X'X)^-1(X'Y) = (X'X)^-1 * diag(xi'xi) * old_beta
-# if inv is not stable for real snp data, may try pinv.
-
-# variance co-variance matrix of X.
-cov_m = X'X
-
-# generate diag(xi'xi)
-d_matrix = zeros(size(cov_m,1),size(cov_m,1))
-for i in 1:size(cov_m,1)
-    d_matrix[i,i] = cov_m[i,i]
+y = readdlm("y.txt",'\t',Float64,'\n')
+# my = mean(y)
+# substract y's mean.
+y = y .- mean(y)
+# Single variant regress,
+# *** x and y has to be mean centered.
+# b = (x'x)^-1X'Y
+B = zeros(size(X,2),1)
+for i in 1:size(X,2)
+    # k = X[:,i] .- mean(X[:,i])
+    k = X[:,i] # X is already shift to mean zero above, ignore this.
+    b = inv(k'*k)*k'* y
+    B[i] = b[1]
 end
 
-# new adjusted beta
-new_beta = pinv(cov_m) * d_matrix * beta
-writedlm("new_beta.txt",new_beta)
-
-# new PRS: X * new_beta
-prs = X * new_beta
-writedlm("prs.txt",prs)
+writedlm("res_b.txt",B)
