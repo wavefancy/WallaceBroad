@@ -69,3 +69,12 @@ y
 # Calculate R2
 r2 = RsqGLM(model=lr)
 str(r2, comp.str = "")
+
+# Calculate AUC
+# https://stackoverflow.com/questions/18449013/r-logistic-regression-area-under-curve
+prob=predict(lr,type=c("response"))
+library("ROCR")
+#print(colnames(dd)[1])
+pred <- prediction(prob, dd[[colnames(dd)[1]]])
+auc.perf = performance(pred, measure = "auc")
+print(c("AUC:",auc.perf@y.values[[1]]),quote=F)
