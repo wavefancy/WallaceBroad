@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Txt2Xls.py -o oname [--rc cindex] [-d string] [--hcl color]
+        Txt2Xls.py -o oname [--rc cindex] [-d string] [--hcl color] [--hv vals]
         Txt2Xls.py -h | --help | -v | --version
 
     Notes:
@@ -19,6 +19,7 @@
         -d string      Set the column delimiter, default whitespace+. tab for '\\t'.
         --rc cindex    Format row color by the value at column 'cindex'.
         --hcl color    Set highlight line color.
+        --hv vals      Highlight by values seted, eg. val1,val2|val.
         -h --help      Show this screen.
         -v --version   Show version.
 
@@ -47,6 +48,7 @@ if __name__ == '__main__':
         rc = int(args['--rc']) -1
 
     HIGHLIGH_COLOR = args['--hcl'] if args['--hcl'] else '#cceeff'
+    VALs = set(args['--hv'].split(',')) if args['--hv'] else set()
 
     import xlsxwriter
     from xlsxwriter.utility import xl_rowcol_to_cell
@@ -71,6 +73,7 @@ if __name__ == '__main__':
         global rc_temp
         rc_temp = rc_temp + 1
         return formats[rc_temp % len(formats)]
+
     delimiter = args['-d'] if args['-d'] else None
     if delimiter and delimiter.upper() == 'TAB':
         delimiter = '\t'
@@ -87,11 +90,18 @@ if __name__ == '__main__':
             col = 0
             for x in ss:
                 if rc >= 0:  #change row color if value change.
-                    if rc_temp_value != ss[rc]:
-                        rc_temp_value = ss[rc]
-                        current_format = getFormat()
+                    if not VALs:
+                        if rc_temp_value != ss[rc]:
+                            rc_temp_value = ss[rc]
+                            current_format = getFormat()
 
-                    worksheet.write(row, col, x, current_format) #row col,
+                        worksheet.write(row, col, x, current_format) #row col,
+                    else:
+                        if ss[rc] in VALs:
+                            worksheet.write(row, col, x, format2)
+                        else:
+                            worksheet.write(row, col, x)
+
                 else:
                     worksheet.write(row, col, x) #row col,
 
