@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -19,6 +19,7 @@
         -o outname    Output file name: output.html.
         --yerr yecol  Column index for y error bar.
         --rx int      Set the angle for rotate x label.
+        --ry int      Set the angle for rotate y label.
         --xls int     Set x axit tick font size, default 12.
         --yr yrange   Set the yAxis plot range: float1,float2.
         --hl hline    Add horizontal lines: float1,float2.
@@ -91,7 +92,7 @@ if __name__ == '__main__':
     haw = 2
 
     ydt = ''
-    yrange = []
+    yrange = None
     if args['--yerr']:
         errYCol = int(args['--yerr']) -1
     if args['--yr']:
@@ -114,7 +115,8 @@ if __name__ == '__main__':
         ydt = float(args['--ydt'])
     hat = int(args['--hat']) if args['--hat'] else 12
     #angle for rotate x axis.
-    rx = int(args['--rx']) if args['--rx'] else ''
+    rx = int(args['--rx']) if args['--rx'] else None
+    ry = int(args['--ry']) if args['--ry'] else None
     xls = int(args['--xls']) if args['--xls'] else 12
     rm = int(args['--rm']) if args['--rm'] else 20
     lm = int(args['--lm']) if args['--lm'] else 50
@@ -208,6 +210,7 @@ if __name__ == '__main__':
             # autorange=True,
             showgrid=True,
             zeroline=False,
+            tickangle=ry,
             dtick=ydt,
             # gridcolor='rgb(255, 255, 255)',
             #gridwidth=1,
