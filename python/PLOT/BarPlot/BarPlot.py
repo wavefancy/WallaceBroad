@@ -6,7 +6,11 @@
     @Author: wavefancy@gmail.com
 
     Usage:
+<<<<<<< HEAD
         BarPlot.py -y ytitle -o outname [-x xtitle] [--yerr] [--yr yrange] [--xr xrange] [--ydt float] [--xdt float] [--vl vline] [--hl hline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bma bmargin] [--rma rmargin] [--bm bm] [--or or] [--gcl color] [--bcl color] [--ta tanno] [--ts int] [--lbcl color] [--xtfs int] [--ytfs int]
+=======
+        BarPlot.py -y ytitle -o outname [-x xtitle] [--yerr] [--yr yrange] [--xr xrange] [--ydt float] [--xdt float] [--vl vline] [--hl hline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bma bmargin] [--rma rmargin] [--bm bm] [--or or] [--gcl color] [--bcl color] [--ta tanno] [--ts int] [--lbcl color] [--xtfs int] [--ytfs int] [--rx int] [--ry int]
+>>>>>>> 39cc2bbafa04968a7f0e2015410c4bb27de87efd
         BarPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,6 +24,11 @@
         --yerr        Set plot y error bar, default False, input should like format 2.
         --yr yrange   Set the yAxis plot range: float1,float2.
         --xr xrange   Set the yAxis plot range: float1,float2.
+<<<<<<< HEAD
+=======
+        --rx int      Set the angle for rotate x label.
+        --ry int      Set the angle for rotate y label.
+>>>>>>> 39cc2bbafa04968a7f0e2015410c4bb27de87efd
         --hl hline    Add horizontal lines: float1,float2.
         --vl vline    Add vertical lines: float1, float2...
         --ms msize    Set marker size: float, default 5.
@@ -187,6 +196,11 @@ if __name__ == '__main__':
     if args['--lbcl']:
         legendBorderColor = args['--lbcl']
         legendBorderWidth = 1
+<<<<<<< HEAD
+=======
+    rx = int(args['--rx']) if args['--rx'] else None
+    ry = int(args['--ry']) if args['--ry'] else None
+>>>>>>> 39cc2bbafa04968a7f0e2015410c4bb27de87efd
 
     # from collections import OrderedDict
     # xdata = OrderedDict() #{categoryName -> []}
@@ -272,6 +286,10 @@ if __name__ == '__main__':
         xaxis=dict(
             dtick = xdt,
             range = xxrange,
+<<<<<<< HEAD
+=======
+            tickangle = rx,
+>>>>>>> 39cc2bbafa04968a7f0e2015410c4bb27de87efd
             tickfont=dict(
                 # color='#ff7f0e',
                 size=xtfs
@@ -286,6 +304,10 @@ if __name__ == '__main__':
             title =  ytitle,
             range = yrange,
             dtick = ydt,
+<<<<<<< HEAD
+=======
+            tickangle = ry,
+>>>>>>> 39cc2bbafa04968a7f0e2015410c4bb27de87efd
             tickfont=dict(
                 # color='#ff7f0e',
                 size=ytfs
