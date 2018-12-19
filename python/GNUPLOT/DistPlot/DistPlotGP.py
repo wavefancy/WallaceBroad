@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        DistPlotGP.py -o out -s size [-x xlabel] [--shade txt] [--vl txt] [--code] [--debug]
+        DistPlotGP.py -o out -s size [-c code] [-x xlabel] [--shade txt] [--vl txt] [--code] [--debug]
         DistPlotGP.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,8 @@
         -o out        Output file name.
         -s size       Output figure size in inch, width-height.
         -x xlabel     Set the x-label
+        -c code       Add gnuplot code, inserting position just before the plot function call.
+                        eg. 'line1::line2'
         --shade txt   Add shaing area annotation, 'left-right-color-title,left-right-color-title'.
         --vl txt      Add vertical line(s), loc-attribute. 'loc-lt 1 lw 2 lc "red",loc-lt 1 lw 2 lc "blue"'
         --code        Output code to stderr.
@@ -40,14 +42,6 @@ def ShowFormat():
     print('''
     #input:
     ------------------------
-1   2   3
-4   5   6
-
-    #output: cat in.txt | python3 BasicStatistics4Row.py -t
-    ------------------------
-Min     1%Q     25%Q    Mean    Median  75%Q    99%Q    Max     SD      SE
-1.0000  1.5000  1.5000  2.0000  2.0000  2.5000  2.9800  3.0000  0.8165  0.5774
-4.0000  4.5000  4.5000  5.0000  5.0000  5.5000  5.9800  6.0000  0.8165  0.5774
     ''');
 
 CODE_FILE = None
@@ -115,6 +109,7 @@ if __name__ == '__main__':
             VLINES.append(x.split('-'))
     fsize = args['-s'].split('-')
     XLABEL = args['-x'] if args['-x'] else None
+    CODE   = args['-c'].split('::') if args['-c'] else None
 
     CODE_FILE = tempfile.NamedTemporaryFile(mode='w',dir="./",delete=DEL_TEMP)
     DATA_FILE = tempfile.NamedTemporaryFile(mode='w',dir="./",delete=DEL_TEMP)
@@ -165,6 +160,11 @@ if __name__ == '__main__':
         w('set xlabel "%s" offset 0,0.5,0'%(XLABEL))
     # only use left and bottom border
     w('set border 3 lw 1.5')
+
+    # addittion code to insert.
+    if CODE:
+        [w(x) for x in CODE]
+
     if SHADE:
         # w("plot '%s' using (filter($1, 50, 100)):2 with filledcurves x1 lt 22 title 'T_1',\\"%(SMOOTH_FILE.name))
         x = SHADE[0];i=0
