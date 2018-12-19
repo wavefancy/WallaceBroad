@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        ScatterPlot.py -o out -s size [-c code] [-x xlabel] [-y ylabel] [-t int] [--vl txt] [--code] [--debug] [--ps float] [--lw float] [--lt int] [--pt int] [--sb]
+        ScatterPlot.py -o out -s size [-c code] [-x xlabel] [-y ylabel] [-t int] [--vl txt] [--code] [--debug] [--ps float] [--lw float] [--lt int] [--pt int] [--sb] [--sbc color]
         ScatterPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -27,6 +27,7 @@
         --pt int      Point type, default 7.
         -t int        Plot type, 1:lines+points, 2:points, 3:lines. eg. 1(default)|2|3.
         --sb          Add a smooth line by gnuplot bezier function.
+        --sbc color   Set color for bezier line, eg. #EEEEEE.
         --vl txt      Add vertical line(s), loc-attribute. 'loc-lt 1 lw 2 lc "red",loc-lt 1 lw 2 lc "blue"'
         --code        Output code to stderr.
         --debug       In debug model, keep temp files and output code to stderr.
@@ -121,6 +122,7 @@ if __name__ == '__main__':
     pt = args['--pt'] if args['--pt'] else '7'
     lt = args['--lt'] if args['--lt'] else '1'
     SMOOTH = True if args['--sb'] else None
+    B_COLOR = 'lc "' + args['--sbc'] + '"' if args['--sbc'] else ''
 
     CODE_FILE = tempfile.NamedTemporaryFile(mode='w',dir="./",delete=DEL_TEMP)
     DATA_FILE = tempfile.NamedTemporaryFile(mode='w',dir="./",delete=DEL_TEMP)
@@ -181,18 +183,21 @@ if __name__ == '__main__':
 
     # plot the figure.
     # w('plot "%s" index 0 with %s ls 90 title "%s"'%(DATA_FILE.name, plott, CATE_NAME[0]), Newline=False)
-    w('plot "%s" index 0 with %s ls 90 title "%s"'%(DATA_FILE.name, plott, CATE_NAME[0]), Newline=False)
     if SMOOTH:
+        w('plot "%s" index 0 with %s ls 90 %s notitle smooth bezier'%(DATA_FILE.name, plott, B_COLOR), Newline=False)
         w(', \\')
-        w('"%s" index 0 with %s ls 90 notitle smooth bezier'%(DATA_FILE.name, plott), Newline=False)
+        w('"" index 0 with %s ls 90 title "%s"'%(plott, CATE_NAME[0]), Newline=False)
+    else:
+        w('plot "%s" index 0 with %s ls 90 title "%s"'%(DATA_FILE.name, plott, CATE_NAME[0]), Newline=False)
 
     CATE_NAME = CATE_NAME[1:]
     for i,v in zip(range(len(CATE_NAME)), CATE_NAME):
-        w(', \\')
-        w("'' index %d with %s ls 9%d title '%s' "%(i+1, plott, i+1, v), Newline=False)
         if SMOOTH:
             w(', \\')
-            w("'' index %d with %s ls 9%d notitle smooth bezier "%(i+1, plott, i+1), Newline=False)
+            w("'' index %d with %s ls 9%d %s notitle smooth bezier "%(i+1, plott, i+1, B_COLOR), Newline=False)
+
+        w(', \\')
+        w("'' index %d with %s ls 9%d title '%s' "%(i+1, plott, i+1, v), Newline=False)
 
     CODE_FILE.flush()
     runGNUPLOT(CODE_FILE.name)
