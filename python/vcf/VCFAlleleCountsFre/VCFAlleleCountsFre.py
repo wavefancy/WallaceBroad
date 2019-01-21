@@ -51,6 +51,7 @@ if __name__ == '__main__':
 
     vcfMetaCols=9       #number of colummns for vcf meta information.
     tags = ['GT']
+    OUT_FORMAT = 'ALT_FRE'
 
     def getGeno(geno):
         '''get genotype info.'''
@@ -66,6 +67,7 @@ if __name__ == '__main__':
 
     outGenoArrayIndex = []
     def setoutGenoArrayIndex(oldFormatTags):
+        '''Check and set the tag index based in input format string.'''
         outGenoArrayIndex.clear()
         ss = oldFormatTags.upper().split(':')
         for x in tags:
@@ -76,13 +78,11 @@ if __name__ == '__main__':
                 sys.stderr.write('ERROR: can not find tag: "%s", from input vcf FORMAT field.\n'%(x))
                 sys.exit(-1)
 
-    infile = VariantFile('-', 'r')
-    #sys.stdout.write(str(infile.header))
-    sys.stdout.write('#CHROM\tPOS\tREF\tALT\tTotalCount\tAltCount\tAltFre\n')
-    for line in infile:
-        ss = str(line).strip().split()
+    def outputAlleleFrequency(ss):
+        '''Output allele frequency, in the format of:
+            #CHROM  POS     REF     ALT     TotalCount      AltCount        AltFre
+        '''
         out = ss[0:2] + ss[3:5]
-        setoutGenoArrayIndex(ss[8])
         allels = []
         for x in ss[vcfMetaCols:]:
             genotye = getGeno(x)
@@ -103,6 +103,17 @@ if __name__ == '__main__':
             sys.stdout.write('%s\t%d\t%d\tNA\n'%('\t'.join(out), ref+alt, alt))
         else:
             sys.stdout.write('%s\t%d\t%d\t%.4f\n'%('\t'.join(out), ref+alt, alt, alt*1.0/(alt + ref)))
+
+    infile = VariantFile('-', 'r')
+    #sys.stdout.write(str(infile.header))
+    sys.stdout.write('#CHROM\tPOS\tREF\tALT\tTotalCount\tAltCount\tAltFre\n')
+    for line in infile:
+        ss = str(line).strip().split()
+        setoutGenoArrayIndex(ss[8])
+
+        if OUT_FORMAT == 'ALT_FRE':
+            outputAlleleFrequency(ss)
+
 
     infile.close()
 sys.stdout.flush()
