@@ -33,6 +33,7 @@ def help():
     @Usages
     para1: individual id list file (line by line or sep. by '\t').
     para2:[-r, optional] remove individuals from the stdout.
+    para:[-i, optional] ignore those individuals can not found in vcf file.
 
     @Notes:
     1. Read VCF file from stdin and output to stdout.
@@ -50,9 +51,12 @@ class P(object):
 
 if __name__ == '__main__':
     args = []
+    IGNORE_ID = False
     for x in sys.argv:
         if x == '-r':
             P.remove =  True
+        elif x == '-i':
+            IGNORE_ID = True
         else:
             args.append(x)
 
@@ -114,9 +118,12 @@ if __name__ == '__main__':
                             ii = INDMAP[x]
                             temp_idis.append(ii)
                         except KeyError:
-                            sys.stderr.write('***Can not find individual from vcf for: %s\n'%(x))
-                            sys.stderr.write('***System exited, please check!\n')
-                            sys.exit(-1)
+                            if IGNORE_ID:
+                                sys.stderr.write('***Can not find individual from vcf for: %s\n'%(x))
+                                sys.stderr.write('***System exited, please check!\n')
+                                sys.exit(-1)
+                            else:
+                                sys.stderr.write('***WARN: Can not find individual from vcf for: %s\n'%(x))
 
                     if P.remove: #remove mode.
                         temp_idis = [x for x in range(P.skipCol, len(ss)) if x not in temp_idis]
