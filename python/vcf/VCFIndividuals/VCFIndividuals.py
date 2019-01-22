@@ -119,11 +119,11 @@ if __name__ == '__main__':
                             temp_idis.append(ii)
                         except KeyError:
                             if IGNORE_ID:
+                                sys.stderr.write('***WARN: Can not find individual from vcf for: %s\n'%(x))
+                            else:
                                 sys.stderr.write('***Can not find individual from vcf for: %s\n'%(x))
                                 sys.stderr.write('***System exited, please check!\n')
                                 sys.exit(-1)
-                            else:
-                                sys.stderr.write('***WARN: Can not find individual from vcf for: %s\n'%(x))
 
                     if P.remove: #remove mode.
                         temp_idis = [x for x in range(P.skipCol, len(ss)) if x not in temp_idis]
