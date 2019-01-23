@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol> | -a aValue) [-d delimter] [-x]
+        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol>[,default] | -a aValue) [-d delimter] [-x]
         KeyMapReplace.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,15 +17,18 @@
     Options:
         -p <key-map-pair-file>  Key value pairs, one entry one line.
                                 [1,n] columns as key, n is the number of keys '-k'.
-        -k <kcol>     Colums as key in stdin, column index starts from 1, eg 1|1,3
-        -r <rcol>     Colum to replace in stdin, column index starts from 1.
-        -a aValue     Add one column at line end, other than replace one column,
-                        add 'aValue' if no key matching.
-        -d delimter   Delimiter to split columns from stdin.
-        -x            Close output for unmatched records, default output.
-        -h --help     Show this screen.
-        -v --version  Show version.
-        -f --format   Show input/output file format example.
+        -k <kcol>               Colums as key in stdin, column index starts from 1, eg 1|1,3
+        -r <rcol>[,default]     Colum to replace in stdin, column index starts from 1.
+                                  if in '-r <rcol>' mode, change the matched records, keep other untouched.
+                                  if in <rcol>[,default] mode, change the matched, replace the unmatched as the 'default' value.
+                                     this will erase the '-x' effects, output all records.
+        -a aValue               Add one column at line end, other than replace one column,
+                                  add 'aValue' if no key matching.
+        -d delimter             Delimiter to split columns from stdin.
+        -x                      Close output for unmatched records, default output.
+        -h --help               Show this screen.
+        -v --version            Show version.
+        -f --format             Show input/output file format example.
 
 """
 import sys
@@ -36,29 +39,37 @@ signal(SIGPIPE,SIG_DFL)
 def ShowFormat():
     '''File format example'''
     print('''
-    #kv_map:
-    ------------------------
+#kv_map:
+------------------------
 2   K
 2   c
 2   a
 
-    #input:
-    ------------------------
+#input:
+------------------------
 1   a
 2   c
 3   d
 
-    #output: -p kv_map -k 1 -r 2
-    ------------------------
+#output: -p kv_map -k 1 -r 2
+------------------------
 1       a
 2       K
 3       d
 
-    #output: -p kv_map -k 1 -a aval
-    ------------------------
+#output: -p kv_map -k 1 -a aval
+------------------------
 1       a       aval
 2       c       K
 3       d       aval
+
+# cat in.txt | python3 KeyMapReplacer.py -p kv_map.txt -k 1 -r 2,DEFAULT
+------------------------
+Warning: Duplicate keys, only keep first entry. Skip: 2   c   10
+Warning: Duplicate keys, only keep first entry. Skip: 2   a   10
+1       DEFAULT 3
+2       K       10      4
+3       DEFAULT 5
           ''');
 
 if __name__ == '__main__':
@@ -107,7 +118,12 @@ if __name__ == '__main__':
 
 
     if args['-r']:
-        rcol = int(args['-r']) -1
+        pp = args['-r'].split(',')
+        rcol = int(pp[0]) -1
+        Change_Unmatched = True if len(pp) == 2 else False
+        if Change_Unmatched:
+            keep_unmatch = True
+
         for line in sys.stdin:
             line = line.strip()
             if line:
@@ -119,7 +135,11 @@ if __name__ == '__main__':
                     sys.stdout.write('%s\n'%('\t'.join(ss)))
                 else:
                     if keep_unmatch:
-                        sys.stdout.write('%s\n'%('\t'.join(ss)))
+                        if Change_Unmatched:
+                            ss[rcol] = pp[1]
+                            sys.stdout.write('%s\n'%('\t'.join(ss)))
+                        else:
+                            sys.stdout.write('%s\n'%('\t'.join(ss)))
 
     if args['-a']:
         val = [args['-a'] for x in range(n_content)]
