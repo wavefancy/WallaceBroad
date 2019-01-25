@@ -144,14 +144,21 @@ if __name__ == '__main__':
         # print(f'W: {w}')
         # print(f'w_normal {w_normal}')
         # print(f'bottom {bottom}')
-        return np.sum(top) * 1.0 / (1-np.sum(bottom))
-
+        return np.sum(top) * 1.0 / (1-np.sum(bottom)) if 1-np.sum(bottom) != 0 else None
 
     #get all variant scores
+    # Cache the boundary for permutation, only need calculate the boundary once.
+    WIN_BOUNDARY_CACHE = []
     def getAllScores(p1=p1, p2=p2, pos=pos):
         all_score = []
+        if not WIN_BOUNDARY_CACHE:
+            for i in range(0, len(p1)):
+                left, right = getWindowBoundary(i, pos, half_window_size)
+                WIN_BOUNDARY_CACHE.append((left,right))
+
         for i in range(0, len(p1)):
-            left, right = getWindowBoundary(i, pos, half_window_size)
+            # left, right = getWindowBoundary(i, pos, half_window_size)
+            left,right = WIN_BOUNDARY_CACHE[i]
             score = computingSscore(i, left, right, p1=p1, p2=p2, pos=pos)
             all_score.append(score)
 
@@ -168,17 +175,18 @@ if __name__ == '__main__':
         for i in range(P1_PERMUTE):
             np.random.shuffle(p1)
             scores = getAllScores(p1=p1, p2=p2, pos=pos)
-            resuts = pd.concat([resuts, pd.DataFrame({'scores': scores})], axis=1, ignore_index=True)
+            resuts = pd.concat([resuts, pd.DataFrame({'scores_'+str(i): scores})], axis=1, ignore_index=True)
 
     if P2_PERMUTE > 0:
         resuts = data
         for i in range(P2_PERMUTE):
             np.random.shuffle(p2)
             scores = getAllScores(p1=p1, p2=p2, pos=pos)
-            resuts = pd.concat([resuts, pd.DataFrame({'scores': scores})], axis=1, ignore_index=True)
+            resuts = pd.concat([resuts, pd.DataFrame({'scores_'+str(i): scores})], axis=1, ignore_index=True)
 
     resuts.to_string(sys.stdout,header=False, index=False)
-
+    sys.stdout.write('\n')
+    
 sys.stdout.flush()
 sys.stdout.close()
 sys.stderr.flush()
