@@ -14,6 +14,8 @@
     Notes:
         1. Read results from stdin, and output the transformed percentiles to stdout.
         2. See example by -f.
+        3. The last column is the non-missing value count from the distribution
+            to estimate the percentile.
 
     Options:
         -n ints        The first n columns to be transformed, index starts from 1.
