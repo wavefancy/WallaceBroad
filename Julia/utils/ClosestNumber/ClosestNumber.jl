@@ -2,7 +2,7 @@
 doc = """Find the closest number from a list of numbers.
 
 Usage:
-    ClosestNumber.jl -f file -c int [-t type]
+    ClosestNumber.jl -f file -c int [-t type] [-g int]
     ClosestNumber.jl -h | --help | --version
 
 Notes:
@@ -12,6 +12,7 @@ Notes:
 Options:
     -c int        Column index for data from stdin to compare with, starts from 1.
     -f file       File contains the list of numbers to search.
+    -g int        Check the closest number in sub-group. Column index in stdin for group name.
     -t type       Input data type, default Int, Int|Float64
     -h --help     Show this screen.
     --version     Show version.
@@ -26,10 +27,31 @@ args = docopt(doc, version=v"1.0")
 NUM_FILE    = args["-f"] # file name for reading numbers.
 COL_INDEX   = parse(Int, args["-c"]) # genotyping matrx, sample by genotype.
 D_TYPE      = args["-t"] == nothing ? Int : args["-t"]
+G_INDEX     = args["-g"] == nothing ? -1  : parse(Int, args["-g"])
 
-vals = readdlm(NUM_FILE,'\t',D_TYPE,'\n')
-vals = sort(vec(vals)) # convert to array and sort.
-# println(vals)
+dict = Dict{String,Array}()
+open(NUM_FILE) do file
+    for ln in eachline(file)
+        # println(ln)
+        ss = split(chomp(ln))
+        # println(ss)
+        if G_INDEX >0
+            x = tryparse(D_TYPE, ss[2])
+        else
+            x = tryparse(D_TYPE, ss[1])
+        end
+        # println("OK")
+        if x != nothing
+            g  = G_INDEX > 0 ? ss[1] : "G"
+            if haskey(dict, g) == false
+                dict[g] = Vector{D_TYPE}([])
+            end
+            push!(dict[g],x)
+        end
+    end
+end
+[sort!(dict[k]) for k in keys(dict)]
+# println(dict)
 
 #read data from stdin
 # read and streaming https://docs.julialang.org/en/v1/manual/networking-and-streams/index.html
@@ -37,10 +59,13 @@ for line in eachline(stdin)
     ss = split(chomp(line))
     # print(ss[COL_INDEX])
     x = tryparse(D_TYPE, ss[COL_INDEX])
+    g  = G_INDEX > 0 ? ss[G_INDEX] : "G"
+
     # print(x)
-    if x == nothing
+    if x == nothing || haskey(dict, g)==false
         println(join(vcat(ss, "FAIL"), "\t"))
     else
+        vals = dict[g]
         pos = searchsorted(vals, x)
         # print(repr(pos)*"---")
         # in reverse order if can not find the elements.
