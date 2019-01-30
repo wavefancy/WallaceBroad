@@ -64,15 +64,17 @@ if __name__ == '__main__':
         if line:
             ss = line.split()
             try:
-                vals = [float(x) for x in ss if x != MISSING]
+                # vals = ss
+                data = [x for x in ss[N_COL:] if x != MISSING]
+                data = [float(x) for x in data]
+                d    = [float(x) for x in ss[:N_COL]]
 
-                data = vals[N_COL:]
-                out = [stats.percentileofscore(data,x) for x in vals[:N_COL]]
-                out = ['%.4f'%(x) for x in out]
+                out = [stats.percentileofscore(data,x) for x in d]
+                out = ['%.4f'%(x) for x in out] + [str(len(data))]
 
                 sys.stdout.write('%s\n'%("\t".join(out)))
             except Exception as e:
-                sys.stdout.write('%s\n'%('\t'.join(["PERCENTILE"]*N_COL)))
+                sys.stdout.write('%s\n'%('\t'.join(["PERCENTILE"]*(N_COL+1))))
 
 sys.stdout.flush()
 sys.stdout.close()
