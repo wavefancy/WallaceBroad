@@ -8,7 +8,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        PercentilesByRow.py -n ints
+        PercentilesByRow.py -n ints [-m txt]
         PercentilesByRow.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
 
     Options:
         -n ints        The first n columns to be transformed, index starts from 1.
+        -m txt         Set the missing values, default NA.
         -h --help      Show this screen.
         -v --version   Show version.
         -f --format    Show input/output file format example.
@@ -55,6 +56,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     N_COL = int(args['-n'])
+    MISSING = args['-m'] if args['-m'] else 'NA'
 
     from scipy import stats
     for line in sys.stdin:
@@ -62,7 +64,7 @@ if __name__ == '__main__':
         if line:
             ss = line.split()
             try:
-                vals = [float(x) for x in ss]
+                vals = [float(x) for x in ss if x != MISSING]
 
                 data = vals[N_COL:]
                 out = [stats.percentileofscore(data,x) for x in vals[:N_COL]]
