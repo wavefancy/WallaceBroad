@@ -48,7 +48,7 @@ for line in eachline(stdin)
         n_start = pos.start > length(vals) ? length(vals) : pos.start
 
         if n_start == n_stop
-            println(join(vcat(ss, vals[n_stop]), "\t"))
+            println(join(vcat(ss, repr(vals[n_stop])), "\t"))
         else
             # println(pos)
             if abs(vals[n_start] - x) < abs(vals[n_stop] -x)
@@ -56,7 +56,7 @@ for line in eachline(stdin)
             else
                 out = vals[n_stop]
             end
-            println(join(vcat(ss, out), "\t"))
+            println(join(vcat(ss, repr(out)), "\t"))
         end
     end
 end
