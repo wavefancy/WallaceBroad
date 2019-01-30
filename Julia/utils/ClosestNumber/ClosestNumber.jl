@@ -26,8 +26,20 @@ args = docopt(doc, version=v"1.0")
 # println(args["-b"])
 NUM_FILE    = args["-f"] # file name for reading numbers.
 COL_INDEX   = parse(Int, args["-c"]) # genotyping matrx, sample by genotype.
-D_TYPE      = args["-t"] == nothing ? Int : args["-t"]
+TYPE        = args["-t"] == nothing ? "Int" : args["-t"]
 G_INDEX     = args["-g"] == nothing ? -1  : parse(Int, args["-g"])
+
+# println(TYPE)
+# D_TYPE = nothing
+if TYPE == "Int"
+    D_TYPE = Int
+elseif TYPE == "Float64"
+    D_TYPE = Float64
+else
+    println(stderr, "Please set a proper value for -t, Int|Float64")
+    exit(-1)
+end
+# println(D_TYPE)
 
 dict = Dict{String,Array}()
 open(NUM_FILE) do file
