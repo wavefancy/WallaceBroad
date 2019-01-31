@@ -8,7 +8,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        PercentilesByRow.py -n ints
+        PercentilesByRow.py -n int
         PercentilesByRow.py -h | --help | -v | --version | -f | --format
 
     Notes:
