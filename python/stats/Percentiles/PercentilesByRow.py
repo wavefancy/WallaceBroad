@@ -8,15 +8,18 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        PercentilesByRow.py -n int
+        PercentilesByRow.py -n ints [-m txt]
         PercentilesByRow.py -h | --help | -v | --version | -f | --format
 
     Notes:
         1. Read results from stdin, and output the transformed percentiles to stdout.
         2. See example by -f.
+        3. The last column is the non-missing value count from the distribution
+            to estimate the percentile.
 
     Options:
         -n ints        The first n columns to be transformed, index starts from 1.
+        -m txt         Set the missing values, default NA.
         -h --help      Show this screen.
         -v --version   Show version.
         -f --format    Show input/output file format example.
@@ -55,6 +58,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     N_COL = int(args['-n'])
+    MISSING = args['-m'] if args['-m'] else 'NA'
 
     from scipy import stats
     for line in sys.stdin:
@@ -62,15 +66,17 @@ if __name__ == '__main__':
         if line:
             ss = line.split()
             try:
-                vals = [float(x) for x in ss]
+                # vals = ss
+                data = [x for x in ss[N_COL:] if x != MISSING]
+                data = [float(x) for x in data]
+                d    = [float(x) for x in ss[:N_COL]]
 
-                data = vals[N_COL:]
-                out = [stats.percentileofscore(data,x) for x in vals[:N_COL]]
-                out = ['%.4f'%(x) for x in out]
+                out = [stats.percentileofscore(data,x) for x in d]
+                out = ['%.4f'%(x) for x in out] + [str(len(data))]
 
                 sys.stdout.write('%s\n'%("\t".join(out)))
             except Exception as e:
-                sys.stdout.write('%s\n'%('\t'.join(["PERCENTILE"]*N_COL)))
+                sys.stdout.write('%s\n'%('\t'.join(["PERCENTILE"]*(N_COL+1))))
 
 sys.stdout.flush()
 sys.stdout.close()
