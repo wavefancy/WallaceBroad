@@ -1,2 +1,4 @@
 cat test.txt | Rscript logisticRegression.R
 
+# add option for testing iteraction term.
+cat test.txt | Rscript logisticRegression.R lot1*lot2

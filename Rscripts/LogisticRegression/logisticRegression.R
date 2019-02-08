@@ -1,5 +1,28 @@
 #!/usr/bin/env Rscript
 
+# Rscript ~/Rscripts/logisticRegression.R [interactions]
+
+# Do logistic regression by R, possible add interaction terms by the first parameter.
+# [interactions] example: T1*T2,T3*T4 | T1*T2
+#------------------------------
+# Read data from stdin, auto generate formula based on input title.
+# The basic model regress the first(0/1) binary variables to all the other input as covariates.
+# Add interaction term thereafter by parameter1.
+
+# Output results to stdout.
+# @Wallace Wang, wavefancy@gmail.com
+#------------------------------
+
+#library(GenABEL)
+
+args <- commandArgs(TRUE)
+inter = c()
+if(length(args) == 1){
+    inter = unlist(strsplit(args[1],','))
+}
+# col = as.numeric(args[1])
+
+
 ## Calculate of Nagelkerke R2.
 ## Do logistic regression, output summary statistics and also several correlation metrics.
 ## Read data with header from stdin, and output results to stdout.
@@ -52,7 +75,7 @@ RsqGLM <- function(obs = NULL, pred = NULL, model = NULL) {
 dd = read.table(file("stdin"),header = T)
 # https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables
 # auto convert the colnames as formula.
-form = sub('\\+','~',paste(colnames(dd), collapse = '+'))
+form = sub('\\+','~',paste(c(colnames(dd),inter), collapse = '+'))
 
 print("FORMULA:")
 print(form)
