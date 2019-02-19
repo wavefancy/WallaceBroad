@@ -7,14 +7,17 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        FitFunc.py
+        FitFunc.py [-p]
         FitFunc.py -h | --help | -v | --version | -f | --format
 
     Notes:
         1. Read from stdin and output to stdout.
+            The fitted coefficient, a, b, c and the intercept of x of
+            the tangent line at the point of (y=0) for the fitted curve.
         2. Output results from stdout.
 
     Options:
+        -p            Generate predicted values based on the fitting function to stderr.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -31,29 +34,6 @@ def ShowFormat():
     '''Input File format example:'''
     print('''
 #input example
-------------------------
-Y 1  2  3  4  3  4  5  4  5  5  4  5  4  5  4  5  6  5  4  5  4  3  4
-T 4  2  3  4  5  4  5  6  7  4  8  9  8  8  6  6  5  5  5  5  5  5  5
-M 4  1  2  3  4  5  6  7  5  8  7  8  7  8  7  8  7  7  7  7  7  6  5
-K 4  1  2  5  6  7  8  9  7  8  7  8  7  7  7  7  7  7  6  6  4  4  4
-
-#cat test.txt | wcut -f2- | python3 PCA.py -n 3
-------------------------
-ExplainedVar    0.5660  0.2364  0.1976
-Sample  PC1     PC2     PC3
-0       5.5742e+00      -1.4207e+00     1.0485e+00
-1       7.9032e-01      3.3549e+00      -2.0023e+00
-2       -3.4264e+00     8.5029e-01      2.9886e+00
-3       -2.9381e+00     -2.7845e+00     -2.0348e+00
-
-#cat test.txt | wcut -f2- | python3 PCA.py -n 3
-------------------------
-ExplainedVar    0.5660  0.2364  0.1976
-Sample  PC0     PC1     PC2
-Y       5.5742e+00      -1.4207e+00     1.0485e+00
-T       7.9032e-01      3.3549e+00      -2.0023e+00
-M       -3.4264e+00     8.5029e-01      2.9886e+00
-K       -2.9381e+00     -2.7845e+00     -2.0348e+00
     ''');
 
 if __name__ == '__main__':
@@ -69,6 +49,15 @@ if __name__ == '__main__':
     def func(x, a, b, c):
         return a * np.exp(-x / b) + c
 
+    def deriv(x, a, b, c):
+        '''Compute the derivative of f at the point of x'''
+        # http://math-physics-problems.wikia.com/wiki/Graphing_Tangent_Lines_with_Python
+        h = 0.000000001                 #step-size
+        y1 = func(x, a, b, c)
+        y2 = func(x+h, a, b, c)
+        # return (f(x+h) - f(x))/h        #definition of derivative
+        return (y2-y1)/h        #definition of derivative
+
     data = []
     for line in sys.stdin:
         line = line.strip()
@@ -80,12 +69,30 @@ if __name__ == '__main__':
             except Exception as e:
                 pass
 
-    sys.stdout.write('a\tb\tc\n')
+    sys.stdout.write('a\tb\tc\tInterceptX_Y=0\n')
     data = np.array(data)
+    f_vals = [] # [] fitted values of each fitted func.
+    f_vals.append(data[:,0])
     # print(data)
     for i in range(1,len(data[0,:])):
         popt, pcov = curve_fit(func, data[:,0], data[:,i])
-        sys.stdout.write('%s\n'%('\t'.join(['%.4e'%(x) for x in popt])))
+        out = [x for x in popt]
+
+        #compute the intercept point of x when Y = 0
+        #(y-y1)/(x-x1) = slop
+        x = (0 - func(0,popt[0],popt[1],popt[2]))/deriv(0, popt[0],popt[1],popt[2]) + 0
+        out.append(x)
+
+        sys.stdout.write('%s\n'%('\t'.join(['%.4e'%(x) for x in out])))
+
+        if args['-p']:
+            fv = [func(x,popt[0],popt[1],popt[2]) for x in data[:,0]]
+            f_vals.append(fv)
+
+    if args['-p']:
+        f_vals = np.array(f_vals).T
+        for y in f_vals:
+            sys.stderr.write('%s\n'%('\t'.join(['%.4e'%(x) for x in y])))
 
 sys.stdout.flush()
 sys.stdout.close()
