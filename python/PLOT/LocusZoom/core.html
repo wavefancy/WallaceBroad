@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Necessary includes for LocusZoom.js -->
+    <!-- <script src="../dist/locuszoom.vendor.min.js" type="text/javascript"></script>
+    <script src="../dist/locuszoom.app.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="../dist/locuszoom.css" type="text/css"/> -->
+
+    <!--Dynamically fetch from server-->
+    <script src="https://statgen.github.io/locuszoom/versions/0.9.0/locuszoom.vendor.min.js" type="text/javascript"></script>
+    <script src="https://statgen.github.io/locuszoom/versions/0.9.0/locuszoom.app.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://statgen.github.io/locuszoom/versions/0.9.0/locuszoom.css" type="text/css"/>
+
+    <title>MY_LocusZoom.js ~ Minimal Example</title>
+  </head>
+
+  <body>
+    <p>SNP_ID information</p>
+    <!--
+      This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
+      special data-attribute. See other examples for alternative ways to specify the region using JavaScript.
+    -->
+    <div id="lz-plot" data-region="1:150010660-151010660"></div>
+    <div id="lz-plot-2" data-region="1:150010660-151010660"></div>
+    <div id="lz-plot-3" data-region="1:150010660-151010660"></div>
+
+    <script type="application/javascript">
+      "use strict";
+
+      // First, tell the plot how to find each kind of data it will use. By default, it fetches a specific dataset
+      //   from a UMich API, using a set of data sources that obey a specific URL format and payload structure.
+      // If your API has different URL syntax, or needs to reformat data from the server before giving it to LZ.js,
+      //   you can write a custom datasource.
+      var apiBase = "https://portaldev.sph.umich.edu/api/v1/";
+      var mydata = "../staticdata/assoc_10_114550452-115067678.json?"
+      var mydata_local="./json.CAD-1-150510660.json?"
+      var data_sources = new LocusZoom.DataSources()
+        //.add("assoc", ["AssociationLZ", {url: apiBase + "statistic/single/", params: { source: 45, id_field: "variant" }}])
+        //.add("assoc", ["AssociationLZ", {url: apiBase + "assoc_10_114550452-115067678.json?", params: {analysis: 3, id_field: "variant"}}])
+
+        //make use of local data.
+        .add("assoc", ["AssociationLZ", {url: mydata_local, params: {analysis: 3, id_field: "variant"}}])
+        .add("ld", ["LDLZ2", { url: "https://portaldev.sph.umich.edu/ld/" }])
+        .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/" }])
+        .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/" }])
+        .add("constraint", ["GeneConstraintLZ", { url: "http://exac.broadinstitute.org/api/constraint" }]);
+
+      var data_sources_2 = new LocusZoom.DataSources()
+        //make use of local data.
+        .add("assoc", ["AssociationLZ", {url: "./json.MIG-1-150510660.json?", params: {analysis: 3, id_field: "variant"}}])
+        .add("ld", ["LDLZ2", { url: "https://portaldev.sph.umich.edu/ld/",params: {source: '1000G', build: 'GRCh37', population: 'ALL'} }])
+        .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/" }])
+        .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/" }])
+        .add("constraint", ["GeneConstraintLZ", { url: "http://exac.broadinstitute.org/api/constraint" }]);
+
+      // Second, specify what kind of information to display. This demo uses a pre-defined set of panels with common
+      //   display options, and tells all annotation tracks to auto-select data for a specific build
+      var layout = LocusZoom.Layouts.get("plot", "standard_association", { state: { genome_build: 'GRCh37' } });
+
+      // Wallace: define my own panel for show specific content.
+      var layout_asso_only = {
+            width: 800,
+            height: 500,
+            panels: [
+              LocusZoom.Layouts.get("panel", "association", { id: "assoc" }),
+            ],
+            state: { genome_build: 'GRCh37' }
+          };
+      var layout_gene_only = {
+            width: 800,
+            height: 200,
+            panels: [
+              LocusZoom.Layouts.get("panel", "genes", { id: "gene" }),
+            ],
+            state: { genome_build: 'GRCh37' }
+          };
+
+      // Last, draw the plot in the div created in the HTML above.
+      //   Using window.x ensures that a reference to the plot is available via the JS console for debugging
+      var plot1 = LocusZoom.populate("#lz-plot", data_sources, layout_asso_only);
+      plot1.
+      window.plot = LocusZoom.populate("#lz-plot-2", data_sources_2, layout_asso_only);
+      window.plot = LocusZoom.populate("#lz-plot-3", data_sources, layout_gene_only);
+    </script>
+  </body>
+</html>
