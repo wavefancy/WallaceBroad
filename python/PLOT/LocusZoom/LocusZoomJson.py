@@ -13,6 +13,7 @@
     Notes:
         1. Read data from stdin, and output to stdout.
         2. Input as 5 colums: CHR POS REF ALT P_Value
+        3. Set the minimal P values as 1e-80.
 
     Options:
         -h --help     Show this screen.
@@ -71,7 +72,9 @@ if __name__ == '__main__':
         data_map['refAlleleFreq'].append('null')
         data_map['ref_allele'].append(ref)
         data_map['pvalue'].append(p)
-        data_map['log_pvalue'].append(-1.0*numpy.log10(float(p)))
+        pp = float(p)
+        pp = pp if pp > 1e-80 else 1e-80
+        data_map['log_pvalue'].append(-1.0*numpy.log10(pp))
         data_map['scoreTestStat'].append('null')
 
     for line in sys.stdin:
