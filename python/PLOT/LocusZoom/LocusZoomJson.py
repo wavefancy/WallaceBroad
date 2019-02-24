@@ -66,7 +66,8 @@ if __name__ == '__main__':
         data_map['analysis'].append(3)
         data_map['variant'].append(chr+':'+pos+'_'+ref+'/'+alt)
         data_map['chr'].append(chr)
-        data_map['position'].append(pos)
+        # it's very import to make the pos as int, otherwise the linkage with not work.
+        data_map['position'].append(int(pos))
         data_map['refAlleleFreq'].append('null')
         data_map['ref_allele'].append(ref)
         data_map['pvalue'].append(p)
