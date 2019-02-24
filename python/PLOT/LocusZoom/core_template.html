@@ -16,14 +16,18 @@
   </head>
 
   <body>
-    <p>CAD-MIG-LDL-TG-SCZ</p>
+    <!-- <p>CAD-MIG-LDL-TG-SCZ</p> -->
     <!--
       This div is used by LocusZoom to draw the plot. In this example, the plot region is specified as a
       special data-attribute. See other examples for alternative ways to specify the region using JavaScript.
     -->
-    <!-- <div id="lz-plot-0" data-region="1:150010660-151010660"></div>
-    <div id="lz-plot-1" data-region="1:150010660-151010660"></div>
-    <div id="lz-plot-2" data-region="1:150010660-151010660"></div> -->
+    <!-- <div style="height:0px;margin-left: 350px;top:20px;z-index:1000;position:relative;">CAD</div>
+    <div id="lz-plot" data-region="1:150010660-151010660"></div>
+    <div style="height:0px;margin-left: 350px;top:20px;z-index:1000;position:relative;">MIG</div>
+    <div id="lz-plot-2" data-region="1:150010660-151010660"></div>
+    <div id="lz-plot-3" data-region="1:150010660-151010660"></div> -->
+    <!-- the apply for add vertical line will cause error, use this panel to hidden the error message -->
+    <!-- <div id="lz-plot-error" data-region="1:150010660-151010660" style="display:none"></div> -->
     __out_region__
 
     <script type="application/javascript">
@@ -81,6 +85,32 @@
       // window.plot = LocusZoom.populate("#lz-plot", data_sources, layout_asso_only);
       // window.plot = LocusZoom.populate("#lz-plot-2", data_sources_2, layout_asso_only);
       // window.plot = LocusZoom.populate("#lz-plot-3", data_sources, layout_gene_only);
+      // define the vertical line.
+      var vertical = {
+            id: 'focal_snp',
+            type: 'orthogonal_line',
+            orientation: 'vertical',
+            // offset: 150510660,
+            style: {
+                    'stroke': 'orange',
+                    'stroke-width': '3px',
+                    'stroke-dasharray': '10px 10px'
+                },
+            x_axis: {
+                axis: 1,
+                decoupled: true
+            },
+            y_axis: {
+                axis: 1,
+                decoupled: true
+            }
+      }
+      // vertical['offset'] =  150510660
+      __vertical_line__
+      // the layer for hadle error.
+      var plot_error = LocusZoom.populate("#lz-plot-error", data_sources_0, layout_asso_only);
+      plot_error.panels.assoc.addDataLayer(vertical);
+
       __out_plot__
 
     </script>

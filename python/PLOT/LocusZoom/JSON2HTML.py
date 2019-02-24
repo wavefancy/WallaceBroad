@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        JSON2HTML.py -r txt -j files
+        JSON2HTML.py -r txt -j files [-t titles]
         JSON2HTML.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,7 +16,8 @@
 
     Options:
         -r txt        Specify the region to plot.
-        -j files      Jsons files to show in the plot.
+        -j files      Jsons files to show in the plot. eg. file1,file2.
+        -t titles     Association panlel titles. eg. text1,text2.
 
         -h --help     Show this screen.
         -v --version  Show version.
@@ -52,14 +53,17 @@ if __name__ == '__main__':
 
     region = args['-r']
     jsons = args['-j'].split(',')
-
+    titles = args['-t'].split(',') if args['-t'] else ['' for x in jsons]
 
     # <div id="lz-plot-0" data-region="1:150010660-151010660"></div>
     # <div id="lz-plot-1" data-region="1:150010660-151010660"></div>
     # <div id="lz-plot-2" data-region="1:150010660-151010660"></div>
     out_region = []
-    for i in range(len(jsons)+1):
-        out_region.append('<div id="lz-plot-%d" data-region="%s"></div>'%(i, region))
+    for i in range(len(jsons)):
+        out_region.append('<div style="height:0px;margin-left: 350px;top:20px;z-index:1000;position:relative;">%s</div><div id="lz-plot-%d" data-region="%s"></div>'%(titles[i],i, region))
+    out_region.append('<div id="lz-plot-%d" data-region="%s"></div>'%(len(jsons), region))
+    # the layer for handle error.
+    out_region.append('<div id="lz-plot-error" data-region="%s" style="display:none"></div>'%(region))
 
     # var data_sources_2 = new LocusZoom.DataSources()
     #     .add("assoc", ["AssociationLZ", {url: "./json.MIG-1-150510660.json?", params: {analysis: 3, id_field: "variant"}}])
@@ -84,12 +88,17 @@ if __name__ == '__main__':
         out_plot.append('window.plot = LocusZoom.populate("#lz-plot-%d", data_sources_%d, layout_asso_only);'%(i,i))
     i = len(jsons)
     out_plot.append('window.plot = LocusZoom.populate("#lz-plot-%d", data_sources_0, layout_gene_only);'%(i))
-
+    # vertical['offset'] =  150510660
+    pos = region.split(':')[1].split('-')
+    pos = [int(x) for x in pos]
+    vertical = "vertical['offset'] =  %d"%(sum(pos)/2) #vertical line right in the middle.
     with open(basehtml,'r') as bf:
         for line in bf:
             line = line.replace('__out_region__','\n'.join(out_region))
             line = line.replace('__out_resources__','\n'.join(out_resources))
             line = line.replace('__out_plot__','\n'.join(out_plot))
+            line = line.replace('__vertical_line__',vertical)
+
             sys.stdout.write('%s'%(line))
 
 sys.stdout.flush()
