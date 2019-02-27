@@ -23,6 +23,10 @@
         -v --version  Show version.
         -f --format   Show input/output file format example.
 
+    REF:
+        1. API: http://portaldev.sph.umich.edu/docs/api/v1/#introduction
+        2. HOME: http://statgen.github.io/locuszoom/index.html?chrom=10&start=114550452&end=115067678
+
 """
 import sys
 import json
@@ -71,12 +75,14 @@ if __name__ == '__main__':
     #     .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/" }])
     #     .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/" }])
     #     .add("constraint", ["GeneConstraintLZ", { url: "http://exac.broadinstitute.org/api/constraint" }]);
+    # LD population: params: { source: '1000G', population: 'ALL' }
+    # params: { source: '1000G', population: 'EUR' }, use European LD structure.
     out_resources = []
     for i,j in zip(range(len(jsons)),jsons):
         out_resources.append('''var data_sources_'''+str(i)+''' = new LocusZoom.DataSources()
     .add("assoc", ["AssociationLZ", {url: "'''+j+'''?", params: {analysis: 3, id_field: "variant"}}])
-    .add("ld", ["LDLZ2", { url: "https://portaldev.sph.umich.edu/ld/" }])
-    .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/" }])
+    .add("ld", ["LDLZ2", { url: "https://portaldev.sph.umich.edu/ld/", params: { source: '1000G', population: 'EUR' }}])
+    .add("gene", ["GeneLZ", { url: apiBase + "annotation/genes/"}])
     .add("recomb", ["RecombLZ", { url: apiBase + "annotation/recomb/results/" }])
     .add("constraint", ["GeneConstraintLZ", { url: "http://exac.broadinstitute.org/api/constraint" }]);''')
 
