@@ -40,8 +40,8 @@ line2
 
 #output: -t 10 -m 5 -c 3 -n test
 ------------------------
-qsub -cwd -l h_rt=10:0:0 -l h_vmem=5g -pe smp 3 -binding linear:3 -N test_1 -b y 'line1'
-qsub -cwd -l h_rt=10:0:0 -l h_vmem=5g -pe smp 3 -binding linear:3 -N test_2 -b y 'line2'
+qsub -cwd -j y -l h_rt=10:0:0 -l h_vmem=5g -pe smp 3 -binding linear:3 -N test_1 -b y 'line1'
+qsub -cwd -j y -l h_rt=10:0:0 -l h_vmem=5g -pe smp 3 -binding linear:3 -N test_2 -b y 'line2'
     ''');
 
 if __name__ == '__main__':
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         if line:
             temp += 1
             #sys.stdout.write("qsub -cwd -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -q %s -b y bash -c '%s'\n"
-            sys.stdout.write("qsub -cwd -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y '%s'\n"
+            sys.stdout.write("qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y '%s'\n"
                 %(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,line))
 
 sys.stdout.flush()

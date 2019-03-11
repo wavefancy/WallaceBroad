@@ -1,17 +1,20 @@
 //"use strict";
+// example debug:
+// phantomjs --debug=true --local-to-remote-url-access=true --web-security=no ~/scripts/js/rasterize.js http://www.google.com google.png 1920px
+
 var page = require('webpage').create(),
     system = require('system'),
     address, output, size;
     dpi = 72;  //this constant factor can't be change.
+    //page.settings.resourceTimeout=6000
 
 if (system.args.length < 3 || system.args.length > 5) {
-    console.log('Usage: rasterize.js URL filename [paperwidth*paperheight|paperformat] [notes]');
+    console.log('Usage: rasterize.js URL filename [paperwidth*paperheight|paperformat] [zoom]');
     console.log('  paper (pdf output) examples: "5in*7.5in", "10cm*20cm", "A4", "Letter"');
     console.log('  image (png/jpg output) examples: "1920px" entire page, window width 1920px');
     console.log('                                   "800px*600px" window, clipped to 800x600');
     phantom.exit(1);
 } else {
-
     address = system.args[1];
     output = system.args[2];
     page.viewportSize = { width: 600, height: 600 };
@@ -40,51 +43,23 @@ if (system.args.length < 3 || system.args.length > 5) {
             page.viewportSize = { width: pageWidth, height: pageHeight };
        }
     }
-
-    mynotes = "";
     if (system.args.length > 4) {
-        var mynotes = system.args[4];
+        page.zoomFactor = system.args[4];
     }
     page.open(address, function (status) {
-        // console.log(mynotes);
         if (status !== 'success') {
             console.log('Unable to load the address!');
             phantom.exit(1);
         } else {
-            //add notes, wavefancy@gmail.com
-            if (mynotes.length > 0) {
-                var ua = page.evaluate(function(note) {
-                    // var node = document.querySelector(".plot-container");
-                    // var textnode = document.createTextNode("Water");         // Create a text node
-                    //     node.appendChild(textnode);
-
-                    var x = document.createElement("p"); // Create a <p> node
-                    //blue notes.
-                    var t = document.createTextNode("Notes: ");    // Create a text node
-                    var d = document.createElement("span")
-                        d.appendChild(t);
-                        d.setAttribute("style", "color: 02C6FA;");
-                        x.setAttribute("style", "font-size:12;color:#2C3E50;padding-top:10px;");
-                        x.appendChild(d)
-
-                    // text from the paramter.
-                    var m = document.createTextNode(note);    // Create a text node
-                        x.appendChild(m);
-
-                    // Append the text to <p>
-                    document.body.appendChild(x);
-
-                    // return node.childElementCount;
-                    // return document.documentElement.outerHTML;
-                }, mynotes);
-            };
-            // console.log(ua);
-            // fs.write('test.html', ua, 'w');
-
             window.setTimeout(function () {
                 page.render(output);
                 phantom.exit();
             }, 200);
+            // Fix the problem of:
+            // 2019-02-25T14:28:49 [DEBUG] Network - Resource request error: QNetworkReply::NetworkError(OperationCanceledError) ( "Operation canceled" ) URL: "http://10.200.102.68:8000/json/json.SCZ-1-150510660.json?results/?filter=analysis%20in%203%20and%20chromosome%20in%20%20'1'%20and%20position%20ge%20150010660%20and%20position%20le%20151010660"
+            // Ref: https://github.com/ariya/phantomjs/issues/12750
+            // jo-37's solution.
+            // }, 60000);
         }
     });
 }
