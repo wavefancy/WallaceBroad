@@ -537,6 +537,8 @@ if __name__ == '__main__':
             if len(y) == 5:
                 cc = y[4]
 
+            # set the layer of elements.
+            # https://github.com/plotly/plotly.js/issues/923
             ab_data.append(
                 {
                     'type': 'line',
@@ -545,11 +547,12 @@ if __name__ == '__main__':
                     'y0': y[1],
                     'x1': y[2],
                     'y1': y[3],
+                    'layer': 'below',
                     'line': {
                         'color': cc,
                         #'color': 'rgba(0, 0, 0, 0.5)',
                         'width': 2,
-                        # 'dash': 'dashdot',
+                        'dash': 'dashdot'
                     }
                 }
             )
@@ -587,10 +590,15 @@ if __name__ == '__main__':
             # showgrid = True,
             showline = True,
             ticks =  'outside',
-            # showticklabels = True,
+            showticklabels = True,
             title = ytitle,
             zeroline = False,
-            titlefont=dict(size=titlefontsize)
+            titlefont=dict(size=titlefontsize),
+            tickfont = {
+                #family: 'Courier New, monospace',
+                'size': tickfontsize,
+                #color: '#7f7f7f'
+            }
         )
     )
     layout.update(yupdate)
