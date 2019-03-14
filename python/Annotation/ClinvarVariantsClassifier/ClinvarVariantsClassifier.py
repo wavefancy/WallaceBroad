@@ -12,7 +12,7 @@
 
     Notes:
         1. Read data from stdin, and output results to stdout.
-        2. Parse the 'INFO' field. Make classification as PATHOGENIC/BENIGN/NA(something else)
+        2. Parse the 'INFO' field. Make classification as PATHOGENIC(damvar)/BENIGN(exclude)/NA(something else)
 
     Options:
         -h --help     Show this screen.
@@ -46,6 +46,7 @@ if __name__ == '__main__':
     indata = False
     INFO_COL = 7 # The column for INFO.
 
+    #:::: This is copy from Mark's definition.
     #include in the damaging if it has this annotation (pathogenic)
     include = ['Pathogenic','Pathogenic/Likely_pathogenic','Pathogenic/Likely_pathogenic,_risk_factor','Pathogenic,_risk_factor',
                'Pathogenic,_drug_response','Pathogenic,_other','Pathogenic,_protective','Pathogenic,_Affects','Pathogenic/Likely_pathogenic,_other',
