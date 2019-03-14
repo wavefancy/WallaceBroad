@@ -1,0 +1,12 @@
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+##INFO=<ID=SpliceAI,Number=.,Type=String,Description="SpliceAIv1.2.1 variant annotation. These include delta scores (DS) and delta positions (DP) for acceptor gain (AG), acceptor loss (AL), donor gain (DG), and donor loss (DL). Format: ALLELE|SYMBOL|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL">
+#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO
+1       861255  .       A       G       .       .       SpliceAI=G|SAMD11|0.01|0.02|0.01|0.00|47|23|138|23
+1       861255  .       A       C       .       .       SpliceAI=C|SAMD11|0.01|0.01|0.01|0.02|23|47|87|-75
+1       861261  .       G       A       .       .       SpliceAI=A|SAMD11|0.01|0.01|0.00|0.00|17|41|-116|-81
+1       861265  .       C       T       .       .       SpliceAI=T|SAMD11|0.01|0.02|0.00|0.01|13|37|-85|-120,T|AL645608.1|0.00|0.01|0.00|0.00|184|437|184|305
+1       861265  .       C       A       .       .       SpliceAI=A|SAMD11|0.03|0.03|0.01|0.02|37|13|128|-85,A|AL645608.1|0.00|0.00|0.00|0.00|71|437|228|281
+1       861265  .       C       T       .       .       SpliceAI=T|SAMD11|0.01|0.02|0.00|0.01|13|37|-85|-120,T|AL645608.1|0.00|0.01|0.00|0.00|184|437|184|305
