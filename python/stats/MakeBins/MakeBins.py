@@ -95,12 +95,13 @@ if __name__ == '__main__':
 
     OK_Data = [x for x in COL_Data if x]
     if args['--en']:
-        labels = pandas.qcut(OK_Data, NBINS, labels=False)
+        labels = pandas.qcut(OK_Data, NBINS, labels=False, duplicates='drop')
+        # labels = pandas.qcut(OK_Data, NBINS, labels=False)
     elif args['--es']:
         labels = pandas.cut(OK_Data, bins=NBINS, labels=False)
 
     index = 0
-    labels = [str(x) for x in labels]
+    labels = [str(x+1) for x in labels]
     for d,c in zip(data, COL_Data):
         out = []
         if c:
