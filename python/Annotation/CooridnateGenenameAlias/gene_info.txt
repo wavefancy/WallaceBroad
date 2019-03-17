@@ -1,0 +1,6 @@
+#tax_id GeneID  Symbol  LocusTag        Synonyms        dbXrefs chromosome      map_location
+9606    1       A1BG    -       A1B|ABG|GAB|HYST2477    MIM:138670|HGNC:HGNC:5|Ensembl:ENSG0
+9606    2       A2M     -       A2MD|CPAMD5|FWP007|S863-7
+9607	3 	A	-	A|B
+9608	4	B	-	C
+9609	5	D	-	-
