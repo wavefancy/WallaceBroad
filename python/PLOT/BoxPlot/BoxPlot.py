@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -38,6 +38,7 @@
         --cl colors   Set the colors of the box plot, eg: '#1F77B4::#2B9D2B'.
         --ydt float   Set the tick distance on y axis.
         --c2          Set the input data format as 2 columns format.
+        --yt txt      Tranform the scale of y, default no. Support: log.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -120,6 +121,8 @@ if __name__ == '__main__':
     xls = int(args['--xls']) if args['--xls'] else 12
     rm = int(args['--rm']) if args['--rm'] else 20
     lm = int(args['--lm']) if args['--lm'] else 50
+    transformY = args['--yt'] if args['--yt'] else "" #tranform the scale of y.
+
 
     format2 = True if args['--c2'] else False
 
@@ -207,6 +210,7 @@ if __name__ == '__main__':
         #title='Points Scored by the Top 9 Scoring NBA Players in 2012',
         yaxis=dict(
             title=ytitle,
+            type=transformY,
             # autorange=True,
             showgrid=True,
             zeroline=False,
