@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        qsubHelper.py [-t int] [-m int] [-c int] [-n string]
+        qsubHelper.py [-t int] [-m int] [-c int] [-n string] [-f]
         qsubHelper.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,9 +20,10 @@
                          The actual memory loaded is [-c] * [-m], also depending
                          on the number of cpus requested.
         -n string     Set job name, default 'name'.
+        -f            Put commands to files and return the commands for run from file.
         -h --help     Show this screen.
         -v --version  Show version.
-        -f --format   Show input/output file format example.
+        --format   Show input/output file format example.
 
 """
 import sys
@@ -45,7 +46,7 @@ qsub -cwd -j y -l h_rt=10:0:0 -l h_vmem=5g -pe smp 3 -binding linear:3 -N test_2
     ''');
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='1.0')
+    args = docopt(__doc__, version='1.1')
     #print(args)
 
     if(args['--format']):
@@ -71,8 +72,17 @@ if __name__ == '__main__':
         if line:
             temp += 1
             #sys.stdout.write("qsub -cwd -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -q %s -b y bash -c '%s'\n"
-            sys.stdout.write("qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y '%s'\n"
-                %(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,line))
+            if args['-f']:
+                fn = "%s_%d.bash"%(N_NAME, temp)
+                with open(fn,'w') as ofile:
+                    ofile.write('%s\n'%(line))
+
+                out = "qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y '%s'\n"%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,"bash ./"+fn)
+
+            else:
+                out = "qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y '%s'\n"%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,line)
+
+            sys.stdout.write(out)
 
 sys.stdout.flush()
 sys.stdout.close()
