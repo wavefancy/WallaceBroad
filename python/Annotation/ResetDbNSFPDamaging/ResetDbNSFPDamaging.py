@@ -94,7 +94,7 @@ def ShowFormat():
 #MutationTaster_pred: D/A; A=DiseaseCausingAutomatic; D=DiseaseCausing
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='1.0')
+    args = docopt(__doc__, version='2.0')
     #print(args)
 
     if(args['--format']):
