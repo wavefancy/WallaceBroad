@@ -14,3 +14,11 @@ cat inv4.txt | python3 KeyMapReplacer.py -p kv_map4.txt -k 1 -r 2 -d ';'
 #1       NA      3
 #2;4     K;NA    4
 #3;2     NA;K    5
+
+# Warn out unmatched results to stderr.
+cat in.txt | python3 KeyMapReplacer.py -p kv_map4.txt -k 1 -r 2 -w -x
+#Warning: Duplicate keys, only keep first entry. Skip: 2   c
+#Warning: Duplicate keys, only keep first entry. Skip: 2   a
+#W_NOMATCH: 1    a       3
+#2       K       4
+#W_NOMATCH: 3    d       5
