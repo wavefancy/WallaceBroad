@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -28,6 +28,7 @@
         --rm int      Right margin, default 20.
         --lm int      left margin, default 50.
         --over        Overlap dot with box.
+        --nobox       Hidden box, only show dots.
         --ha hanno    Add horizontal line annotation with text.
                         foramt: x1_x2_y_text,x1_x2_y_text.
                         Example: 1_2_0.5_**
@@ -104,6 +105,10 @@ if __name__ == '__main__':
         msize = float(args['--ms'])
     if args['--over']:
         overBoxDot = True
+    # only show dots, no show box.
+    DOTS_ONLY = True if args['--nobox'] else False
+    if DOTS_ONLY:
+        overBoxDot = False
     if args['--bm']:
         bmargin = int(args['--bm'])
     if args['--ha']:
@@ -191,20 +196,41 @@ if __name__ == '__main__':
                     line=dict(width=1),
                 ))
             else:
-                traces.append(go.Box(
-                    y=yd,
-                    name=xd,
-                    boxpoints='all',
-                    jitter=0.5,
-                    whiskerwidth=0.2,
-                    #fillcolor=cls,
-                    marker=dict(
-                        size=msize,
-                        color = cls
-                    ),
-                    line=dict(width=1),
-                ))
+                if DOTS_ONLY:
+                    # https://codepen.io/etpinard/pen/NaVreM?editors=0010
+                    traces.append(go.Box(
+                        y=yd,
+                        name=xd,
+                        boxpoints='all',
+                        whiskerwidth=0.2,
+                        fillcolor='rgba(0,0,0,0)',
+                        line= dict(color='rgba(0,0,0,0)'),
+                        marker=dict(
+                            size=msize,
+                            color = cls
+                        ),
+                        # line=dict(width=1),
+                    ))
+                else:
+                    traces.append(go.Box(
+                        y=yd,
+                        name=xd,
+                        boxpoints='all',
+                        jitter=0.5,
+                        whiskerwidth=0.2,
+                        #fillcolor=cls,
+                        marker=dict(
+                            size=msize,
+                            color = cls
+                        ),
+                        line=dict(width=1),
+                    ))
 
+    ticktext=''
+    tickvals=''
+    if DOTS_ONLY:
+        ticktext = x_data
+        tickvals = [-0.3 + x for x in range(0,len(x_data))]
     # print(yrange)
     layout = go.Layout(
         #title='Points Scored by the Top 9 Scoring NBA Players in 2012',
@@ -224,6 +250,10 @@ if __name__ == '__main__':
         ),
         xaxis=dict(
             ticks='outside',
+            # tickvals=[-0.3,0.7],
+            # ticktext=['c1','c2'],
+            tickvals=tickvals,
+            ticktext=ticktext,
             showline=True,
             tickangle=rx,
             tickfont=dict(
