@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Txt2MarkdownTable.py [--rb int]
+        Txt2MarkdownTable.py [--rb int] [-n]
         Txt2MarkdownTable.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,6 +16,7 @@
 
     Options:
         --rb int      Make row as bold format, 1 based. ex. 1|1,3.
+        -n            Set no title line.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -68,7 +69,10 @@ if __name__ == '__main__':
             return str.ljust
         elif cell.endswith(":") and not cell.startswith(":"):
             return str.rjust
-        return str.center
+        elif cell.endswith(":") and cell.startswith(":"):
+            return str.center
+        else:
+            return str.ljust
 
 
     # For "cleaned" table entries:
@@ -76,8 +80,9 @@ if __name__ == '__main__':
     for x in rb:
         rows[x] = ['**'+x+'**' for x in rows[x]]
 
-    #add the second align rows, set default left align.
-    rows = [rows[0]] + [[':---' for x in rows[0]]] + rows[1:]
+    #add the second align rows, set default left align. if no -n specified.
+    if not args['-n']:
+        rows = [rows[0]] + [[':---' for x in rows[0]]] + rows[1:]
     # print(rows)
 
     # Max length of each "entry" is what we'll use

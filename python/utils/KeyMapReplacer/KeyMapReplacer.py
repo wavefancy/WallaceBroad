@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol>[,default] | -a aValue) [-d delimter] [-x]
+        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol>[,default] | -a aValue) [-d delimter] [-x] [-w]
         KeyMapReplace.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -26,6 +26,7 @@
                                   add 'aValue' if no key matching.
         -d delimter             Delimiter to split columns from stdin.
         -x                      Close output for unmatched records, default output.
+        -w                      Warning out unmatched records to stderr.
         -h --help               Show this screen.
         -v --version            Show version.
         -f --format             Show input/output file format example.
@@ -99,6 +100,7 @@ if __name__ == '__main__':
     kcols = [int(x) -1 for x in args['-k'].split(',')]
 
     keep_unmatch = False if args['-x'] else True
+    warn_unmatch = True  if args['-w'] else False
 
     #read key-value pairs
     kv_map = {}
@@ -141,6 +143,9 @@ if __name__ == '__main__':
                         else:
                             sys.stdout.write('%s\n'%('\t'.join(ss)))
 
+                    if warn_unmatch:
+                        sys.stderr.write('W_NOMATCH: %s\n'%('\t'.join(ss)))
+
     if args['-a']:
         val = [args['-a'] for x in range(n_content)]
         for line in sys.stdin:
@@ -154,6 +159,8 @@ if __name__ == '__main__':
                 else:
                     if keep_unmatch:
                         sys.stdout.write('%s\t%s\n'%('\t'.join(ss), '\t'.join(val)))
+                    if warn_unmatch:
+                        sys.stderr.write('W_NOMATCH: %s\t%s\n'%('\t'.join(ss), '\t'.join(val)))
 
 sys.stdout.flush()
 sys.stdout.close()
