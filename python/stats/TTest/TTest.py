@@ -50,11 +50,13 @@ if __name__ == '__main__':
     LABEL = False
     equalVar = False
 
+    title=['PVALUE','T_STATISTICS']
     if args['-l']:
         LABEL = True
+        title = ['GROUP_NAME1','GROUP_NAME2'] + title
     if args['-e']:
         equalVar = True
-
+    sys.stdout.write('%s\n'%('\t'.join(title)))
 #-------------------------------------------------
     from scipy import stats
     for line in sys.stdin:
