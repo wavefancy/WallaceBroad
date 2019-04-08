@@ -46,7 +46,7 @@ qsub -cwd -j y -l h_rt=10:0:0 -l h_vmem=5g -pe smp 3 -binding linear:3 -N test_2
     ''');
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='1.1')
+    args = docopt(__doc__, version='1.2')
     #print(args)
 
     if(args['--format']):
@@ -77,10 +77,10 @@ if __name__ == '__main__':
                 with open(fn,'w') as ofile:
                     ofile.write('%s\n'%(line))
 
-                out = "qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y '%s'\n"%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,"bash ./"+fn)
+                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,"bash ./"+fn)
 
             else:
-                out = "qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y '%s'\n"%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,line)
+                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,line)
 
             sys.stdout.write(out)
 
