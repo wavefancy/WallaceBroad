@@ -59,7 +59,11 @@ if __name__ == '__main__':
 
         #set missing value to ref.
         geno = list(geno) # str to list.
-        geno[0] = '0' if geno[0] == '.' else geno[0]
+        # expand x chromosome to homo. the genotye on chrX were coded as 0 or 1 as one haplotype, not two haplotypes.
+        if len(geno) ==1:
+            geno = [geno[0],'/',geno[0]]
+
+        geno[0] = '0 ' if geno[0] == '.' else geno[0]
         geno[2] = '0' if geno[2] == '.' else geno[2]
 
         return geno
