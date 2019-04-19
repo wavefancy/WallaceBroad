@@ -62,7 +62,7 @@ if __name__ == '__main__':
     # additional options we will add in.
     addition = ''
     if args['--os']:
-        addition += ('-l ' + args['--os'])
+        addition += ('-l os=' + args['--os'])
 
     temp = 0
     for line in sys.stdin:
