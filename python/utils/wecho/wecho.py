@@ -19,7 +19,7 @@
     Options:
         -d string     Replace default pair comment delimter(%%) as 'string'.
         -l string     String for declearing a linecomment, default '#' or '//'.
-        -b string     String for linebreaker, start a new line after these characters, default !.
+        -b string     String for linebreaker, start a new line after these characters, default !!.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     commentDelimeter = '%%'
     # linecomment = '//'
     linecomment = '#'
-    linebreaker = '!'
+    linebreaker = '!!'
 
     if args['-d']:
         commentDelimeter = args['-d']

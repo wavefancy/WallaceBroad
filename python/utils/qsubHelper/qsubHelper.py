@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        qsubHelper.py [-t int] [-m int] [-c int] [-n string] [-f]
+        qsubHelper.py [-t int] [-m int] [-c int] [-n string] [-f] [--os name]
         qsubHelper.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,6 +20,7 @@
                          The actual memory loaded is [-c] * [-m], also depending
                          on the number of cpus requested.
         -n string     Set job name, default 'name'.
+        --os name     Set up the os class name, default no set, eg. RedHat7
         -f            Put commands to files and return the commands for run from file.
         -h --help     Show this screen.
         -v --version  Show version.
@@ -57,15 +58,12 @@ if __name__ == '__main__':
     N_MEM  = args['-m'] if args['-m'] else '2'
     N_HOUR = args['-t'] if args['-t'] else '2'
     N_NAME = args['-n'] if args['-n'] else 'name'
-    # QUEUE  = 'long'
-    #
-    # if args['-q']:
-    #     if args['-q'] not in ['long','short']:
-    #         sys.stderr.write('ERROR: unsupported queue, please check! input queue name: %s\n'%(args['-q']))
-    #         sys.exit(-1)
-    #     QUEUE = args['-q']
 
-    # qsub -l h_rt=10:0:0 -l h_vmem=10g -pe smp 2 -binding linear:2 -b y bash -c 'command line'
+    # additional options we will add in.
+    addition = ''
+    if args['--os']:
+        addition += ('-l os=' + args['--os'])
+
     temp = 0
     for line in sys.stdin:
         line = line.strip()
@@ -77,10 +75,10 @@ if __name__ == '__main__':
                 with open(fn,'w') as ofile:
                     ofile.write('%s\n'%(line))
 
-                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,"bash ./"+fn)
+                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d %s -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,addition,"bash ./"+fn)
 
             else:
-                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,line)
+                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d %s -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,addition,line)
 
             sys.stdout.write(out)
 
