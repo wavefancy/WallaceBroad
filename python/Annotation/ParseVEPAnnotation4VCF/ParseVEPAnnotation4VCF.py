@@ -25,12 +25,16 @@ import sys
 from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE, SIG_DFL)
+import codecs
+if sys.stdout.encoding != 'UTF-8':
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+if sys.stderr.encoding != 'UTF-8':
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
 def ShowFormat():
     '''Input File format example:'''
     print('''
-
-    ''');
+    ''')
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
