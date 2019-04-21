@@ -47,7 +47,7 @@ def ShowFormat():
     # header1
     chr1 1
     chr2 2
-          ''');
+''')
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
