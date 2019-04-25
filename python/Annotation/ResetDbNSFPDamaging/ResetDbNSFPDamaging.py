@@ -26,11 +26,18 @@ import sys
 from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE, SIG_DFL)
+import codecs
+if sys.stdout.encoding != 'UTF-8':
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+if sys.stderr.encoding != 'UTF-8':
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+if sys.stdin.encoding  != 'UTF-8':
+    sys.stdin = codecs.getreader('utf-8')(sys.stdin.buffer, 'strict')
 
 def ShowFormat():
     '''Input File format example:'''
     print('''
-    ''');
+    ''')
 
 # dbNSFP 3.5a ReadMe, variant classification
 # https://drive.google.com/file/d/0B60wROKy6OqcNGJ2STJlMTJONk0/view

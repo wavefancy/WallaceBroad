@@ -2,7 +2,7 @@
 
 """
 
-    Combine SAM files.
+    Combine VCF files (in put as gz or flat text files).
     @Author: wavefancy@gmail.com
 
     Usage:
@@ -21,8 +21,13 @@
 
 """
 import sys
+import codecs
 from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
+if sys.stdout.encoding != 'UTF-8':
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+if sys.stderr.encoding != 'UTF-8':
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
 def ShowFormat():
     '''File format example'''
@@ -42,7 +47,7 @@ def ShowFormat():
     # header1
     chr1 1
     chr2 2
-          ''');
+''')
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
@@ -58,13 +63,15 @@ if __name__ == '__main__':
         if f.endswith('.gz'):
             files.append(gzip.open(f, 'rt'))
         else:
-            files.append(open(f,'r'))
+            #files.append(open(f,'r'))
+            files.append(open(f,'r',encoding="utf-8"))
 
     for line in files[0]:
         line = line.strip()
         if line:
             sys.stdout.write('%s\n'%(line))
 
+    # sys.stdout.reconfigure(encoding='utf-8')
     for file in files[1:]:
         for line in file:
             line = line.strip()
