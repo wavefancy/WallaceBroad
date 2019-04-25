@@ -20,11 +20,7 @@
                         eg. v1|v1,v2. v1,v2 add two columns, split values by ','
         -t text       The title for the new insertting column(s).
                         eg. t1|t1,t2. Split values by ','. len(-t) == len(-v).
-<<<<<<< HEAD
-        -e ints       Using the existing columns as the content for the new column.
-=======
         -e ints       Using the Existing columns as the content for the new column.
->>>>>>> 5c632ee071f1edc7753d62a306ccb2e46e6da729
                         eg. 1|1,3. ints for the column index, based on input file, 1 based.
                         Copied columns were concatenated by ':'.
         -i int        Add index value for each row, index start from 'int'.
