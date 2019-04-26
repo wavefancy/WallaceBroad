@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     # iris = data.iris()
     data = pd.read_csv(sys.stdin, header=0, delimiter='\s+')
-    print(data)
+    # print(data)
     paras = dict(x=x,y=y)
     if color:
         paras['color'] = color
