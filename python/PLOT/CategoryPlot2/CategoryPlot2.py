@@ -99,15 +99,15 @@ if __name__ == '__main__':
     vlines = []
     msize = 5
     # lm = 50
-    lm = ''  #left margins
+    lm = None  #left margins
     bm = 40
     clrClm = ''  #value column for parse point color.
-    xtickangle = ''
+    xtickangle = None
 
-    yrange = []
+    yrange = None
     ydt = '' # Distance between y ticks.
     xdt = '' # Distance between x ticks.
-    Xrange = []
+    Xrange = None
     groupAnnotation = {} # groupname -> {color:red, ms:2, ..}
     if args['--yerr']:
         errYCol = int(args['--yerr']) -1
@@ -200,14 +200,14 @@ if __name__ == '__main__':
     if args['--cms']:
         cms = int(args['--cms']) -1
 
-    font = args['--font'] if args['--font'] else ''
+    font = args['--font'] if args['--font'] else None
 
     # https://plot.ly/python/axes/
     # change x ticks
     #ticktext=labels,
     #tickvals=[i * step for i in range(len(labels))]
-    xticktext = ''
-    xtickvals = ''
+    xticktext = None
+    xtickvals = None
 
     from collections import OrderedDict
     xdata = OrderedDict() #{categoryName -> []}
@@ -581,27 +581,46 @@ if __name__ == '__main__':
         h = {'shapes':alllines}
         layout.update(h)
 
-    yupdate = go.Layout(
-        yaxis=dict(
-            dtick = ydt, # '' empty string means auto ticks
-            # autotick = True,
-            mirror  = myMirror,
-            range   =yrange,
-            # showgrid = True,
-            showline = True,
-            ticks =  'outside',
-            showticklabels = True,
-            title = ytitle,
-            zeroline = False,
-            titlefont=dict(size=titlefontsize),
-            tickfont = {
-                #family: 'Courier New, monospace',
-                'size': tickfontsize,
-                #color: '#7f7f7f'
-            }
-        )
+    # yupdate = go.Layout(
+    #     yaxis=dict(
+    #         dtick = ydt, # '' empty string means auto ticks
+    #         # autotick = True,
+    #         mirror  = myMirror,
+    #         range   =yrange,
+    #         # showgrid = True,
+    #         showline = True,
+    #         ticks =  'outside',
+    #         showticklabels = True,
+    #         title = ytitle,
+    #         zeroline = False,
+    #         titlefont=dict(size=titlefontsize),
+    #         tickfont = {
+    #             #family: 'Courier New, monospace',
+    #             'size': tickfontsize,
+    #             #color: '#7f7f7f'
+    #         }
+    #     )
+    # )
+    yudict = dict(
+        dtick = ydt, # '' empty string means auto ticks
+        # autotick = True,
+        mirror  = myMirror,
+        range   =yrange,
+        # showgrid = True,
+        showline = True,
+        ticks =  'outside',
+        showticklabels = True,
+        title = ytitle,
+        zeroline = False,
+        titlefont=dict(size=titlefontsize),
+        tickfont = {
+            #family: 'Courier New, monospace',
+            'size': tickfontsize,
+            #color: '#7f7f7f'
+        }
     )
-    layout.update(yupdate)
+    # layout.update(yupdate)
+    layout['yaxis'] = yudict
     #output the last one
     plotly.offline.plot({'data': plotData,'layout': layout}
          ,show_link=False
