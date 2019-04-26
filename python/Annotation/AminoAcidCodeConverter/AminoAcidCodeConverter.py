@@ -58,6 +58,7 @@ if __name__ == '__main__':
     NO_TITLE  = False if args['-t'] else True
     CONVERT31 = False if args['--13'] else True
     # https://stackoverflow.com/questions/12760271/how-do-i-convert-the-three-letter-amino-acid-codes-to-one-letter-code-with-pytho
+    # http://www.fao.org/3/y2775e/y2775e0e.htm
     d31 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
      'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
      'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
