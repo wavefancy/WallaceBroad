@@ -126,7 +126,7 @@ if __name__ == '__main__':
     xls = int(args['--xls']) if args['--xls'] else 12
     rm = int(args['--rm']) if args['--rm'] else 20
     lm = int(args['--lm']) if args['--lm'] else 50
-    transformY = args['--yt'] if args['--yt'] else "" #tranform the scale of y.
+    transformY = args['--yt'] if args['--yt'] else 'linear' #tranform the scale of y.
 
 
     format2 = True if args['--c2'] else False
@@ -226,8 +226,8 @@ if __name__ == '__main__':
                         line=dict(width=1),
                     ))
 
-    ticktext=''
-    tickvals=''
+    ticktext=None
+    tickvals=None
     if DOTS_ONLY:
         ticktext = x_data
         tickvals = [-0.3 + x for x in range(0,len(x_data))]
