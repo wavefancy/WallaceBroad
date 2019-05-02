@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -29,6 +29,7 @@
         --lm int      left margin, default 50.
         --over        Overlap dot with box.
         --nobox       Hidden box, only show dots.
+        --nooutliers  Turn on the --over option, and hidden outliers.
         --ha hanno    Add horizontal line annotation with text.
                         foramt: x1_x2_y_text,x1_x2_y_text.
                         Example: 1_2_0.5_**
@@ -105,10 +106,16 @@ if __name__ == '__main__':
         msize = float(args['--ms'])
     if args['--over']:
         overBoxDot = True
+        overBoxDot_points = 'outliers'
     # only show dots, no show box.
     DOTS_ONLY = True if args['--nobox'] else False
     if DOTS_ONLY:
         overBoxDot = False
+    # overlay box and dots, and hidden outliers.
+    if args['--nooutliers']:
+        overBoxDot = True
+        overBoxDot_points = False
+
     if args['--bm']:
         bmargin = int(args['--bm'])
     if args['--ha']:
@@ -187,6 +194,7 @@ if __name__ == '__main__':
                 traces.append(go.Box(
                     y=yd,
                     name=xd,
+                    boxpoints=overBoxDot_points,
                     whiskerwidth=0.2,
                     #fillcolor=cls,
                     marker=dict(
