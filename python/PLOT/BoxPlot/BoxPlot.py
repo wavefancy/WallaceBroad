@@ -106,15 +106,17 @@ if __name__ == '__main__':
         msize = float(args['--ms'])
     if args['--over']:
         overBoxDot = True
-        overBoxDot_points = 'outliers'
+        outliers_opacity = 1
     # only show dots, no show box.
     DOTS_ONLY = True if args['--nobox'] else False
     if DOTS_ONLY:
         overBoxDot = False
     # overlay box and dots, and hidden outliers.
+    # This is just a workaround, may suffer change later on.
+    # https://github.com/plotly/plotly.js/issues/1953
     if args['--nooutliers']:
         overBoxDot = True
-        overBoxDot_points = False
+        outliers_opacity = 0
 
     if args['--bm']:
         bmargin = int(args['--bm'])
@@ -194,12 +196,14 @@ if __name__ == '__main__':
                 traces.append(go.Box(
                     y=yd,
                     name=xd,
-                    boxpoints=overBoxDot_points,
+                    # boxpoints=overBoxDot_points,
+                    boxpoints='outliers',
                     whiskerwidth=0.2,
                     #fillcolor=cls,
                     marker=dict(
                         size=msize,
-                        color = cls
+                        color = cls,
+                        opacity = outliers_opacity
                     ),
                     line=dict(width=1),
                 ))
