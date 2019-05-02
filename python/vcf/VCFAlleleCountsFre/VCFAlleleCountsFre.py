@@ -21,9 +21,13 @@
         -c txt          Specify statistics to calculate,
                           default: ALT_FRE: calculate alt allele frequency.
                            option: GP_GENO: genotype count based on imputation GP.
+                                   GT_GENO: genotype count based on GT field.
         -h --help       Show this screen.
         -v --version    Show version.
         -f --format     Show format example.
+    Caution:
+        1. For multi-allelic sites, the HET count may be not appropriate.
+           Currently, the the HET is as allele1 != allele2.
 """
 import sys
 from docopt import docopt
@@ -48,6 +52,14 @@ chr2    13649   G       C       4       1       0.2500
 1       16141   C       T       3.000   0.000   0.000
 1       16280   T       C       3.000   0.000   0.000
 1       49298   T       C       0.363   1.360   1.277
+
+# gzcat test1.vcf.gz | python3 VCFAlleleCountsFre.py -c GT_GENO
+#CHROM  POS     REF     ALT     COUNT_0/0       COUNT_0/1       COUNT_1/1       MISSING
+chr1    13273   G       T       0       0       2       1
+chr1    13289   CCT     C       2       0       0       1
+chr1    13417   C       CGAGA   0       0       1       2
+chr1    13649   G       C       1       1       0       1
+chr2    13649   G       C       1       1       0       1
     ''');
 
 if __name__ == '__main__':
@@ -64,7 +76,7 @@ if __name__ == '__main__':
     vcfMetaCols=9       #number of colummns for vcf meta information.
     tags = ['GT']
     OUT_FORMAT = 'ALT_FRE'
-    if args['-c'] and args['-c'] not in ['ALT_FRE', 'GP_GENO']:
+    if args['-c'] and args['-c'] not in ['ALT_FRE', 'GP_GENO', 'GT_GENO']:
         sys.stderr.write('PLEASE set a proper value for "-c"!\n')
         sys.exit(-1)
 
@@ -72,6 +84,11 @@ if __name__ == '__main__':
         OUT_FORMAT = 'GP_GENO'
         tags = ['GP']
         sys.stdout.write('#CHROM\tPOS\tREF\tALT\tCOUNT_0/0\tCOUNT_0/1\tCOUNT_1/1\n')
+
+    if args['-c'] == 'GT_GENO':
+        OUT_FORMAT = 'GT_GENO'
+        tags = ['GT']
+        sys.stdout.write('#CHROM\tPOS\tREF\tALT\tCOUNT_0/0\tCOUNT_0/1\tCOUNT_1/1\tMISSING\n')
 
     if OUT_FORMAT == 'ALT_FRE':
         sys.stdout.write('#CHROM\tPOS\tREF\tALT\tTotalCount\tAltCount\tAltFre\n')
@@ -90,7 +107,7 @@ if __name__ == '__main__':
 
     outGenoArrayIndex = []
     def setoutGenoArrayIndex(oldFormatTags):
-        '''Check and set the tag index based in input format string.'''
+        '''Check and set the tag index based on input format string.'''
         outGenoArrayIndex.clear()
         ss = oldFormatTags.upper().split(':')
         for x in tags:
@@ -134,10 +151,36 @@ if __name__ == '__main__':
         for x in ss[vcfMetaCols:]:
             values.append([float(t) for t in getGeno(x).split(',')])
 
+        # Column sum for genotye count 00 01 and 11.
         count = np.sum(np.array(values), axis=0)
         [out.append('%.3f'%(x)) for x in count]
         sys.stdout.write('%s\n'%('\t'.join(out)))
 
+    def outputGTGenotype(ss):
+        '''output genotype counts based on GT tag'''
+        out = ss[0:2] + ss[3:5]
+
+        REF_HOMO = 0
+        HET = 0
+        ALT_HOMO = 0
+        MISS = 0
+        for x in ss[vcfMetaCols:]:
+            genotype = getGeno(x)
+            if genotype[0] == '.':
+                MISS += 1
+                continue
+
+            if genotype[0] == genotype[2]:
+                if genotype[0] == '0':
+                    REF_HOMO += 1
+                else:
+                    ALT_HOMO += 1
+            else:
+                HET += 1
+
+        sys.stdout.write('%s\t%d\t%d\t%d\t%d\n'%('\t'.join(out), REF_HOMO, HET, ALT_HOMO, MISS))
+
+    # Start file reading from here.
     infile = VariantFile('-', 'r')
     #sys.stdout.write(str(infile.header))
     for line in infile:
@@ -148,6 +191,8 @@ if __name__ == '__main__':
             outputAlleleFrequency(ss)
         elif OUT_FORMAT == 'GP_GENO':
             outputGPGenotype(ss)
+        elif OUT_FORMAT == 'GT_GENO':
+            outputGTGenotype(ss)
 
     infile.close()
 sys.stdout.flush()
