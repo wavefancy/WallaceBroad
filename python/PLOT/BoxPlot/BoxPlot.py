@@ -29,7 +29,7 @@
         --lm int      left margin, default 50.
         --over        Overlap dot with box.
         --nobox       Hidden box, only show dots.
-        --nooutliers  Turn on the --over option, and hidden outliers.
+        --nooutliers  Turn on the --over option, and hidden outliers, the Whiskers as the min/max.
         --ha hanno    Add horizontal line annotation with text.
                         foramt: x1_x2_y_text,x1_x2_y_text.
                         Example: 1_2_0.5_**
