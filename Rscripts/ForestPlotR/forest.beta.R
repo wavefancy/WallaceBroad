@@ -11,11 +11,11 @@ library(metafor)
 
 
 #http://www.cookbook-r.com/Graphs/Output_to_a_file/
-pdf("plots.pdf", width=6, height=3.2)
+pdf("plots-TG.pdf", width=6, height=3.2)
 ### decrease margins so the full space is used
 par(mar=c(4,4,1,2))
 
-data=read.table("data.txt",header = T,sep = '\t')
+data=read.table("data.beta.txt",header = T,sep = '\t')
 
 # Specify study group.
 # slab	optional vector with labels for the k studies.
@@ -70,38 +70,41 @@ yrows
 # the y position for put each labels.
 ylables
 
+
 #col_pos_4data_cols = c(-7.5,-6,-3,-1.5)
 # by is the length between columns, the last number is teh sift from 0
 # ****** Control the column width behaviours here ******
-col_width = 2.8
-shift_left = 1.5
-label_width = 4.8
-XRIGHT = 6
+col_width = 80
+shift_left = 100
+label_width = 100
+left_data = data[,2]
+dim1_left_data = 1 #dim(left_data)[1]
+XRIGHT = 150   # The right end of the plot data.
 # ************************
 
-col_pos_4data_cols = rev( seq(0,by=col_width * - 1.0,length.out = 4) - shift_left )
+col_pos_4data_cols = rev( seq(0,by=col_width * - 1.0,length.out = dim1_left_data) - shift_left )
 XLEFT = col_pos_4data_cols[1] - label_width
 # we use the Forest Plots (Default Method) for specify the size and variance(CI) by our self.
-#forest(res,
-forest(x=data[,6],ci.lb = data[,7], ci.ub = data[,8], slab= data[,1],
-       xlim=c(XLEFT, XRIGHT),
-       #at=log(c(0.5, 1, 3, 8)),
-       at = c(0,1,2),
+#forest(res, 
+forest(x=data[,3], sei = data[,4], slab= data[,1],
+       xlim=c(XLEFT, XRIGHT), 
+       #at=log(c(0.5, 1, 3, 8)), 
+       at = seq(-50,50,by=10),
        #atransf=exp,
        #atransf=log,
        #The 4 columns for listing scores.
        #ilab=cbind(data$t.case, data$t.ctrl, data$r.case, data$r.ctrl),
-       ilab = data[,2:5],
+       ilab = left_data,
        # important change ylim from ylim=c(-1, 20) to ylim=c(0.5, 20) to hidden the summary information.
-       #ilab.xpos=c(-7.5,-6,-3,-1.5), cex=0.75,
-       ilab.xpos=col_pos_4data_cols, cex=0.75,
+       #ilab.xpos=c(-7.5,-6,-3,-1.5), cex=0.75, 
+       ilab.xpos=col_pos_4data_cols, cex=0.75, 
        #ylim=c(0.5, 26),
        ylim=c(0.5, YLIM),
        #rows, specify the position on Y for result to put.
        #rows=c(1:4,7:10,13:16,19:22),
        rows=rev(yrows),
        #col=fpColors(box="royalblue",line="darkblue", summary="royalblue"),
-       xlab="Odds Ratio", psize=1)
+       xlab="Beta", psize=1)
 
 op <- par(cex=0.75, font=3)
 ### add text for the subgroups, text, x y location.
@@ -115,10 +118,10 @@ text(XLEFT, rev(ylables), pos=4, unique(data$GROUP))
 par(font=2)
 ### add column headings to the plot, top limit is 26.
 #text(c(-7.5,-6,-3,-1.5), 25, c("Case", "Control", "Case", "Control"))
-text(col_pos_4data_cols , YLIM-1, colnames(data)[2:5])
+text(col_pos_4data_cols , YLIM-1, colnames(data)[2])
 #GROUP NAMEs for the columns of 2:3, 4:5
 #text(c(-6.65,-2.15),      YLIM, c("Top percentile", "Remainder population"))
 text(XLEFT,               YLIM-1, colnames(data)[1],  pos=4)
-text(XRIGHT,              YLIM-1, "Odds Ratio [95% CI]", pos=2)
+text(XRIGHT,                   YLIM-1, "Beta [95% CI]", pos=2)
 
 dev.off()
