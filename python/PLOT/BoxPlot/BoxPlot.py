@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers] [--atext txt] [--atr int]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -31,12 +31,17 @@
         --nobox       Hidden box, only show dots.
         --nooutliers  Turn on the --over option, and hidden outliers, the Whiskers as the min/max.
         --ha hanno    Add horizontal line annotation with text.
-                        foramt: x1_x2_y_text,x1_x2_y_text.
+                        format: x1_x2_y_text,x1_x2_y_text.
                         Example: 1_2_0.5_**
                         Each category for the box plot with x-coordinate as 0,1,2...n-1.
         --ady ady     Set the distance between horizontal annotation line and text (default 0.025).
         --haw float   Set the horizontal annotation line with, default 2.
-        --hat int     Set the horizontal annotation font size, default 12.
+        --hat int     Set the (horizontal or text) annotation font size, default 12.
+        --atext txt   Add text annotations to the boxplot.
+                        format: x1_y1_text,x2_y2_text.
+                        Example: 1_0.5_**,
+                        Each category for the box plot with x-coordinate as 0,1,2...n-1.
+        --atr int     Set the annotation text rotation angle.
         --cl colors   Set the colors of the box plot, eg: '#1F77B4::#2B9D2B'.
         --ydt float   Set the tick distance on y axis.
         --c2          Set the input data format as 2 columns format.
@@ -136,7 +141,8 @@ if __name__ == '__main__':
     rm = int(args['--rm']) if args['--rm'] else 20
     lm = int(args['--lm']) if args['--lm'] else 50
     transformY = args['--yt'] if args['--yt'] else 'linear' #tranform the scale of y.
-
+    TextAnno = args['--atext'] if args['--atext'] else False
+    TextAnnoRotation = int(args['--atr']) if args['--atr'] else 0
 
     format2 = True if args['--c2'] else False
 
@@ -339,6 +345,33 @@ if __name__ == '__main__':
                     # axref='x',
                     # ax=float(ss[0])+1,
                     # ay=0
+                ))
+
+    # add text annotation
+    if TextAnno:
+        for x in TextAnno.split(','):
+            ss = x.split('_')
+            x1 = float(ss[0])
+            y  = float(ss[1])
+            t  = ss[2]
+
+            # draw Font text.
+            # https://plot.ly/python/reference/#layout-annotations
+            annoArray.append(dict(
+                    x=x1,
+                    y=y,
+                    xref='x',
+                    yref='y',
+                    #yref='paper',
+                    text=t, textangle = TextAnnoRotation,valign='bottom',align='left',
+                    xanchor='center',
+                    showarrow=False,
+                    arrowhead=0,
+                    arrowcolor=annoColor,
+                    font=dict(
+                        color= annoColor,
+                        size = hat,
+                    ),
                 ))
 
     annoLayout = go.Layout(
