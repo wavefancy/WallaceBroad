@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt]
+        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt] [--hhist]
         DistributionPlotV2.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -28,6 +28,7 @@
         --yr yrange   Set the yAxis plot range: float1,float2,
                       *** Please set this parameter to fix the bug of two horizontal lines for xAxis.
         --nc          Do not display fitting curve.
+        --hhist       Do not display histnorm bar, default show.
         --hl hline    Add horizontal lines: float1,float2.
         --ms msize    Set marker size: float, default 5.
         -p            Set histnorm as 'probability', default: 'probability density'
@@ -102,10 +103,10 @@ if __name__ == '__main__':
     if args['--ydt']:
         ydt = float(args['--ydt'])
 
-    xrange = []
+    xrange = None
     if args['--xr']:
         xrange = list(map(float, args['--xr'].split(',')))
-    yrange = []
+    yrange = None
     if args['--yr']:
         yrange = list(map(float, args['--yr'].split(',')))
     if args['--lm']:
@@ -129,6 +130,7 @@ if __name__ == '__main__':
         colors = args['--cl'].split('::')
     if args['--title']:
         figureTitle = args['--title']
+    show_hist = False if args['--hhist'] else True
 
     commands = {'vl'}
     data = [] #[[name, val1,val2 ..], [name, val1, val2...]]
@@ -169,6 +171,7 @@ if __name__ == '__main__':
         curve_type='normal',
         colors=colors,
         show_curve= show_curve,
+        show_hist=show_hist,
         show_rug=False)
 
     afsize = 10 #annotation font size.
