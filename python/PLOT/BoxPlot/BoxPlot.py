@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers] [--atext txt] [--atr int]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -29,13 +29,19 @@
         --lm int      left margin, default 50.
         --over        Overlap dot with box.
         --nobox       Hidden box, only show dots.
+        --nooutliers  Turn on the --over option, and hidden outliers, the Whiskers as the min/max.
         --ha hanno    Add horizontal line annotation with text.
-                        foramt: x1_x2_y_text,x1_x2_y_text.
+                        format: x1_x2_y_text,x1_x2_y_text.
                         Example: 1_2_0.5_**
                         Each category for the box plot with x-coordinate as 0,1,2...n-1.
         --ady ady     Set the distance between horizontal annotation line and text (default 0.025).
         --haw float   Set the horizontal annotation line with, default 2.
-        --hat int     Set the horizontal annotation font size, default 12.
+        --hat int     Set the (horizontal or text) annotation font size, default 12.
+        --atext txt   Add text annotations to the boxplot.
+                        format: x1_y1_text,x2_y2_text.
+                        Example: 1_0.5_**,
+                        Each category for the box plot with x-coordinate as 0,1,2...n-1.
+        --atr int     Set the annotation text rotation angle.
         --cl colors   Set the colors of the box plot, eg: '#1F77B4::#2B9D2B'.
         --ydt float   Set the tick distance on y axis.
         --c2          Set the input data format as 2 columns format.
@@ -105,10 +111,18 @@ if __name__ == '__main__':
         msize = float(args['--ms'])
     if args['--over']:
         overBoxDot = True
+        outliers_opacity = 1
     # only show dots, no show box.
     DOTS_ONLY = True if args['--nobox'] else False
     if DOTS_ONLY:
         overBoxDot = False
+    # overlay box and dots, and hidden outliers.
+    # This is just a workaround, may suffer change later on.
+    # https://github.com/plotly/plotly.js/issues/1953
+    if args['--nooutliers']:
+        overBoxDot = True
+        outliers_opacity = 0
+
     if args['--bm']:
         bmargin = int(args['--bm'])
     if args['--ha']:
@@ -126,8 +140,9 @@ if __name__ == '__main__':
     xls = int(args['--xls']) if args['--xls'] else 12
     rm = int(args['--rm']) if args['--rm'] else 20
     lm = int(args['--lm']) if args['--lm'] else 50
-    transformY = args['--yt'] if args['--yt'] else "" #tranform the scale of y.
-
+    transformY = args['--yt'] if args['--yt'] else 'linear' #tranform the scale of y.
+    TextAnno = args['--atext'] if args['--atext'] else False
+    TextAnnoRotation = int(args['--atr']) if args['--atr'] else 0
 
     format2 = True if args['--c2'] else False
 
@@ -187,11 +202,14 @@ if __name__ == '__main__':
                 traces.append(go.Box(
                     y=yd,
                     name=xd,
+                    # boxpoints=overBoxDot_points,
+                    boxpoints='outliers',
                     whiskerwidth=0.2,
                     #fillcolor=cls,
                     marker=dict(
                         size=msize,
-                        color = cls
+                        color = cls,
+                        opacity = outliers_opacity
                     ),
                     line=dict(width=1),
                 ))
@@ -226,8 +244,8 @@ if __name__ == '__main__':
                         line=dict(width=1),
                     ))
 
-    ticktext=''
-    tickvals=''
+    ticktext=None
+    tickvals=None
     if DOTS_ONLY:
         ticktext = x_data
         tickvals = [-0.3 + x for x in range(0,len(x_data))]
@@ -327,6 +345,33 @@ if __name__ == '__main__':
                     # axref='x',
                     # ax=float(ss[0])+1,
                     # ay=0
+                ))
+
+    # add text annotation
+    if TextAnno:
+        for x in TextAnno.split(','):
+            ss = x.split('_')
+            x1 = float(ss[0])
+            y  = float(ss[1])
+            t  = ss[2]
+
+            # draw Font text.
+            # https://plot.ly/python/reference/#layout-annotations
+            annoArray.append(dict(
+                    x=x1,
+                    y=y,
+                    xref='x',
+                    yref='y',
+                    #yref='paper',
+                    text=t, textangle = TextAnnoRotation,valign='bottom',align='left',
+                    xanchor='center',
+                    showarrow=False,
+                    arrowhead=0,
+                    arrowcolor=annoColor,
+                    font=dict(
+                        color= annoColor,
+                        size = hat,
+                    ),
                 ))
 
     annoLayout = go.Layout(

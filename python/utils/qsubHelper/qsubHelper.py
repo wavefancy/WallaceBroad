@@ -16,7 +16,8 @@
     Options:
         -t int        Set the running hours for the jobs, default 2.
         -c int        Set the number of cpu cores, default 2.
-        -m int        Set the memory size, default 2G.
+        -m txt        Set the memory size, default 2G. Default unit is G.
+                         Specify in MB by like 100M.
                          The actual memory loaded is [-c] * [-m], also depending
                          on the number of cpus requested.
         -n string     Set job name, default 'name'.
@@ -55,7 +56,9 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     N_CPU  = args['-c'] if args['-c'] else '2'
-    N_MEM  = args['-m'] if args['-m'] else '2'
+    N_MEM  = args['-m'] if args['-m'] else '2G'
+    if N_MEM[-1].isdigit():
+        N_MEM += 'G'
     N_HOUR = args['-t'] if args['-t'] else '2'
     N_NAME = args['-n'] if args['-n'] else 'name'
 
@@ -75,10 +78,10 @@ if __name__ == '__main__':
                 with open(fn,'w') as ofile:
                     ofile.write('%s\n'%(line))
 
-                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d %s -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,addition,"bash ./"+fn)
+                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%s -pe smp %s -binding linear:%s -N %s_%d %s -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,addition,"bash ./"+fn)
 
             else:
-                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%sg -pe smp %s -binding linear:%s -N %s_%d %s -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,addition,line)
+                out = 'qsub -cwd -j y -l h_rt=%s:0:0 -l h_vmem=%s -pe smp %s -binding linear:%s -N %s_%d %s -b y "%s"\n'%(N_HOUR,N_MEM,N_CPU,N_CPU,N_NAME,temp,addition,line)
 
             sys.stdout.write(out)
 

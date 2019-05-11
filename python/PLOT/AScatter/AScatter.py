@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # )
     chart = alt.Chart(data).mark_point().encode(**paras)
 
-    chart.save(outname)
+    chart.save(outname, webdriver='firefox')
 
 sys.stdout.flush()
 sys.stdout.close()
