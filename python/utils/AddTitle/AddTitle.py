@@ -2,7 +2,7 @@
 
 '''
 
-    Add title for the input stream, and output stout.
+    Add title for the input stream, and output to stdout.
 
     @Author: wavefancy@gmail.com, Wallace Wang.
 
