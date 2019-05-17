@@ -1,0 +1,45 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.6.0.json",
+  "config": {
+    "view": {
+      "height": 300,
+      "width": 400
+    }
+  },
+  "data": {
+    "name": "data-c5b3818a245621ca858cdec1d3885251"
+  },
+  "datasets": {
+    "data-c5b3818a245621ca858cdec1d3885251": [
+      {
+        "C": "c1",
+        "X": 1,
+        "Y": 10,
+        "Z": 1
+      },
+      {
+        "C": "c2",
+        "X": 2,
+        "Y": -5,
+        "Z": 3
+      },
+      {
+        "C": "c3",
+        "X": 5,
+        "Y": 3,
+        "Z": 2
+      }
+    ]
+  },
+  "encoding": {
+    "x": {
+      "field": "X",
+      "type": "quantitative"
+    },
+    "y": {
+      "field": "Y",
+      "type": "quantitative"
+    }
+  },
+  "mark": "point"
+}

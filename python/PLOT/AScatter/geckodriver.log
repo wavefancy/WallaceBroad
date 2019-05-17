@@ -1,0 +1,96 @@
+1556289812651	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "/var/folders/7d/ccj472rn0b75m9v69gk_k1bmxnjk4h/T/rust_mozprofile.wOMo5MD1JY6S"
+*** You are running in headless mode.
+*** You are running in headless mode.
+2019-04-26 10:43:37.537 plugin-container[44242:426208] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x703f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:43:37.842 plugin-container[44242:426208] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x701f, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+1556289818179	Marionette	INFO	Listening on port 62983
+2019-04-26 10:43:38.621 plugin-container[44244:426284] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x8643, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:43:38.703 plugin-container[44244:426284] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x7417, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+1556289843990	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "/var/folders/7d/ccj472rn0b75m9v69gk_k1bmxnjk4h/T/rust_mozprofile.gKHst6CC6aW1"
+*** You are running in headless mode.
+2019-04-26 10:44:05.018 plugin-container[44269:426841] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x7543, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:44:05.105 plugin-container[44269:426841] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x751f, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+1556289845362	Marionette	INFO	Listening on port 63017
+1556289845430	Marionette	WARN	TLS certificate errors will be ignored for this session
+2019-04-26 10:44:05.820 plugin-container[44270:426926] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x7b3f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:44:05.944 plugin-container[44270:426926] TISFileInterrogator updateSystemInputSources false but old data invalid: currentCacheHeaderPtr nonNULL? 0, ->cacheFormatVersion 0, ->magicCookie 00000000, inputSourceTableCountSys 0
+2019-04-26 10:44:05.949 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:05.949 plugin-container[44270:426928] Connection Invalid error for service com.apple.hiservices-xpcservice.
+2019-04-26 10:44:05.950 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:05.971 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:05.974 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:06.009 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:06.012 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:06.016 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:06.020 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+Keyboard Layouts: duplicate keyboard layout identifier -14934.
+Keyboard Layouts: keyboard layout identifier -14934 has been replaced with -28673.
+2019-04-26 10:44:06.046 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:06.047 plugin-container[44270:426926] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:06.062 plugin-container[44270:426926] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x7ba3, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+console.log: Accessibility service init or shutdown observer does not exist.
+*** UTM:SVC TimerManager:registerTimer called after profile-before-change notification. Ignoring timer registration for id: telemetry_modules_ping
+1556289856039	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "/var/folders/7d/ccj472rn0b75m9v69gk_k1bmxnjk4h/T/rust_mozprofile.qW1y5BPha0A4"
+*** You are running in headless mode.
+2019-04-26 10:44:17.049 plugin-container[44286:427231] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x8a2b, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:44:17.147 plugin-container[44286:427231] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x8a2b, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+1556289857364	Marionette	INFO	Listening on port 63059
+1556289857384	Marionette	WARN	TLS certificate errors will be ignored for this session
+2019-04-26 10:44:17.802 plugin-container[44288:427312] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x863f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:44:17.883 plugin-container[44288:427312] TISFileInterrogator updateSystemInputSources false but old data invalid: currentCacheHeaderPtr nonNULL? 0, ->cacheFormatVersion 0, ->magicCookie 00000000, inputSourceTableCountSys 0
+2019-04-26 10:44:17.887 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.887 plugin-container[44288:427315] Connection Invalid error for service com.apple.hiservices-xpcservice.
+2019-04-26 10:44:17.888 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.904 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.906 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.931 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.934 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.938 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.940 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+Keyboard Layouts: duplicate keyboard layout identifier -14934.
+Keyboard Layouts: keyboard layout identifier -14934 has been replaced with -28673.
+2019-04-26 10:44:17.965 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.966 plugin-container[44288:427312] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:17.981 plugin-container[44288:427312] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x8723, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+console.log: Accessibility service init or shutdown observer does not exist.
+*** UTM:SVC TimerManager:registerTimer called after profile-before-change notification. Ignoring timer registration for id: telemetry_modules_ping
+1556289893544	mozrunner::runner	INFO	Running command: "/Applications/Firefox.app/Contents/MacOS/firefox-bin" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "/var/folders/7d/ccj472rn0b75m9v69gk_k1bmxnjk4h/T/rust_mozprofile.ZvevKqGJxJTc"
+*** You are running in headless mode.
+2019-04-26 10:44:54.577 plugin-container[44319:428124] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x833f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:44:54.666 plugin-container[44319:428124] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x830b, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+1556289894881	Marionette	INFO	Listening on port 63103
+1556289894985	Marionette	WARN	TLS certificate errors will be ignored for this session
+2019-04-26 10:44:55.377 plugin-container[44320:428209] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x813f, name = 'com.apple.tsm.portname'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+2019-04-26 10:44:55.459 plugin-container[44320:428209] TISFileInterrogator updateSystemInputSources false but old data invalid: currentCacheHeaderPtr nonNULL? 0, ->cacheFormatVersion 0, ->magicCookie 00000000, inputSourceTableCountSys 0
+2019-04-26 10:44:55.464 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.464 plugin-container[44320:428210] Connection Invalid error for service com.apple.hiservices-xpcservice.
+2019-04-26 10:44:55.466 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.485 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.487 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.513 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.516 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.521 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.524 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+Keyboard Layouts: duplicate keyboard layout identifier -14934.
+Keyboard Layouts: keyboard layout identifier -14934 has been replaced with -28673.
+2019-04-26 10:44:55.548 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.549 plugin-container[44320:428209] Error received in message reply handler: Connection invalid
+2019-04-26 10:44:55.564 plugin-container[44320:428209] *** CFMessagePort: bootstrap_register(): failed 1100 (0x44c) 'Permission denied', port = 0x1b7b, name = 'com.apple.coredrag'
+See /usr/include/servers/bootstrap_defs.h for the error codes.
+console.log: Accessibility service init or shutdown observer does not exist.
+*** UTM:SVC TimerManager:registerTimer called after profile-before-change notification. Ignoring timer registration for id: telemetry_modules_ping
