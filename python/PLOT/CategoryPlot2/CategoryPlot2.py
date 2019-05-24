@@ -81,7 +81,7 @@ COMMAND groupAnnotation C1 color:red ms:1 mt:'x'
     ''');
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='2.2')
+    args = docopt(__doc__, version='3.8.1')
     # version 2.2: add the option for abline.
     print(args)
 
@@ -306,7 +306,7 @@ if __name__ == '__main__':
 
         if k in errY:
             color = 'dark'
-            size = '1'
+            size = 1
             if k in pcolors:
                 marker['color'] = pcolors[k] #color, same length as the data set.
                 line['color'] = pcolors[k][0]
