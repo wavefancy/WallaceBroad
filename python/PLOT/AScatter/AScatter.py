@@ -6,11 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-<<<<<<< HEAD
-        AScatter.py -x text -y text -o outname [-c text] [-s text]
-=======
-        AScatter.py -x text -y text [-c text] [-s text]
->>>>>>> 5547cdca9a34d0abd8bbf85e4fe022aaf9db5da5
+        AScatter.py -x text -y text [-c text] [-s text] [-H height] [-W width]
         AScatter.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -22,10 +18,8 @@
         -y text       Column name for Y data.
         -c text       Column name for set color.
         -s text       Column name for set mark size.
-<<<<<<< HEAD
-        -o outname    Output file name: output.html.
-=======
->>>>>>> 5547cdca9a34d0abd8bbf85e4fe022aaf9db5da5
+        -H height     Figure height, int, default 300.
+        -W width      Figure width, int, default 400.
 
     API:
         https://altair-viz.github.io/getting_started/installation.html
@@ -53,10 +47,15 @@ if __name__ == '__main__':
     # outname = args['-o']
     color = args['-c'] if args['-c'] else None
     size  = args['-s'] if args['-s'] else None
+    fheight = int(args['-H']) if args['-H'] else 300
+    fwidth  = int(args['-W']) if args['-W'] else 400
 
     import altair as alt
     from vega_datasets import data
     import pandas as pd
+    # make altair can handle large files.
+    # https://altair-viz.github.io/user_guide/faq.html
+    alt.data_transformers.enable('default', max_rows=None)
 
     # iris = data.iris()
     data = pd.read_csv(sys.stdin, header=0, delimiter='\s+')
@@ -72,7 +71,10 @@ if __name__ == '__main__':
     #     y=y,
     #     color=color
     # )
-    chart = alt.Chart(data).mark_point().encode(**paras)
+    chart = alt.Chart(data).mark_point().encode(**paras).configure_view(
+            height = fheight,
+            width  = fwidth
+        )
 
     # chart.save(outname, webdriver='firefox')
     # chart.save(outname, vega_version='4')
