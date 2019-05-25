@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        AScatter.py -x text -y text -o outname [-c text]
+        AScatter.py -x text -y text -o outname [-c text] [-s text]
         AScatter.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
         -x text       Column name for X data.
         -y text       Column name for Y data.
         -c text       Column name for set color.
+        -s text       Column name for set mark size.
         -o outname    Output file name: output.html.
 
     API:
@@ -44,6 +45,7 @@ if __name__ == '__main__':
     y = args['-y']
     outname = args['-o']
     color = args['-c'] if args['-c'] else None
+    size  = args['-s'] if args['-s'] else None
 
     import altair as alt
     from vega_datasets import data
@@ -55,6 +57,8 @@ if __name__ == '__main__':
     paras = dict(x=x,y=y)
     if color:
         paras['color'] = color
+    if size:
+        paras['size'] = size
 
     # chart = alt.Chart(data).mark_point().encode(
     #     x=x,
