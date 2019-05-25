@@ -2,11 +2,15 @@
 
 """
 
-    Scatter plot by Altair
+    Scatter plot by Altair, output vega-lite json to stdout.
     @Author: wavefancy@gmail.com
 
     Usage:
+<<<<<<< HEAD
         AScatter.py -x text -y text -o outname [-c text] [-s text]
+=======
+        AScatter.py -x text -y text [-c text] [-s text]
+>>>>>>> 5547cdca9a34d0abd8bbf85e4fe022aaf9db5da5
         AScatter.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -18,7 +22,10 @@
         -y text       Column name for Y data.
         -c text       Column name for set color.
         -s text       Column name for set mark size.
+<<<<<<< HEAD
         -o outname    Output file name: output.html.
+=======
+>>>>>>> 5547cdca9a34d0abd8bbf85e4fe022aaf9db5da5
 
     API:
         https://altair-viz.github.io/getting_started/installation.html
@@ -39,11 +46,11 @@ if __name__ == '__main__':
     if(args['--format']):
         ShowFormat()
         sys.exit(-1)
-    print(args)
+    sys.stderr.write(str(args))
 
     x = args['-x']
     y = args['-y']
-    outname = args['-o']
+    # outname = args['-o']
     color = args['-c'] if args['-c'] else None
     size  = args['-s'] if args['-s'] else None
 
@@ -67,7 +74,9 @@ if __name__ == '__main__':
     # )
     chart = alt.Chart(data).mark_point().encode(**paras)
 
-    chart.save(outname, webdriver='firefox')
+    # chart.save(outname, webdriver='firefox')
+    # chart.save(outname, vega_version='4')
+    print(chart.to_json())
 
 sys.stdout.flush()
 sys.stdout.close()
