@@ -123,6 +123,10 @@ if __name__ == '__main__':
             else:
                 sys.stderr.write('Warning: Duplicate keys, only keep first entry. Skip: %s\n'%(line))
 
+
+    # The maxmium number of elements.
+    MAX_SPLIT = max(kcols)
+
     # Replace one colum.
     if args['-r']:
         pp = args['-r'].split(',')
@@ -131,6 +135,7 @@ if __name__ == '__main__':
         if Change_Unmatched:
             keep_unmatch = True
 
+        MAX_SPLIT = max(MAX_SPLIT, rcol) +1
         for line in sys.stdin:
             line = line.strip()
             if line:
@@ -139,7 +144,7 @@ if __name__ == '__main__':
                     sys.stdout.write('%s\n'%(line))
                     continue
 
-                ss = line.split(delimiter)
+                ss = line.split(delimiter, MAX_SPLIT)
 
                 k = '-'.join([ss[x] for x in kcols])
                 if k in kv_map:
@@ -157,6 +162,7 @@ if __name__ == '__main__':
                         sys.stderr.write('W_NOMATCH: %s\n'%('\t'.join(ss)))
 
     # add one more colum.
+    MAX_SPLIT += 1
     if args['-a']:
         val = [args['-a'] for x in range(n_content)]
         for line in sys.stdin:
@@ -167,7 +173,7 @@ if __name__ == '__main__':
                     sys.stdout.write('%s\n'%(line))
                     continue
 
-                ss = line.split(delimiter)
+                ss = line.split(delimiter, MAX_SPLIT)
 
                 k = '-'.join([ss[x] for x in kcols])
                 if k in kv_map:
