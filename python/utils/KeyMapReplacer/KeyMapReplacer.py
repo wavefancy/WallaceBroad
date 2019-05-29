@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol>[,default] | -a aValue) [-d delimter] [-x] [-w]
+        KeyMapReplace.py -p <key-value-pair-file> -k <kcol> (-r <rcol>[,default] | -a aValue) [-d delimter] [-x] [-w] [-c] [--cs txt]
         KeyMapReplace.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -27,6 +27,8 @@
         -d delimter             Delimiter to split columns from stdin.
         -x                      Close output for unmatched records, default output.
         -w                      Warning out unmatched records to stderr.
+        -c                      Directly copy comment lines to stdout.
+        --cs txt                Set the starting text for comment lines, default #.
         -h --help               Show this screen.
         -v --version            Show version.
         -f --format             Show input/output file format example.
@@ -83,7 +85,7 @@ if __name__ == '__main__':
     #version 4.0
     # 1. add option to split kep colum from stdin.
 
-    #print(args)
+    # print(args)
     #sys.exit(-1)
 
     if(args['--format']):
@@ -102,6 +104,9 @@ if __name__ == '__main__':
     keep_unmatch = False if args['-x'] else True
     warn_unmatch = True  if args['-w'] else False
 
+    COMMENT_STRING = args['--cs'] if args['--cs'] else '#'
+    COPY_COMMENTS = True if args['-c'] else False
+
     #read key-value pairs
     kv_map = {}
     n_content = ''
@@ -118,7 +123,7 @@ if __name__ == '__main__':
             else:
                 sys.stderr.write('Warning: Duplicate keys, only keep first entry. Skip: %s\n'%(line))
 
-
+    # Replace one colum.
     if args['-r']:
         pp = args['-r'].split(',')
         rcol = int(pp[0]) -1
@@ -129,6 +134,11 @@ if __name__ == '__main__':
         for line in sys.stdin:
             line = line.strip()
             if line:
+                # copy comment lines.
+                if COPY_COMMENTS and line.startswith(COMMENT_STRING):
+                    sys.stdout.write('%s\n'%(line))
+                    continue
+
                 ss = line.split(delimiter)
 
                 k = '-'.join([ss[x] for x in kcols])
@@ -146,11 +156,17 @@ if __name__ == '__main__':
                     if warn_unmatch:
                         sys.stderr.write('W_NOMATCH: %s\n'%('\t'.join(ss)))
 
+    # add one more colum.
     if args['-a']:
         val = [args['-a'] for x in range(n_content)]
         for line in sys.stdin:
             line = line.strip()
             if line:
+                # copy comments line.
+                if COPY_COMMENTS and line.startswith(COMMENT_STRING):
+                    sys.stdout.write('%s\n'%(line))
+                    continue
+
                 ss = line.split(delimiter)
 
                 k = '-'.join([ss[x] for x in kcols])
