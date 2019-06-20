@@ -39,10 +39,11 @@ Beta BetaSE
 -0.3 0.2
 
 #output
+# cat test.txt | python3 LogisticBeta2OR.py -b 1 -s 2
 #--------------
 Beta BetaSE     OR      OR_SE   OR_CI_L OR_CI_R
-0.5 0.1 1.6487  0.1649  1.3256  1.9719
--0.3 0.2        0.7408  0.1482  0.4504  1.0312
+0.5 0.1 1.6487  0.1649  1.3553  2.0057
+-0.3 0.2        0.7408  0.1482  0.5006  1.0964
     ''');
 
 # https://stackoverflow.com/questions/30211923/what-is-the-difference-between-pandas-qcut-and-pandas-cut
@@ -70,8 +71,8 @@ if __name__ == '__main__':
     # OR: https://www.stata.com/support/faqs/statistics/delta-rule/
     # ORb = exp(b)
     # se(ORb) = exp(b)*se(b)
-    # Upper 95% limit: mean + 1.96 SE
-    # Lower 95% limit: mean - 1.96 SE
+    # Upper 95% limit: exp(b + 1.96 b_SE)
+    # Lower 95% limit: exp(b - 1.96 b_SE)
 
     import numpy
     for line in sys.stdin:
@@ -85,9 +86,9 @@ if __name__ == '__main__':
                 OR = numpy.exp(b)
                 OR_SE = OR * se
 
-                CI = 1.96 * OR_SE
-                CIL = OR - CI
-                CIR = OR + CI
+                CI = 1.96 * se
+                CIL = numpy.exp(b-CI)
+                CIR = numpy.exp(b+CI)
 
                 out = [OR, OR_SE, CIL, CIR]
                 out = ['%.4f'%(x) for x in out]
