@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        VCFCountScore4GeneMask.py -g file -v bgzfile [--weight text] [-s file] --max-maf floats
+        VCFCountScore4GeneMask.py -g file -v bgzfile [--weight text] [-s file] --max-maf floats [-n int]
         VCFCountScore4GeneMask.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -22,6 +22,7 @@
                                    Set as 1 if group file don't have weight.
                              MAF:  Set the weight as 1/(MAF*(1-MAF))^0.5. Madsen and Browning (2009).
         -s file          Sample file, only count the score for those individuals decleared in this file.
+        -n int           Set the number of threads, Default 2, no impove as more threads.
         --max-maf floats MAF cut-off for variants, eg. 0.01|0.01,0.05
         -h --help        Show this screen.
         --version        Show version.
@@ -33,6 +34,7 @@ from signal import signal, SIGPIPE, SIG_DFL
 from cyvcf2 import VCF
 from collections import OrderedDict
 import numpy as np
+import numexpr as ne
 signal(SIGPIPE, SIG_DFL)
 
 def ShowFormat():
@@ -56,6 +58,11 @@ if __name__ == '__main__':
     weight_way = weight_way.lower()
     if weight_way not in set(['file','maf']):
         sys.stderr.write('Please set a proper value for --weight')
+    # set the number of threads
+    N_threads = 2
+    if args['-n']:
+        N_threads = int(args['-n'])
+        ne.set_num_threads(N_threads)
 
     samples = []
     with open(args['-s'], 'r') as sfile:
@@ -74,10 +81,11 @@ if __name__ == '__main__':
     #    if True, then gt_types will be 0=HOM_REF, 1=HET, 2=HOM_ALT, 3=UNKNOWN. If False, 3, 2 are flipped.
     # strict_gt: True: half missing set as UNKNOWN. Otherwise half missing set at HET.
     # API: https://brentp.github.io/cyvcf2/docstrings.html#api
+    # lazy or not has no big change on performance.
     if samples: #automatic substract the subset of samples we want.
-        vcf = VCF(vcf_file, gts012=True, strict_gt=True, samples=samples, lazy=True)
+        vcf = VCF(vcf_file, gts012=True, strict_gt=True, samples=samples, lazy=True, threads = N_threads)
     else:
-        vcf = VCF(vcf_file, gts012=True, strict_gt=True, lazy=True)
+        vcf = VCF(vcf_file, gts012=True, strict_gt=True, lazy=True, threads = N_threads)
 
     # print(vcf.samples)
     out = "#CHROM  BEGIN   END     MARKER_ID       NUM_ALL_VARS    NUM_PASS_VARS   NUM_SING_VARS MAF_CUT".split()
@@ -139,7 +147,7 @@ if __name__ == '__main__':
                             # impute missing as HOM_REF
                             genos[genos == 3] = 0
                             # convert geno count to weight
-                            genos = genos * weight
+                            genos = ne.evaluate('genos * weight')
                             #genos[genos >0 ] *= weight
 
                             # aggregate results
@@ -147,7 +155,8 @@ if __name__ == '__main__':
                                 if v_maf <= maf:
                                     aid = str(maf)
                                     MAF_RESULTS_PASS[aid] = MAF_RESULTS_PASS[aid] + 1
-                                    MAF_RESULTS[aid]      = MAF_RESULTS[aid] + genos
+                                    t = MAF_RESULTS[aid]
+                                    MAF_RESULTS[aid]      = ne.evaluate('t + genos')
 
                                     if alt_count == 1:
                                         MAF_RESULTS_SING[aid] = MAF_RESULTS_SING[aid] + 1
