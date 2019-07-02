@@ -14,7 +14,7 @@
         1. Read results from stdin, and output results to stdout.
         2. If any transcript annotion has damaging prediction, set as D else N.
         3. Currently only support the reset of
-            'SIFT_pred Polyphen2_HDIV_pred Polyphen2_HVAR_pred LRT_pred MutationTaster_pred'.
+            'SIFT_pred Polyphen2_HDIV_pred Polyphen2_HVAR_pred LRT_pred MutationTaster_pred MetaSVM_pred MetaLR_pred M-CAP_pred PROVEAN_pred FATHMM_pred'.
 
     Options:
         -h --help     Show this screen.
@@ -49,7 +49,7 @@ def ShowFormat():
 #		predicted as "D(amaging)"; otherwise it is predicted as "T(olerated)".
 #		Multiple predictions separated by ";"
 
-# .       11027847        0.102315
+#.       11027847        0.102315
 #B       34489731        0.319991
 #D       39291666        0.364542
 #P       22974338        0.213152
@@ -62,7 +62,7 @@ def ShowFormat():
 #		and "deleterious" if the HDIV score is larger than 0.5 (rankscore is larger than
 #		0.3528). Multiple entries are separated by ";".
 
-# .       11027847        0.102084
+#.       11027847        0.102084
 #B       42428265        0.392754
 #D       31698431        0.293429
 #P       22873087        0.211734
@@ -91,6 +91,34 @@ def ShowFormat():
 #		"D" ("disease_causing"), "N" ("polymorphism") or "P" ("polymorphism_automatic"). The
 #		score cutoff between "D" and "N" is 0.5 for MTnew and 0.31713 for the rankscore.
 
+# MetaSVM_pred
+#.       7519568 0.083907
+#D       13663364        0.152463
+#T       68434853        0.763630
+
+#M-CAP_pred
+#.       11583101        0.129250
+#D       40128069        0.447769
+#T       37906615        0.422981
+
+#MetaLR_pred
+#.       7519568 0.083907
+#D       14557286        0.162437
+#T       67540931        0.753655
+
+#MutationAssessor_pred
+#.       20158730        0.224941
+#H       4895251 0.054624
+#L       22645922        0.252695
+#M       28229553        0.314999
+#N       13688329        0.152741
+# MutationAssessor_pred: MutationAssessor's functional impact of a variant :
+#		predicted functional, i.e. high ("H") or medium ("M"), or predicted non-functional,
+#		i.e. low ("L") or neutral ("N"). The MAori score cutoffs between "H" and "M",
+#		"M" and "L", and "L" and "N", are 3.5, 1.935 and 0.8, respectively. The rankscore cutoffs
+#		between "H" and "M", "M" and "L", and "L" and "N", are 0.92922, 0.51944 and 0.19719,
+#		respectively.
+
 # Mark's damaging mask.
 #Scores used for 'of five' designations:
 #SIFT_pred Polyphen2_HDIV_pred Polyphen2_HVAR_pred LRT_pred MutationTaster_pred
@@ -109,12 +137,19 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     #classification map for the five predictions.
+    # M-CAP_pred PROVEAN_pred FATHMM_pred
     CLASS_MAP={
         "SIFT_pred".upper()          : set(['D']),
         "Polyphen2_HDIV_pred".upper(): set(['D','P']),
         "Polyphen2_HVAR_pred".upper(): set(['D','P']),
         "LRT_pred".upper()           : set(['D']),
-        "MutationTaster_pred".upper(): set(['A','D'])
+        "MutationTaster_pred".upper(): set(['A','D']),
+        "MutationAssessor_pred".upper(): set(['H','M']), # 37%
+        "MetaSVM_pred".upper(): set(['D']), # 15%
+        "MetaLR_pred".upper(): set(['D']), # 16%
+        "M-CAP_pred".upper(): set(['D']), # 44%
+        "PROVEAN_pred".upper(): set(['D']),
+        "FATHMM_pred".upper(): set(['D'])
     }
 
     title = False
@@ -122,13 +157,14 @@ if __name__ == '__main__':
     for line in sys.stdin:
         line = line.strip()
         if line:
+            line = line.replace(';','&') # transcript level prediction separated by ';' from dbNSFP.
             ss = line.split()
             if title:
                 ss = line.split()
                 # Reset the classification label.
                 for k in COL_INDEX.keys():
-                    pred = ss[COL_INDEX[k]].upper().split('&')
-                    dam = [x for x in pred if x in CLASS_MAP[k]]
+                    pred = ss[COL_INDEX[k]].upper().split('&') # get transcript level predictions.
+                    dam = [x for x in pred if x in CLASS_MAP[k]] # any transcript is damaging, treat as damaging.
                     if dam:
                         ss[COL_INDEX[k]] = 'D'
                     else:
