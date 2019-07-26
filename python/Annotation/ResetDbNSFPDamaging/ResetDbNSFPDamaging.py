@@ -14,7 +14,7 @@
         1. Read results from stdin, and output results to stdout.
         2. If any transcript annotion has damaging prediction, set as D else N.
         3. Currently only support the reset of
-            'SIFT_pred Polyphen2_HDIV_pred Polyphen2_HVAR_pred LRT_pred MutationTaster_pred MetaSVM_pred MetaLR_pred M-CAP_pred PROVEAN_pred FATHMM_pred'.
+            'SIFT_pred Polyphen2_HDIV_pred Polyphen2_HVAR_pred LRT_pred MutationTaster_pred MutationAssessor_pred MetaSVM_pred MetaLR_pred M-CAP_pred PROVEAN_pred FATHMM_pred'.
 
     Options:
         -h --help     Show this screen.
