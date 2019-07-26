@@ -5,7 +5,7 @@
     Split comma separated records.
 
     Usage:
-        SplitRecord.py -a columnIndexs
+        SplitRecord.py -a columnIndexs [-d txt]
         SplitRecord.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -14,6 +14,7 @@
 
     Options:
         -a columnIndexs  Column index for split, eg: 1,2,3|2
+        -d txt           Set the delimiter for records, default ','.
         -h --help        Show this screen.
         -v --version     Show version.
         -f --format      Show input/output file format example.
@@ -49,6 +50,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     cols = set([int(x)-1 for x in args['-a'].split(',')])
+    delimiter = args['-d'] if args['-d'] else ','
 
     for line in sys.stdin:
         line = line.strip()
@@ -59,7 +61,7 @@ if __name__ == '__main__':
             t_len = 1
             for i in range(len(ss)):
                 if i in cols:
-                    t = ss[i].split(',')
+                    t = ss[i].split(delimiter)
                     t_len = len(t)
                 else:
                     t = ss[i]
