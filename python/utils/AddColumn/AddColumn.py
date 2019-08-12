@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com, Wallace Wang.
 
     Usage:
-        AddColumn.py -c int (-v text | -i int | -e ints) [-t txt]
+        AddColumn.py (-c int|-l) (-v text | -i int | -e ints) [-t txt]
         AddColumn.py -h | --help | --version | -f | --format
 
     Notes:
@@ -16,6 +16,7 @@
     Options:
         -c int        After which column(int, 1 based) from the input for insertting new column.
                         0 for add column at the line begining.
+        -l            Add extra column to the last of a line.
         -v text       The value for the new insertting column(s).
                         eg. v1|v1,v2. v1,v2 add two columns, split values by ','
         -t text       The title for the new insertting column(s).
@@ -65,7 +66,8 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    COL     = int(args['-c'])
+    COL     = int(args['-c']) if args['-c'] else None
+    LAST    = True if args['-l'] else False
     VALS    = args['-v'].split(',') if args['-v'] else None # add constant values.
     INDEXV  = int(args['-i'])       if args['-i'] else None # add index value.
     TITLES  = args['-t'].split(',') if args['-t'] else VALS
@@ -80,6 +82,10 @@ if __name__ == '__main__':
         line = line.strip()
         if line :
             ss = line.split()
+            if LAST:
+                COL = len(ss)
+                LAST = False
+
             out = ss[:COL]
             # print(ss)
             if TITLES:
