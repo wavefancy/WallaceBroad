@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt] [--hhist] [--sy] [--cn]
+        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt] [--hhist] [--sy] [--nyg] [--cn] [--vl vline] [--hl hline]
         DistributionPlotV2.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -27,11 +27,13 @@
         --xr xrange   Set the xAxis plot range: float1,float2.
         --yr yrange   Set the yAxis plot range: float1,float2,
                       *** Please set this parameter to fix the bug of two horizontal lines for xAxis.
+        --nyg         Do not show grid lines for y axis, default show.
         --sy          Show Y Axis, default no show.
         --nc          Do not display fitting curve.
         --cn          Fit curve by 'normal' model, default kde.
         --hhist       Do not display histnorm bar, default show.
         --hl hline    Add horizontal lines: float1,float2.
+        --vl vline    Add vertical lines: float1, float2...
         --ms msize    Set marker size: float, default 5.
         -p            Set histnorm as 'probability', default: 'probability density'
         --lm int      Set left margin, default 50.
@@ -86,12 +88,14 @@ if __name__ == '__main__':
     mode = 'markers'
     hlines = [] #location for horizontal lines.
     vlines = []
+    ablines = []
     msize = 5
     binsize = 0.2
     lm = 50 #left margin
     rm = 30 #right margin
     tm = 30 #top margin
     figureTitle = ''
+    yGRID = False if args['--nyg'] else True
 
     if args['--bs']:
         binsize = float(args['--bs'])
@@ -134,6 +138,11 @@ if __name__ == '__main__':
         figureTitle = args['--title']
     show_hist = False if args['--hhist'] else True
     CTYPE     = 'normal' if args['--cn'] else 'kde'
+
+    if args['--hl']:
+        hlines = list(map(float, args['--hl'].split(',')))
+    if args['--vl']:
+        vlines = list(map(float, args['--vl'].split(',')))
 
     # Show Y axis or not.
     yAxisShow = False
@@ -228,8 +237,8 @@ if __name__ == '__main__':
             range=yrange,
             # ticks='outside',
             ticks=yTickWay,
-            showgrid=True,
             showline=yAxisShow,
+            showgrid=yGRID,
             color='black'
         #     zeroline=False,
         #     #dtick=5,
@@ -268,6 +277,86 @@ if __name__ == '__main__':
     #fig = go.Figure(data=traces, layout=layout)
     #py.iplot(fig)
     #output the last one
+
+    # add lines annotation.
+    hl_data = []
+    if hlines:
+        for y in hlines:
+            hl_data.append(
+                {
+                    'type': 'line',
+                    'xref': 'paper',
+                    'x0': 0,
+                    'y0': y,
+                    'x1': 1,
+                    'y1': y,
+                    'line': {
+                        #'color': 'rgb(50, 171, 96)',
+                        #'color': '#E2E2E2',
+                        'color': 'rgba(0, 0, 0, 0.5)',
+                        'width': 1,
+                        'dash': 'dashdot',
+                }}
+            )
+        #h = {'shapes':hl_data}
+        #layout.update(h)
+
+    #add for ablines
+    ab_data = []
+    if ablines:
+        for y in ablines:
+            #print(y)
+            cc = abcolor
+            if len(y) == 5:
+                cc = y[4]
+
+            # set the layer of elements.
+            # https://github.com/plotly/plotly.js/issues/923
+            ab_data.append(
+                {
+                    'type': 'line',
+                    # 'xref': 'paper',
+                    'x0': y[0],
+                    'y0': y[1],
+                    'x1': y[2],
+                    'y1': y[3],
+                    'layer': 'below',
+                    'line': {
+                        'color': cc,
+                        #'color': 'rgba(0, 0, 0, 0.5)',
+                        'width': 2,
+                        'dash': 'dashdot'
+                    }
+                }
+            )
+
+    vl_data = []
+    if vlines:
+        for y in vlines:
+            vl_data.append(
+                {
+                    'type': 'line',
+                    'yref': 'paper',
+                    'x0': y,
+                    'y0': 0,
+                    'x1': y,
+                    'y1': 1,
+                    'line': {
+                        # 'color': '#FFD979',
+                        'color': 'rgba(0, 0, 0, 0.5)',
+                        'width': 2,
+                        'dash': 'dashdot',
+                }}
+            )
+        #h = {'shapes':vl_data}
+        #layout.update(h)
+    # print(vlines)
+    alllines = hl_data + vl_data + ab_data
+    if alllines:
+        h = {'shapes':alllines}
+        # layout.update(h)
+        fig['layout'].update(h)
+
     plotly.offline.plot(fig
          ,show_link=False
          ,auto_open=False

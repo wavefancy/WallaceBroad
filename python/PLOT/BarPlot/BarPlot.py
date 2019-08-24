@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BarPlot.py -y ytitle -o outname [-x xtitle] [--yerr] [--yr yrange] [--xr xrange] [--ydt float] [--xdt float] [--vl vline] [--hl hline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bma bmargin] [--rma rmargin] [--bm bm] [--or or] [--gcl color] [--bcl color] [--ta tanno] [--ts int] [--lbcl color] [--xtfs int] [--ytfs int] [--rx int] [--ry int] [--sy]
+        BarPlot.py -y ytitle -o outname [-x xtitle] [--yerr] [--yr yrange] [--xr xrange] [--ydt float] [--xdt float] [--vl vline] [--hl hline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--tma tmargin] [--lm lmargin] [--bma bmargin] [--rma rmargin] [--bm bm] [--or or] [--gcl color] [--bcl color] [--ta tanno] [--ts int] [--lbcl color] [--xtfs int] [--ytfs int] [--rx int] [--ry int] [--sy] [--nyg]
         BarPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,6 +20,7 @@
         --yerr        Set plot y error bar, default False, input should like format 2.
         --yr yrange   Set the yAxis plot range: float1,float2.
         --sy          Show Y Axis, default no show.
+        --nyg         Do not show grid lines for y axis, default show.
         --xr xrange   Set the yAxis plot range: float1,float2.
         --rx int      Set the angle for rotate x label.
         --ry int      Set the angle for rotate y label.
@@ -34,6 +35,7 @@
         --lm lmargin  Left margin, default 60.
         --bma bmargin Bottom margin, default 20.
         --rma rmargin Right margin, default 0.
+        --tma tmargin Top margin, default 0.
         --bm bm       Barmode, default 2. 1: stack, 2: group.
         --or or       Orientation, default 1. 1: vertical, 2: horizontal.
         --gcl color   Set the color for different group, eg: #FA1A1A::#0784FF::#8AC300
@@ -100,6 +102,7 @@ if __name__ == '__main__':
 
     colors = ['#419F8D','#C9E14F','#FCE532','#FC8E32','#F4B9C0','#9970AB','gray']
     bcolor = []
+    yGRID = False if args['--nyg'] else True
 
     yrange = None
     xxrange = None
@@ -129,6 +132,7 @@ if __name__ == '__main__':
     rmargin = 0
     if args['--rma']:
         rmargin = float(args['--rma'])
+    tmargin = float(args['--tma']) if args['--tma'] else 0
     barmode = 'group'
     if args['--bm']:
         if args['--bm'] == '1':
@@ -307,7 +311,7 @@ if __name__ == '__main__':
                 # color='#ff7f0e',
                 size=ytfs
             ),
-            # showgrid=False,
+            showgrid=yGRID,
             ticks=yTickWay,
             showline=yAxisShow,
             # ticks='outside',
@@ -319,7 +323,7 @@ if __name__ == '__main__':
             l = lm,
             b = bmargin,
             r = rmargin,
-            t = 0
+            t = tmargin
         ),
 
         showlegend = True,
