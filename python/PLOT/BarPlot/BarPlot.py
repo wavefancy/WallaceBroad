@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BarPlot.py -y ytitle -o outname [-x xtitle] [--yerr] [--yr yrange] [--xr xrange] [--ydt float] [--xdt float] [--vl vline] [--hl hline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bma bmargin] [--rma rmargin] [--bm bm] [--or or] [--gcl color] [--bcl color] [--ta tanno] [--ts int] [--lbcl color] [--xtfs int] [--ytfs int] [--rx int] [--ry int]
+        BarPlot.py -y ytitle -o outname [-x xtitle] [--yerr] [--yr yrange] [--xr xrange] [--ydt float] [--xdt float] [--vl vline] [--hl hline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bma bmargin] [--rma rmargin] [--bm bm] [--or or] [--gcl color] [--bcl color] [--ta tanno] [--ts int] [--lbcl color] [--xtfs int] [--ytfs int] [--rx int] [--ry int] [--sy]
         BarPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -19,6 +19,7 @@
         -o outname    Output file name: output.html.
         --yerr        Set plot y error bar, default False, input should like format 2.
         --yr yrange   Set the yAxis plot range: float1,float2.
+        --sy          Show Y Axis, default no show.
         --xr xrange   Set the yAxis plot range: float1,float2.
         --rx int      Set the angle for rotate x label.
         --ry int      Set the angle for rotate y label.
@@ -193,6 +194,12 @@ if __name__ == '__main__':
     rx = int(args['--rx']) if args['--rx'] else None
     ry = int(args['--ry']) if args['--ry'] else None
 
+    # Show Y axis or not.
+    yAxisShow = False
+    yTickWay  = ''
+    if args['--sy']:
+        yAxisShow = True; yTickWay = 'outside'
+
     # from collections import OrderedDict
     # xdata = OrderedDict() #{categoryName -> []}
     # ydata = OrderedDict() #{categoryName -> []}
@@ -278,6 +285,8 @@ if __name__ == '__main__':
             dtick = xdt,
             range = xxrange,
             tickangle = rx,
+            color='black',
+            ticks='outside',
             tickfont=dict(
                 # color='#ff7f0e',
                 size=xtfs
@@ -292,14 +301,18 @@ if __name__ == '__main__':
             title =  ytitle,
             range = yrange,
             dtick = ydt,
+            color='black',
             tickangle = ry,
             tickfont=dict(
                 # color='#ff7f0e',
                 size=ytfs
             ),
             # showgrid=False,
-            # showline=False,
-            # showticklabels=False,
+            ticks=yTickWay,
+            showline=yAxisShow,
+            # ticks='outside',
+            # showline=True,
+            # showticklabels=True,
             zeroline=True,
         ),
         margin= dict(
