@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt] [--hhist]
+        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt] [--hhist] [--sy] [--cn]
         DistributionPlotV2.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -27,7 +27,9 @@
         --xr xrange   Set the xAxis plot range: float1,float2.
         --yr yrange   Set the yAxis plot range: float1,float2,
                       *** Please set this parameter to fix the bug of two horizontal lines for xAxis.
+        --sy          Show Y Axis, default no show.
         --nc          Do not display fitting curve.
+        --cn          Fit curve by 'normal' model, default kde.
         --hhist       Do not display histnorm bar, default show.
         --hl hline    Add horizontal lines: float1,float2.
         --ms msize    Set marker size: float, default 5.
@@ -131,6 +133,13 @@ if __name__ == '__main__':
     if args['--title']:
         figureTitle = args['--title']
     show_hist = False if args['--hhist'] else True
+    CTYPE     = 'normal' if args['--cn'] else 'kde'
+
+    # Show Y axis or not.
+    yAxisShow = False
+    yTickWay  = ''
+    if args['--sy']:
+        yAxisShow = True; yTickWay = 'outside'
 
     commands = {'vl'}
     data = [] #[[name, val1,val2 ..], [name, val1, val2...]]
@@ -166,9 +175,10 @@ if __name__ == '__main__':
         group_labels.append(k)
 
     # Create distplot
+    # https://plot.ly/python/distplot/
     fig = FF.create_distplot(hist_data, group_labels,bin_size=binsize,
         histnorm=histnorm,
-        curve_type='normal',
+        curve_type=CTYPE,
         colors=colors,
         show_curve= show_curve,
         show_hist=show_hist,
@@ -216,7 +226,11 @@ if __name__ == '__main__':
             title=ytitle,
             dtick = ydt,
             range=yrange,
-        #     showgrid=True,
+            # ticks='outside',
+            ticks=yTickWay,
+            showgrid=True,
+            showline=yAxisShow,
+            color='black'
         #     zeroline=False,
         #     #dtick=5,
             #white grid line
@@ -230,7 +244,9 @@ if __name__ == '__main__':
             range=xrange,
             dtick = xdt,
             ticks='outside',
-            showline=True
+            showline=True,
+            # Sets default for all colors associated with this axis
+            color='black'
         )
         ,
         margin=dict(
