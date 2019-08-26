@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt] [--hhist] [--sy] [--nyg] [--cn] [--vl vline] [--hl hline]
+        DistributionPlotV2.py -o outname -x xtitle [-t] [--bs binsize] [--an anno] [--xr xrange] [--yr yrange] [--xdt xdtick] [--ydt ydtick] [--nc] [-l] [-p] [--lm int] [--rm int] [--tm int] [--cl text] [--title txt] [--hhist] [--sy] [--nyg] [--cn] [--vl vline] [--hl hline] [-d txt]
         DistributionPlotV2.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
         -x xtitle
         -t            In test mode.
         -o outname    Output file name: output.html.
+        -d txt        Set delimter for split column, default whitesapces. tab for '\\t'.
         --bs binsize  Set binsize, float, default 0.2
         -l            Show legned, default False.
         --an anno     Vertical arrow annotation, pattern as: x_y_text_color[_arrowLen],x_y_text_color...
@@ -96,6 +97,9 @@ if __name__ == '__main__':
     tm = 30 #top margin
     figureTitle = ''
     yGRID = False if args['--nyg'] else True
+    delimter = args['-d'] if args['-d'] else ''
+    if delimter == 'tab':
+        delimter = '\t'
 
     if args['--bs']:
         binsize = float(args['--bs'])
@@ -158,7 +162,7 @@ if __name__ == '__main__':
     for line in sys.stdin:
         line = line.strip()
         if line:
-            ss = line.split()
+            ss = line.split(delimter)
             if ss[0]=='COMMAND' and ss[1] in commands:
                 if ss[1] == 'vl':
                     vlines.append(float(ss[2]))
@@ -230,6 +234,9 @@ if __name__ == '__main__':
         titlefont=dict(
             size=14
         ),
+        # change global font color to black.
+        # https://plot.ly/python/font/
+        font=dict(color='black'),
         #title='Points Scored by the Top 9 Scoring NBA Players in 2012',
         yaxis=dict(
             title=ytitle,
@@ -295,7 +302,9 @@ if __name__ == '__main__':
                         #'color': '#E2E2E2',
                         'color': 'rgba(0, 0, 0, 0.5)',
                         'width': 1,
-                        'dash': 'dashdot',
+                        # 'dash': 'dashdot',
+                        # ['solid', 'dot', 'dash', 'longdash', 'dashdot','longdashdot']
+                        'dash': 'dot',
                 }}
             )
         #h = {'shapes':hl_data}
@@ -330,6 +339,7 @@ if __name__ == '__main__':
                 }
             )
 
+    # https://plot.ly/python/reference/#layout-shapes-items-shape-layer
     vl_data = []
     if vlines:
         for y in vlines:
@@ -337,6 +347,8 @@ if __name__ == '__main__':
                 {
                     'type': 'line',
                     'yref': 'paper',
+                    # default above.
+                    'layer': 'below',
                     'x0': y,
                     'y0': 0,
                     'x1': y,
@@ -345,7 +357,8 @@ if __name__ == '__main__':
                         # 'color': '#FFD979',
                         'color': 'rgba(0, 0, 0, 0.5)',
                         'width': 2,
-                        'dash': 'dashdot',
+                        # 'dash': 'dashdot',
+                        'dash': 'dot',
                 }}
             )
         #h = {'shapes':vl_data}
