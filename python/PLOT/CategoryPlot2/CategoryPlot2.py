@@ -305,7 +305,7 @@ if __name__ == '__main__':
             # print(marker['symbol'])
 
         if k in errY:
-            color = 'dark'
+            color = '#000000'
             size = 1
             if k in pcolors:
                 marker['color'] = pcolors[k] #color, same length as the data set.
@@ -449,8 +449,9 @@ if __name__ == '__main__':
         },
         'xaxis':{
             'dtick'   : xdt,
-            'mirror'  :myMirror,
-            'range'   :Xrange,
+            'mirror'  : myMirror,
+            'range'   : Xrange,
+            'color'   :'black',
             #       range=[0, 500],
             'showgrid':True,
             'showline':True,
@@ -581,31 +582,12 @@ if __name__ == '__main__':
         h = {'shapes':alllines}
         layout.update(h)
 
-    # yupdate = go.Layout(
-    #     yaxis=dict(
-    #         dtick = ydt, # '' empty string means auto ticks
-    #         # autotick = True,
-    #         mirror  = myMirror,
-    #         range   =yrange,
-    #         # showgrid = True,
-    #         showline = True,
-    #         ticks =  'outside',
-    #         showticklabels = True,
-    #         title = ytitle,
-    #         zeroline = False,
-    #         titlefont=dict(size=titlefontsize),
-    #         tickfont = {
-    #             #family: 'Courier New, monospace',
-    #             'size': tickfontsize,
-    #             #color: '#7f7f7f'
-    #         }
-    #     )
-    # )
     yudict = dict(
         dtick = ydt, # '' empty string means auto ticks
         # autotick = True,
         mirror  = myMirror,
         range   =yrange,
+        color   ='black',
         # showgrid = True,
         showline = True,
         ticks =  'outside',
