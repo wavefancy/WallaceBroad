@@ -4,7 +4,7 @@
     CategoryExtreme
 
     @Author: wavefancy@gmail.com
-    @Version: 1.0
+    @Version: 2.0
 
     @Algorithms:
     1. Find out the extreme value for each category.
