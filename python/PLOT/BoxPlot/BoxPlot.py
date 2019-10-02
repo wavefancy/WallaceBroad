@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers] [--atext txt] [--atr int]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--ylfs int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers] [--atext txt] [--atr int]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,7 +20,8 @@
         --yerr yecol  Column index for y error bar.
         --rx int      Set the angle for rotate x label.
         --ry int      Set the angle for rotate y label.
-        --xls int     Set x axit tick font size, default 12.
+        --xls int     Set x axis tick font size, default 12.
+        --ylfs int    Set y axis font size, default 12.
         --yr yrange   Set the yAxis plot range: float1,float2.
         --hl hline    Add horizontal lines: float1,float2.
         --ms msize    Set marker size: float, default 2.
@@ -138,6 +139,7 @@ if __name__ == '__main__':
     rx = int(args['--rx']) if args['--rx'] else None
     ry = int(args['--ry']) if args['--ry'] else None
     xls = int(args['--xls']) if args['--xls'] else 12
+    ylfs = int(args['--ylfs']) if args['--ylfs'] else 12
     rm = int(args['--rm']) if args['--rm'] else 20
     lm = int(args['--lm']) if args['--lm'] else 50
     transformY = args['--yt'] if args['--yt'] else 'linear' #tranform the scale of y.
@@ -257,6 +259,7 @@ if __name__ == '__main__':
             type=transformY,
             # autorange=True,
             showgrid=True,
+            color   ='black',
             zeroline=False,
             tickangle=ry,
             dtick=ydt,
@@ -264,7 +267,10 @@ if __name__ == '__main__':
             #gridwidth=1,
             zerolinecolor='rgb(255, 255, 255)',
             zerolinewidth=2,
-            range=yrange
+            range=yrange,
+            title!font=dict(
+                size = ylfs
+            )
         ),
         xaxis=dict(
             ticks='outside',
@@ -274,6 +280,7 @@ if __name__ == '__main__':
             ticktext=ticktext,
             showline=True,
             tickangle=rx,
+            color   ='black',
             tickfont=dict(
                 size = xls
             )

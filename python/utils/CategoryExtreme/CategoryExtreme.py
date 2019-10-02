@@ -1,90 +1,93 @@
 #!/usr/bin/env python
 
-'''
-    CategoryExtreme
+"""
+
+    Select the extreme value for each category.
 
     @Author: wavefancy@gmail.com
-    @Version: 2.0
 
-    @Algorithms:
-    1. Find out the extreme value for each category.
+    Usage:
+        CategoryExtreme.py -k ints -v int [-o txt | --txt] (--max | --min) [-a]
+        CategoryExtreme.py -h | --help | --version | -f | --format
 
-'''
+    Notes:
+        1. Read data from stdin (file name line by line), and output results to stdout.
+        2. **** INPUT SHOULD BE SORTED BY CATEGORY NAMES ****
+              Treat successive same -k column values as a single category.
+
+    Options:
+        -k ints     Column index for category, 1 based. eg. 1|1,3.
+        -v int      Column index for value, 1 based. eg. 1.
+        -o txt      Order for ranking category data, small to large. eg. ONE,TWO,THREE.
+        -a          Select all entries with extreme value, default random pick one.
+        --txt       Sort by value text string naturally, do not convert to float.
+        --max       Select the maxmium values for each category.
+        --min       Select the minimum values for each category.
+        --version  Show version.
+        -f --format   Show input/output file format example.
+"""
 import sys
+from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE,SIG_DFL) #prevent IOError: [Errno 32] Broken pipe. If pipe closed by 'head'.
+signal(SIGPIPE, SIG_DFL)
+import os.path as path
 
-def help():
-    sys.stderr.write('''
-    -------------------------------------
-    CategoryExtreme
-    -------------------------------------
+def ShowFormat():
+    '''Input File format example:'''
+    print('''
 
-    @Author: wavefancy@gmail.com
-    @Version: 1.0
-
-    @Usages:
-    para1: Column index for category name.
-    para2: Column index for values.
-    para3: [i|x] output the line with the minimum(i) or maximum(x) value.
-
-    @Notes:
-    1. Read data from stdin and output to stdout.
-    2. Entries of the same category should be put in adjacent lines.
-        -----Exameple-------
-        s1  12
-        s1  13
-        s2  34
-        ..........
-    3. If content(value) can't be converted to float, copy this line to stderr.
-    4. Column index starts from 1.
-    -------------------------------------
-    \n''')
-    sys.stderr.close()
-    sys.exit(-1)
-
-class P:
-    col_c = -1 # Column index for category. permit multi-columns as category.
-    col_v = -1 # Column index for values.
-    min_v = True # True for minimum, False for maximum
+    ''');
 
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        help()
+    args = docopt(__doc__, version='1.0')
+    # print(args)
+    # sys.exit(-1)
 
-    #P.col_c = int(sys.argv[1]) -1
-    P.col_c = [int(x)-1 for x in sys.argv[1].split(',')] #column starts from 1.
-    P.col_v = int(sys.argv[2]) -1
-    if sys.argv[3].lower() == 'x':
-        P.min_v = False
+    if(args['--format']):
+        ShowFormat()
+        sys.exit(-1)
 
+    CATEGORYS   = [int(x)-1 for x in args['-k'].split(',')]
+    VALUE       = int(args['-v'])-1
+    MAX_VAL     = True if args['--max'] else False
+    ALL_EXTREME = True if args['-a'] else False
+    ORDERS      = args['-o'].split(',') if args['-o'] else []
+    ORDERS_MAP  = {k:i for (i,k) in enumerate(ORDERS)}
+    TEXT_SORT   = True if args['--txt'] else False
 
     def processOne(entries):
         '''find out the extreme value and output'''
         ee = ''
         vv = []
-        # print(entries)
-        for _,x in entries: #skip entry name.
-            try:
-                t_vv = float(x[P.col_v])
+        if TEXT_SORT:
+            if MAX_VAL:
+                entries.sort(key=lambda x: x[1][VALUE], reverse=True)
+            else:
+                entries.sort(key=lambda x: x[1][VALUE])
 
-                if vv:
-                    if P.min_v:
-                        if t_vv < vv[0]:
-                            vv[0] = t_vv
-                            ee = x
-                    else:
-                        if t_vv > vv[0]:
-                            vv[0] = t_vv
-                            ee = x
+        elif ORDERS:
+            if MAX_VAL:
+                entries.sort(key=lambda x: ORDERS_MAP[x[1][VALUE]], reverse=True)
+            else:
+                entries.sort(key=lambda x: ORDERS_MAP[x[1][VALUE]])
+
+        else:
+            if MAX_VAL:
+                entries.sort(key=lambda x: float(x[1][VALUE]), reverse=True)
+            else:
+                entries.sort(key=lambda x: float(x[1][VALUE]))
+
+        #output results after sort.
+        if ALL_EXTREME:
+            for _,v in entries:
+                if v[VALUE] == entries[0][1][VALUE]:
+                    sys.stdout.write('\t'.join(v))
+                    sys.stdout.write('\n')
                 else:
-                    vv.append( t_vv )
-                    ee = x
-
-            except ValueError:
-                sys.stderr.write('%s\n'%('\t'.join(x)))
-        if ee:
-            sys.stdout.write('%s\n'%('\t'.join(ee)))
+                    break
+        else:
+            sys.stdout.write('\t'.join(entries[0][1]))
+            sys.stdout.write('\n')
 
     #read from stdin.
     c_temp = [] #[(entryName,entry1), (entryName,entry2)... ] #entries for a category.
@@ -92,7 +95,7 @@ if __name__ == '__main__':
         line = line.strip()
         if line:
             ss = line.split()
-            name = ','.join([ss[x] for x in P.col_c])
+            name = ','.join([ss[x] for x in CATEGORYS])
             if c_temp:
                 if c_temp[-1][0] == name:
                     c_temp.append((name,ss))
