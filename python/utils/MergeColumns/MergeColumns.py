@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com, Wallace Wang.
 
     Usage:
-        MergeColumns.py -c ints [-t txt]
+        MergeColumns.py -c ints [-t txt] [-d txt]
         MergeColumns.py -h | --help | --version | -f | --format
 
     Notes:
@@ -16,7 +16,7 @@
     Options:
         -c ints       Successive columns to merge together. eg. 1-2|2-4.
                         Both ends included.
-                        Currently by ':'.
+        -d txt        The delimiter for merged columns, default ':'.
         -t text       The title for the new insertting column(s).
         -h --help     Show this screen.
         --version     Show version.
@@ -55,6 +55,7 @@ if __name__ == '__main__':
     ENDS    = [int(x)-1 for x in args['-c'].split('-')] #shift to 0 based.
     ENDS[1] += 1 # make both ends included.
     TITLE   = args['-t'] if args['-t'] else ''
+    delimiter = args['-d'] if args['-d'] else ':'
     # print(ENDS)
 
     for line in sys.stdin:
@@ -62,7 +63,7 @@ if __name__ == '__main__':
         if line :
             ss = line.split()
             L    = ss[:ENDS[0]]
-            M    = [':'.join(ss[ENDS[0]:ENDS[1]])]
+            M    = [delimiter.join(ss[ENDS[0]:ENDS[1]])]
             R    = ss[ENDS[1]:]
             # print(ss)
             if TITLE:
