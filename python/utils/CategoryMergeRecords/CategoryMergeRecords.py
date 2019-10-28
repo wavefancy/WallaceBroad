@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CategoryMergeRecords.py -k ints
+        CategoryMergeRecords.py -k ints [-l]
         CategoryMergeRecords.py -h | --help | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
 
     Options:
         -k ints       Column index for category, 1 based. eg. 1|1,3.
+        -l            List all the content of the merged entries.
         --version     Show version.
         -f --format   Show input/output file format example.
 """
@@ -30,15 +31,20 @@ def ShowFormat():
     '''Input File format example:'''
     print('''
 #-----INPUT-----
-1       x
-1       y
-2       1
-2       1
+1	x c
+1	y c
+2	1 t
+2	1 m
 
 # OUTPUT: -k 1
 #---------------
-1       x,y
-2       1
+1       x,y     c
+2       1       t,m
+
+# OUTPUT: -k 1 -l
+#---------------
+1       x,y     c,c
+2       1,1     t,m
     ''');
 
 if __name__ == '__main__':
@@ -50,16 +56,28 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    CATEGORYS   = [int(x)-1 for x in args['-k'].split(',')]
+    CATEGORYS     = [int(x)-1 for x in args['-k'].split(',')]
+    CATEGORYS_set = set(CATEGORYS)
+    listALL       = True if args['-l'] else False
 
     from collections import OrderedDict
     def processOne(entries):
         '''Process the content of one category'''
 
         out = []
-        for i in range(len(entries[0][1])):
-            keys = OrderedDict((k[1][i],None) for k in entries).keys()
-            out.append(','.join(keys))
+        for i in range(len(entries[0][1])): # each element of an array.
+            # iterate across the entries, and merge the values of each element.
+            # if the same value colapse as one, of not the keep the both.
+            if listALL:
+                # Columns for category name, they are the same, just pick the fist one.
+                if i in CATEGORYS_set:
+                    out.append(entries[0][1][i])
+                else:
+                    out.append(','.join([k[1][i] for k in entries]))
+
+            else:
+                keys = OrderedDict((k[1][i],None) for k in entries).keys()
+                out.append(','.join(keys))
         # print(out)
         sys.stdout.write('%s\n'%('\t'.join(out)))
 
