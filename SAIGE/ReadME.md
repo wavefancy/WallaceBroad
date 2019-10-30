@@ -20,6 +20,7 @@ devtools::install_github("weizhouUMICH/SAIGE")
 ```
 # Create a conda environment `RSAIGE8` 
 conda create -n RSAIGE8 r-essentials r-base=3.6.1 python=2.7
+conda activate RSAIGE8
 conda install -c anaconda cmake
 conda install -c conda-forge gettext lapack r-matrix
 conda install -c r r-rcpp  r-rcpparmadillo r-data.table r-bh
@@ -29,7 +30,6 @@ conda install -c anaconda boost zlib
 pip install cget click
 
 # Using method 3
-conda activate RSAIGE8
 # Open R and install package MetaSKAT
 > install.packages('MetaSKAT')
 # exit R and run bellow command
