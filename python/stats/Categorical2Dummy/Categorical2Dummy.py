@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Categorical2Dummy.py -n name [-k]
+        Categorical2Dummy.py -n name [-k] [--nd]
         Categorical2Dummy.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -18,6 +18,8 @@
     Options:
         -n name       Column name for the column to be converted.
         -k            Keep the column which was converted. Default: Skip.
+        --nd          Do not drop the first categoricy.
+                         Default drop the first to avoid multicollinearity.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -43,7 +45,7 @@ X1      C
 5       C2
 6       C2
 
-#cat test.txt |  cat test.txt | python3 Categorical2Dummy.py -n C -k
+#cat test.txt |  cat test.txt | python3 Categorical2Dummy.py -n C -k --nd
 ------------------------
 X1      C       C_C1    C_C2    C_C3
 1       C1      1       0       0
@@ -63,6 +65,7 @@ if __name__ == '__main__':
 
     CNAME = args['-n']
     KEEP  = True if args['-k'] else False
+    drop_first = False if args['--nd'] else True
     import pandas as pd
 
     data = pd.read_csv(sys.stdin,header=0,delim_whitespace=True)
@@ -70,7 +73,7 @@ if __name__ == '__main__':
         sys.stderr.write('ERROR: can not find column name in input header, key: %s\n'%(CNAME))
         sys.exit(-1)
 
-    dummy = pd.get_dummies(data[(CNAME)],prefix=CNAME)
+    dummy = pd.get_dummies(data[(CNAME)],prefix=CNAME, drop_first = drop_first)
     if not KEEP:
         cols = [x for x in data.columns if x != CNAME]
         data = data[cols]
