@@ -3,7 +3,19 @@
 SAIGE is an association test software, which supports single-variant association tests, gene-based tests (SKAT-O, SKAT, BURDEN), as well as conditional analysis based on summary statistics for both single variant and gene-based tests.
 More from [here](https://github.com/weizhouUMICH/SAIGE/wiki/Genetic-association-tests-using-SAIGE).
 
-#### Receipt for installation by conda
+
+#### (Way 1) Restore from the receipt I have created.
+- Download the `RSAIGE8.yml` in this repository
+- Restore the virtual environment, and install by `devtools`
+
+```
+conda env create -n RSAIGE9 -f RSAIGE8.yml
+conda activate RSAIGE9
+# open R and run (choose 3 no update any packages): 
+devtools::install_github("weizhouUMICH/SAIGE") 
+```
+
+#### (Way 2) Receipt for installation by conda
 
 ```
 # Create a conda environment `RSAIGE8` 
@@ -32,13 +44,4 @@ conda activate RSAIGE8
 devtools::install_github("weizhouUMICH/SAIGE") 
 ```
 
-#### Restore from the receipt I have created.
-- Download the `RSAIGE8.yml` in this repository
-- Restore the virtual environment, and install by `devtools`
 
-```
-conda env create -n RSAIGE9 -f RSAIGE8.yml
-conda activate RSAIGE9
-# open R and run (choose 3 no update any packages): 
-devtools::install_github("weizhouUMICH/SAIGE") 
-```
