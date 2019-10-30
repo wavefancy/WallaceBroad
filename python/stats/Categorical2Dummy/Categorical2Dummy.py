@@ -2,7 +2,7 @@
 
 """
 
-    Convert categorical data to dummy variable.
+    Convert categorical data to dummy variable. NA are ignored.
 
     @Author: wavefancy@gmail.com
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     KEEP  = True if args['-k'] else False
     import pandas as pd
 
-    data = pd.read_table(sys.stdin,header=0,delim_whitespace=True)
+    data = pd.read_csv(sys.stdin,header=0,delim_whitespace=True)
     if CNAME not in data.columns:
         sys.stderr.write('ERROR: can not find column name in input header, key: %s\n'%(CNAME))
         sys.exit(-1)
