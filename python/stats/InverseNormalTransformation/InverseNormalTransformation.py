@@ -21,11 +21,6 @@
     Options:
         -c txt         The column name for the column to be transformed.
         -d             Drop the original value, only keep the transformed values.
-        -a int         [1|2] Alternative for the test, default 0:'two-sided',
-                       1: 'less',     test depletion  of the first element in treat1.
-                       2: 'greater',  test enrichment of the first element in treat1.
-        --ci float     Confidence interval, default 0.95.
-        --pd int       Print int decimal points.
         -h --help      Show this screen.
         -v --version   Show version.
         -f --format    Show input/output file format example.
