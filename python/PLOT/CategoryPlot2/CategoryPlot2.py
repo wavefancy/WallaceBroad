@@ -475,9 +475,9 @@ if __name__ == '__main__':
         },
     }
     # update legend info.
-    legend = go.Layout(
-        showlegend=False
-    )
+    legend={
+        'showlegend': False
+    }
     # api: https://plot.ly/python/legend/
     if args['--lloc'] != '0':
         if args['--lloc'] == '5':
