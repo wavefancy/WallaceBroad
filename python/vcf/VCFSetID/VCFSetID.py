@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        VCFSetID.py [-i]
+        VCFSetID.py [-i] [-s]
         VCFSetID.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,6 +16,7 @@
 
     Options:
         -i              Include old rsID.
+        -s              Sort the ref and alt alleles, sorted([ref,alt])
         -h --help       Show this screen.
         -v --version    Show version.
         -f --format     Show format example.
@@ -57,10 +58,14 @@ if __name__ == '__main__':
             if output:
                 #output results.
                 ss = line.split(None, maxsplit=7)
+
+                # check if need to sort ref, alt alleles.
+                stemp = sorted(ss[3:5]) if args['-s'] else ss[3:5]
+
                 if IncludeOld:
-                    ss[2] = ss[0] + ':' + ss[1] + ':' + ss[3] + ':' + ss[4] + ':' + ss[2]
+                    ss[2] = ss[0] + ':' + ss[1] + ':' + stemp[0] + ':' + stemp[1] + ':' + ss[2]
                 else:
-                    ss[2] = ss[0] + ':' + ss[1] + ':' + ss[3] + ':' + ss[4]
+                    ss[2] = ss[0] + ':' + ss[1] + ':' + stemp[0] + ':' + stemp[1]
                 sys.stdout.write('%s\n'%('\t'.join(ss)))
                 #sys.stdout.write('%s\n'%('\t'.join([ss[x] for x in idIndex])))
 
