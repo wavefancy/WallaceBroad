@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        N2OneLine.py -n int [-q text]
+        N2OneLine.py -n int [-q text] [-d text] [-a]
         N2OneLine.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,8 +16,10 @@
 
     Options:
         -n int        Convert the number of 'int' lines to a single line.
-                          Any int >= 0, 0 means convert the whole file as a single line.
+                          Any int >= 0. 0 means convert the whole file as a single line.
         -q text       Quote each input line element by 'text'.
+        -d text       Set outpout delimiter for combined elements, default tab.
+        -a            Append an extra '-d' delimiter value at each line end.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -47,6 +49,11 @@ def ShowFormat():
 '1'     '2'
 '3'     '4'
 '5'
+
+cat test.txt | python3 ./N2OneLine.py -n 3 -d ';'
+------------------------
+1;2;3
+4;5
     ''');
 
 if __name__ == '__main__':
@@ -59,6 +66,8 @@ if __name__ == '__main__':
 
     NUM_LINE = int(args['-n'])
     QUOTE    = args['-q'] if args['-q'] else ''
+    OUT_DELIMITER = args['-d'] if args['-d'] else '\t'
+    APPEND_D = True if args['-a'] else False
 
     out = []
     for line in sys.stdin:
@@ -72,12 +81,20 @@ if __name__ == '__main__':
             else:
                 out.append(line)
                 if len(out) == NUM_LINE:
-                    sys.stdout.write('%s\n'%('\t'.join(out)))
+                    sys.stdout.write('%s'%(OUT_DELIMITER.join(out)))
+                    if APPEND_D:
+                        sys.stdout.write('%s\n'%(OUT_DELIMITER))
+                    else:
+                        sys.stdout.write('\n')
                     out = []
 
     #output the cached results in out.
     if out:
-        sys.stdout.write('%s\n'%('\t'.join(out)))
+        sys.stdout.write('%s'%(OUT_DELIMITER.join(out)))
+        if APPEND_D:
+            sys.stdout.write('%s\n'%(OUT_DELIMITER))
+        else:
+            sys.stdout.write('\n')
 
 sys.stdout.flush()
 sys.stdout.close()
