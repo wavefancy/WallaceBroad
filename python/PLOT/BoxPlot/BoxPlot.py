@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--ylfs int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers] [--atext txt] [--atr int]
+        BoxPlot.py -y ytitle -o outname [-x xtitle ] [--yerr ycol] [--yr yrange] [--hl hline] [--xls int] [--ylfs int] [--rm int] [--lm int] [--rx int] [--ry int] [--ms msize] [--over] [--bm bmargin] [--ha hanno] [--ady ady] [--haw float] [--hat int] [--cl colors] [--ydt float] [--c2] [--yt txt] [--nobox] [--nooutliers] [--atext txt] [--atr int] [--ngy] [--sy]
         BoxPlot.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -47,6 +47,8 @@
         --ydt float   Set the tick distance on y axis.
         --c2          Set the input data format as 2 columns format.
         --yt txt      Tranform the scale of y, default no. Support: log.
+        --ngy         No show grid line for Y axis. Default show Y grid background line.
+        --sy          Show Y axis, default no show.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -147,6 +149,12 @@ if __name__ == '__main__':
     TextAnnoRotation = int(args['--atr']) if args['--atr'] else 0
 
     format2 = True if args['--c2'] else False
+    GRID_Y  = False if args['--ngy'] else True
+    SHOWY = False
+    YTICKLEN = 0
+    if args['--sy']:
+        SHOWY = True
+        YTICKLEN = 5
 
     commands = {'vl'}
     data = [] #[[name, val1,val2 ..], [name, val1, val2...]]
@@ -258,22 +266,26 @@ if __name__ == '__main__':
             title=ytitle,
             type=transformY,
             # autorange=True,
-            showgrid=True,
+            showgrid=GRID_Y,
             color   ='black',
             zeroline=False,
+            # zeroline=True,
             tickangle=ry,
             dtick=ydt,
+            showline=SHOWY,
+            ticklen=YTICKLEN,
             # gridcolor='rgb(255, 255, 255)',
             #gridwidth=1,
             zerolinecolor='rgb(255, 255, 255)',
             zerolinewidth=2,
             range=yrange,
-            title!font=dict(
+            titlefont=dict(
                 size = ylfs
             )
         ),
         xaxis=dict(
             ticks='outside',
+            # zeroline=True,
             # tickvals=[-0.3,0.7],
             # ticktext=['c1','c2'],
             tickvals=tickvals,
