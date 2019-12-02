@@ -100,7 +100,7 @@ def runApp():
 
     COMMENTS = args['--cs'] if args['--cs'] else '#'
     for line in sys.stdin:
-        line = line.strip('\n')
+        line = line.strip()
         if line:
             if P.copyComments:
                 if line.startswith(COMMENTS):
@@ -202,7 +202,7 @@ if __name__ == '__main__':
         P.title = True
         P.First = False # -t mode, do not need expand.
         P.tArray = args['-t'].split(',')
-    
+
     if args['-r']:
         P.reverseSelection = True
 
