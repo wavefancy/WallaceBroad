@@ -23,6 +23,8 @@
                        1sub: val -> 1-val
                        plus1int: val -> val+1 (parse value as int, output also int, only work for int value.)
                        entropy: val -> -1*val*math.log10(val)
+                       LODP: linkage LOD score to P value.
+                       LODX2: linkage LOD score to chisq value, degree of one.
         -h --help      Show this screen.
         -v --version   Show version.
         -f --format    Show input/output file format example.
@@ -50,13 +52,14 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     P.col = int(args['-c']) -1
-    P.action = args['-t']
-    tMap = {'maf','nlog','nint','1sub', 'plus1int','entropy','log'}
+    P.action = args['-t'].lower()
+    tMap = {'maf','nlog','nint','1sub', 'plus1int','entropy','log','lodp','lodx2'}
     if P.action not in tMap:
         sys.stderr.write('Transformer "%s" not supported! Please check!\n'%(P.action))
         sys.exit(-1)
 
     import math
+    from scipy import stats
     for line in sys.stdin:
         line = line.strip()
         if line:
@@ -108,6 +111,27 @@ if __name__ == '__main__':
                     ss[P.col] = '%.4e'%(math.log(val))
                 except ValueError:
                     ss[P.col] = 'NA'
+            elif P.action == 'lodp':
+                # https://www.biostars.org/p/88495/
+                # pchisq(x*(2*log(10)),df=1,lower.tail=FALSE)/2
+                # We only need test single tail.
+                try:
+                    val = float(ss[P.col])
+                    val = val * 4.6 # (2*ln10) = 4.6
+                    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html
+                    # convert chi2 to P value.
+                    p = stats.chi2.sf(val, 1) / 2
+                    ss[P.col] = '%g'%(p)
+                except ValueError:
+                    ss[P.col] = 'LODP'
+            elif P.action == 'lodx2':
+                # https://www.biostars.org/p/88495/
+                try:
+                    val = float(ss[P.col])
+                    val = val * 4.6 # (2*ln10) = 4.6
+                    ss[P.col] = '%g'%(val)
+                except ValueError:
+                    ss[P.col] = 'LODX2'
 
             sys.stdout.write('%s\n'%('\t'.join(ss)))
 
