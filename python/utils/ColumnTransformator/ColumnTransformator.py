@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        ColumnTransformator.py -c col -t transformer
+        ColumnTransformator.py -c col -t transformer [-f text]
         ColumnTransformator.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,14 +20,16 @@
                        nlog: negative log. val --> -1.0 * math.log10(float(val))
                        log: val -> math.log(val), log base as e.
                        nint: nearst int value.
-                       1sub: val -> 1-val
+                       subfrom1: val -> 1-val
                        plus1int: val -> val+1 (parse value as int, output also int, only work for int value.)
                        entropy: val -> -1*val*math.log10(val)
                        LODP: linkage LOD score to P value.
                        LODX2: linkage LOD score to chisq value, degree of one.
+                       format: apply the '-f' format pattern to the value.
+        -f text        Format string for output, eg: %.4e| %.4f default: %g.
         -h --help      Show this screen.
         -v --version   Show version.
-        -f --format    Show input/output file format example.
+        --format    Show input/output file format example.
 """
 import sys
 from docopt import docopt
@@ -39,10 +41,6 @@ def ShowFormat():
     print('''
     ''');
 
-class P(object):
-    col = -1
-    action = ''
-
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
     #print(args)
@@ -51,11 +49,54 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    P.col = int(args['-c']) -1
-    P.action = args['-t'].lower()
-    tMap = {'maf','nlog','nint','1sub', 'plus1int','entropy','log','lodp','lodx2'}
-    if P.action not in tMap:
-        sys.stderr.write('Transformer "%s" not supported! Please check!\n'%(P.action))
+    COL = int(args['-c']) -1
+    ACTION = args['-t'].lower()
+    FORMATS = args['-f'] if args['-f'] else '%g'
+
+#### ***** Define the function map for transformer ****####
+    # https://stackoverflow.com/questions/9168340/using-a-dictionary-to-select-function-to-execute
+    # Dynamically define dictionary, map function.
+    Transformers = {}
+    trans = lambda f: Transformers.setdefault(f.__name__, f)
+    @trans
+    def maf(v):
+        return FORMATS%(min(v, 1-v))
+    @trans
+    def nlog(v):
+        t = -1.0 * math.log10(v); return FORMATS%(t)
+    @trans
+    def nint(v):
+        t = int(float(v)+0.5 ); return '%d'%(t)
+    @trans
+    def subfrom1(val):
+        return FORMATS%(1-val)
+    @trans
+    def plus1int(v):
+        return '%d'%(v+1)
+    @trans
+    def entropy(v):
+        return FORMATS%(-1*v*math.log10(v))
+    @trans
+    def log(val):
+        return FORMATS%(math.log(val))
+    @trans
+    def lodp(val):
+        val = val * 4.6 # (2*ln10) = 4.6
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html
+        # convert chi2 to P value.
+        p = stats.chi2.sf(val, 1) / 2
+        return FORMATS%(p)
+    @trans
+    def lodx2(val):
+        val = val * 4.6 # (2*ln10) = 4.6
+        return FORMATS%(val)
+    @trans
+    def format(val):
+        return FORMATS%(val)
+#### *****END Define the function map for transformer ****####
+
+    if ACTION not in Transformers.keys():
+        sys.stderr.write('Transformer "%s" is not supported! Please check!\n'%(ACTION))
         sys.exit(-1)
 
     import math
@@ -64,75 +105,11 @@ if __name__ == '__main__':
         line = line.strip()
         if line:
             ss = line.split()
-            if P.action == 'nlog':
-                try:
-                    ss[P.col] = -1.0 * math.log10(float(ss[P.col]))
-                    ss[P.col] = '%.4e'%(ss[P.col])
-                except ValueError:
-                    sys.stderr.write('WARNING: Can not parse float value or value 0 in line: %s\n'%(line))
-            elif P.action == 'nint':
-                try:
-                    ss[P.col] = int( float(ss[P.col])+0.5 )
-                    ss[P.col] = '%d'%(ss[P.col])
-                except ValueError:
-                    sys.stderr.write('WARNING: Can not parse float value in line: %s\n'%(line))
-
-            elif P.action == 'maf':
-                try:
-                    val = float(ss[P.col])
-                    ss[P.col] = '%.4f'%(min(val, 1-val))
-                except ValueError:
-                    ss[P.col] = 'NA'
-
-            elif P.action == '1sub':
-                try:
-                    val = float(ss[P.col])
-                    ss[P.col] = '%.4f'%(1-val)
-                except ValueError:
-                    ss[P.col] = 'NA'
-
-            elif P.action == 'plus1int':
-                try:
-                    val = int(ss[P.col])
-                    ss[P.col] = '%d'%(val+1)
-                except ValueError:
-                    pass #directly copy to stdout.
-
-            elif P.action == 'entropy':
-                try:
-                    val = float(ss[P.col])
-                    ss[P.col] = '%.4e'%(-1*val*math.log10(val))
-                except ValueError:
-                    pass #directly copy to stdout.
-
-            elif P.action == 'log':
-                try:
-                    val = float(ss[P.col])
-                    ss[P.col] = '%.4e'%(math.log(val))
-                except ValueError:
-                    ss[P.col] = 'NA'
-            elif P.action == 'lodp':
-                # https://www.biostars.org/p/88495/
-                # pchisq(x*(2*log(10)),df=1,lower.tail=FALSE)/2
-                # We only need test single tail.
-                try:
-                    val = float(ss[P.col])
-                    val = val * 4.6 # (2*ln10) = 4.6
-                    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html
-                    # convert chi2 to P value.
-                    p = stats.chi2.sf(val, 1) / 2
-                    ss[P.col] = '%g'%(p)
-                except ValueError:
-                    ss[P.col] = 'LODP'
-            elif P.action == 'lodx2':
-                # https://www.biostars.org/p/88495/
-                try:
-                    val = float(ss[P.col])
-                    val = val * 4.6 # (2*ln10) = 4.6
-                    ss[P.col] = '%g'%(val)
-                except ValueError:
-                    ss[P.col] = 'LODX2'
-
+            try:
+                ss[COL] = Transformers[ACTION](float(ss[COL]))
+            except ValueError:
+                sys.stderr.write('WARNING: Can not parse number in line: %s\n'%(line))
+                ss[COL] = ACTION
             sys.stdout.write('%s\n'%('\t'.join(ss)))
 
 sys.stdout.flush()
