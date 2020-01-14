@@ -23,6 +23,7 @@ Options:
 suppressMessages(library(Publish))
 suppressMessages(library(tidyverse))
 suppressMessages(library(docopt))
+suppressMessages(library(rio))
 
 opts <- docopt(doc)
 # what are the options? Note that stripped versions of the parameters are added to the returned list
@@ -40,11 +41,13 @@ if(is.null(opts$x) == F){
   xname = opts$x
 }
 
-data = read.table(file("stdin"),header = T,sep="\t")
+# check.names = F, to make the header can contain special characters.
+data = read.table(file("stdin"),header = T,sep="\t", check.names = FALSE)
 str(colnames(data))
 colnames(data) = str_replace_all(colnames(data),'X_n_','\n')
 colnames(data) = str_replace_all(colnames(data),'_n_','\n')
 str(colnames(data))
+str(data)
 
 rnames = c('BETA','BETAL','BETAR') #columns for required.
 # TEXTs to toshow
