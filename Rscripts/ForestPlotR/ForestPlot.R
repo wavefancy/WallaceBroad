@@ -3,7 +3,7 @@ Generate Forest Plot by the Publish package.
 
 Notes:
   * Read data from stdin and output results to files.
-  * The "BETA,BETAL,BETAR" are required 3 colums, for beta and betaCI.
+  * The "OR,CIL,CIR" are required 3 colums, for OR and ORCI.
   * All the other colums are copied and to show on the plot.
   * INPUT format are tsv file.
 
@@ -38,7 +38,7 @@ group = NA
 if(is.null(opts$g) == F){
   group = opts$g
 }
-xname = 'Log(Odds Ratio)'
+xname = 'Odds Ratio'
 if(is.null(opts$x) == F){
   xname = opts$x
 }
@@ -52,7 +52,8 @@ data = read.table(file("stdin"),header = T,sep="\t", check.names = FALSE)
 colnames(data) = str_replace_all(colnames(data),'X_n_','\n')
 colnames(data) = str_replace_all(colnames(data),'_n_','\n')
 
-rnames = c('BETA','BETAL','BETAR') #columns for required.
+#rnames = c('BETA','BETAL','BETAR') #columns for required.
+rnames = c('OR','CIL','CIR') #columns for required.
 # TEXTs to toshow
 texts = data %>% select(-!!rnames) %>% as.data.table()
 if( is.na(group) == F){
@@ -62,16 +63,17 @@ if( is.na(group) == F){
 #pdf(paste0(oname, '.pdf'),width=9,height=4.5,pointsize=16)
 pdf(ofile,width=W, height=H, pointsize=16)
 
-if(is.null(opts$xlim) == F){
+if(is.null(opts$xlim) == F){ # set the X lim.
   plotConfidence(
-                  x = data$BETA,lower = data$BETAL, upper = data$BETAR
+                  #x = data$BETA,lower = data$BETAL, upper = data$BETAR
+                  x = data$OR,lower = data$CIL, upper = data$CIR
                   ,labels = texts
                   #,title.labels=tnames
                   ,xlab = xname
                   ,xaxis.cex=1.0    # font size for x axis.
                   ,xlab.cex=0.8     # font size for x label.
                   ,xlab.line=1.8    # The space between X label with X tick values.
-  #               ,plot.log="x"
+                  ,plot.log="x"
                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
                   ,order=c(1,2,3)
                   ,xratio=c(0.8,0.1)
@@ -92,14 +94,15 @@ if(is.null(opts$xlim) == F){
   )
 }else{
   plotConfidence(
-                  x = data$BETA,lower = data$BETAL, upper = data$BETAR
+                  #x = exp(data$BETA),lower = exp(data$BETAL), upper = exp(data$BETAR)
+                  x = data$OR,lower = data$CIL, upper = data$CIR
                   ,labels = texts
                   #,title.labels=tnames
                   ,xlab = xname
                   ,xaxis.cex=1.0    # font size for x axis.
                   ,xlab.cex=0.8     # font size for x label.
                   ,xlab.line=1.8    # The space between X label with X tick values.
-  #               ,plot.log="x"
+                  ,plot.log="x"
                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
                   ,order=c(1,2,3)
                   ,xratio=c(0.8,0.1)
