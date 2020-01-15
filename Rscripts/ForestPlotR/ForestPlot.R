@@ -78,7 +78,7 @@ if(is.null(opts$xlim) == F){ # set the X lim.
                   ,order=c(1,2,3)
                   ,xratio=c(0.8,0.1)
 
-                  ,refline = 0,refline.col='black',refline.lty=2
+                  ,refline = 1,refline.col='black',refline.lty=2
                   ,xlim=xlim
                   ,y.title.offset=2.3 # the vertical space between title line with value.
                   ,section.sep=0.6    # the space between groups(splits).
@@ -107,7 +107,7 @@ if(is.null(opts$xlim) == F){ # set the X lim.
                   ,order=c(1,2,3)
                   ,xratio=c(0.8,0.1)
 
-                  ,refline = 0,refline.col='black',refline.lty=2
+                  ,refline = 1,refline.col='black',refline.lty=2
                   # ,xlim=NULL
                   ,y.title.offset=2.3 # the vertical space between title line with value.
                   ,section.sep=0.6    # the space between groups(splits).
