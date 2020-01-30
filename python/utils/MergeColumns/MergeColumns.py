@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com, Wallace Wang.
 
     Usage:
-        MergeColumns.py -c ints [-t txt] [-d txt]
+        MergeColumns.py -c ints [-t txt] [-d txt] [-m] [--cs txt]
         MergeColumns.py -h | --help | --version | -f | --format
 
     Notes:
@@ -18,6 +18,9 @@
                         Both ends included.
         -d txt        The delimiter for merged columns, default ':'.
         -t text       The title for the new insertting column(s).
+        -m            Open copy model, directly copy comments to stdout.
+        --cs txt      Set the comment start string as 'txt', default it's '#'.
+
         -h --help     Show this screen.
         --version     Show version.
         -f --format   Show input/output file format example.
@@ -56,11 +59,18 @@ if __name__ == '__main__':
     ENDS[1] += 1 # make both ends included.
     TITLE   = args['-t'] if args['-t'] else ''
     delimiter = args['-d'] if args['-d'] else ':'
-    # print(ENDS)
+    COMMENTS = args['--cs'] if args['--cs'] else '#'
+    COPY_COMMENTS = True   if args['-m'] else False
 
     for line in sys.stdin:
         line = line.strip()
         if line :
+            if COPY_COMMENTS:
+                if line.startswith(COMMENTS):
+                    sys.stdout.write('%s\n'%(line))
+                    continue
+
+            # start process non comment lines.
             ss = line.split()
             L    = ss[:ENDS[0]]
             M    = [delimiter.join(ss[ENDS[0]:ENDS[1]])]
