@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CatVCFs.py <file.vcf.gz>...
+        CatVCFs.py [<file.vcf.gz>...]
         CatVCFs.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -57,9 +57,17 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
+    # read file names from stdin or from parameters.
+    names = args['<file.vcf.gz>'] if args['<file.vcf.gz>'] else []
+    if not names:
+        for line in sys.stdin:
+            line = line.strip()
+            if line:
+                names.append(line)
+
     import gzip
     files = []
-    for f in args['<file.vcf.gz>']:
+    for f in names:
         if f.endswith('.gz'):
             files.append(gzip.open(f, 'rt'))
         else:
