@@ -4,6 +4,7 @@
 ##
 ## Do multiple linear regression, output residuals.
 ## Read data with header from stdin, and output results to stdout.
+## ** Add one more column for the residuals, named as RESIDUALS.
 ## The first column is the dependent variable.
 ## From second to last, are independent variables.
 
@@ -23,4 +24,5 @@ form = sub('\\+','~',paste(colnames(dd), collapse = '+'))
 write(c("FORMULA:",form), stderr())
 
 lr = lm(as.formula(form),data = dd)
-write.table(resid(lr),"",row.names=F,col.names=F)
+dd$RESIDUALS = resid(lr)
+write.table(dd ,"",row.names=F,col.names=T,quote=F)
