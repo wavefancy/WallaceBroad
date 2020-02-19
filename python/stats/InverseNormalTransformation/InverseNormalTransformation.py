@@ -44,14 +44,14 @@ b 2 2
 c 2 NA
 d 3 4
 
-# cat test.txt | python3 ./InverseNormalTransformation.py  -c B
+# cat test.txt | python3 ./InverseNormalTransformation.py -c B
 -----------------------------
 A       B       C       B_INV
 a       1       1       -1.15035
 b       2       2       -0.318639
 c       2       NA      0.318639
 d       3       4       1.15035
-    ''');
+''')
 
 # code base from:
 # https://github.com/edm1/rank-based-INT/blob/master/rank_based_inverse_normal_transformation.py
