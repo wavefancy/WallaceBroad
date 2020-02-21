@@ -122,14 +122,15 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    data = pd.read_csv(sys.stdin,header=0,delim_whitespace=True)
+    # read in the data in str format.
+    data = pd.read_csv(sys.stdin,header=0,delim_whitespace=True, dtype='str')
     cname = args['-c']
     if cname not in data.columns.values:
         sys.stderr.write('ERROR: Can not find column name: %s\n'%(cname))
         sys.exit(-1)
 
-    # print(type(data[cname]))
-    ivt_data = rank_INT(data[cname], 0.5, True)
+    # convert string to float for a certain column.
+    ivt_data = rank_INT(data[cname].astype('float'), 0.5, True)
     if args['-d']:
         data[cname] = ivt_data
     else:
