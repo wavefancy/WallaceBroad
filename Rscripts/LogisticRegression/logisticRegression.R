@@ -1,27 +1,43 @@
 #!/usr/bin/env Rscript
-
-# Rscript ~/Rscripts/logisticRegression.R [interactions]
-
-# Do logistic regression by R, possible add interaction terms by the first parameter.
-# [interactions] example: T1*T2,T3*T4 | T1*T2
-#------------------------------
-# Read data from stdin, auto generate formula based on input title.
-# The basic model regress the first(0/1) binary variables to all the other input as covariates.
-# Add interaction term thereafter by parameter1.
-
-# Output results to stdout.
 # @Wallace Wang, wavefancy@gmail.com
 #------------------------------
 
-#library(GenABEL)
+"
+=======================================================================================
+Do logistic regression by R, with the function to add interaction terms.
 
-args <- commandArgs(TRUE)
+Usage:
+    logisticRegression.R [-i interactions] [-c] [-r]
+    logisticRegression.R -h [--help]
+
+Options:
+   -i interactions    Add the interaction terms in the model. example: T1*T2,T3*T4 | T1*T2.
+   -c                 Output 95CI for the effects of each predictors.
+   -r                 Output R2 measures for logistic model: 
+                          CoxSnellR2, NagelkerkeR2, McFaddenR2 and TjurR2.
+
+Notes:
+    1. Read data from stdin, auto generate formula based on input title.
+       The basic model regress the first(0/1) binary variables to all the other input as covariates.
+    2. Read data from stdin and output results to stdout.
+=======================================================================================
+" -> doc
+
+suppressMessages(library(docopt))
+suppressMessages(library(pROC))
+
+opts <- docopt(doc)
+# print(opts)
+
+# whether add covariates.
 inter = c()
-if(length(args) == 1){
-    inter = unlist(strsplit(args[1],','))
+if(is.null(opts$i) == F){
+  inter = unlist(strsplit(opts$i,','))
 }
-# col = as.numeric(args[1])
 
+# whether add CI to the output. c and r are logic in c.
+outCI = opts$c
+outR2 = opts$r
 
 ## Calculate of Nagelkerke R2.
 ## Do logistic regression, output summary statistics and also several correlation metrics.
@@ -84,20 +100,30 @@ lr = glm(as.formula(form),data = dd, family = binomial(link="logit"))
 summary(lr)
 
 # Calculate 95CI.
-x= confint(lr)
-y = as.data.frame(x)
-y$CI='95CI'
-y
+if(outCI == T){
+    cat('----------------\n')
+    x= confint(lr)
+    y = as.data.frame(x)
+    y$CI='95CI'
+    y
+}
 
 # Calculate R2
-r2 = RsqGLM(model=lr)
-str(r2, comp.str = "")
+if(outR2 == T){
+    cat('----------------\n')
+    r2 = RsqGLM(model=lr)
+    str(r2, comp.str = "")
+}
 
 # Calculate AUC
 # https://stackoverflow.com/questions/18449013/r-logistic-regression-area-under-curve
 prob=predict(lr,type=c("response"))
-library("ROCR")
-#print(colnames(dd)[1])
-pred <- prediction(prob, dd[[colnames(dd)[1]]])
-auc.perf = performance(pred, measure = "auc")
-print(c("AUC:",auc.perf@y.values[[1]]),quote=F)
+# Using the ROCR package.
+# pred <- prediction(prob, dd[[colnames(dd)[1]]])
+# auc.perf = performance(pred, measure = "auc")
+# print(c("AUC:",auc.perf@y.values[[1]]),quote=F)
+
+# Using the pROC package.
+roc_obj = roc(dd[[colnames(dd)[1]]], prob)
+cat('----------------\n')
+auc(roc_obj)
