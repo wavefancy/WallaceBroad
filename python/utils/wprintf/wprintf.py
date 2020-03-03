@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        wprintf.py <pattern> [-l]
+        wprintf.py <pattern> [-l] [-s]
         wprintf.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -14,6 +14,7 @@
     Options:
         -d pattern    The string pattern for format output.
         -l            Collapse the output as a single line.
+        -s            Set the place holder as [], instead of {}.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -37,6 +38,7 @@ cat test.txt | python3 ./wprintf.py 'A{} B{} C{}' -l
 A1 B2 C3 AK BL CM
 
 cat test.txt | python3 ./wprintf.py 'A{} B{} C{}'
+cat test.txt | python3 ./wprintf.py 'A[] B[] C[]' -s
 ------------------------
 A1 B2 C3
 AK BL CM
@@ -52,6 +54,9 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     stingpattern = args['<pattern>']
+    if(args['-s']):
+        stingpattern = stingpattern.replace('[','{').replace(']','}')
+
     out_array = []
     for line in sys.stdin:
         line = line.strip()
