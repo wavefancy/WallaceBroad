@@ -48,7 +48,9 @@ if __name__ == '__main__':
     if args['-n']:
         P.start = int(args['-n'])
     if args['-e']:
-        P.end = int(args['-e'])
+        # 9223372036854775807
+        # https://stackoverflow.com/questions/7604966/maximum-and-minimum-values-for-ints
+        P.end = sys.maxsize if args['-e'].lower().startswith('e') else int(args['-e'])
     if args['-a']:
         P.end = P.start + int(args['-a'])
     if args['-r']:
