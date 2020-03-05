@@ -78,7 +78,7 @@ if __name__ == '__main__':
                     break
             else:
                 if temp > P.end:
-                 break;
+                    break
 
                 if temp >= P.start:
                     sys.stdout.write(line)
