@@ -48,7 +48,7 @@ def ShowFormat():
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
-    print(args)
+    # print(args)
     # sys.exit(-1)
 
     if(args['--format']):
