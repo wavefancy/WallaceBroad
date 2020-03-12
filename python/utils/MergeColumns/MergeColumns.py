@@ -48,7 +48,7 @@ def ShowFormat():
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
-    # print(args)
+    print(args)
     # sys.exit(-1)
 
     if(args['--format']):
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     ENDS    = [int(x)-1 for x in args['-c'].split('-')] #shift to 0 based.
     ENDS[1] += 1 # make both ends included.
     TITLE   = args['-t'] if args['-t'] else ''
-    delimiter = args['-d'] if args['-d'] else ':'
+    delimiter = args['-d'] if args['-d'] is not None else ':'
     COMMENTS = args['--cs'] if args['--cs'] else '#'
     COPY_COMMENTS = True   if args['-m'] else False
 
