@@ -54,6 +54,7 @@ class P(object):
     title = False
     tArray = [] # title parameters.
     delimiter = ''
+    odelimiter = '\t' # default tab, using the same as delimiter if set.
     #toEnd = False #output all the column from a starting point.
     First = True
     copyComments = False
@@ -149,7 +150,8 @@ def runApp():
             if P.aVal:
                 s_n  = [addValue(x) for x in s_n]
 
-            sys.stdout.write('\t'.join(s_n))
+            #sys.stdout.write('\t'.join(s_n))
+            sys.stdout.write(P.odelimiter.join(s_n))
             sys.stdout.write('\n')
 
     sys.stdout.close()
@@ -163,6 +165,7 @@ if __name__ == '__main__':
         P.delimiter = args['-d']
         if P.delimiter == 'tab':
             P.delimiter = '\t'
+        P.odelimiter = P.delimiter
 
     if args['-c']:
         P.copyComments = True
