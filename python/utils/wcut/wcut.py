@@ -101,7 +101,7 @@ def runApp():
 
     COMMENTS = args['--cs'] if args['--cs'] else '#'
     for line in sys.stdin:
-        line = line.strip()
+        #line = line.strip()
         if line:
             if P.copyComments:
                 if line.startswith(COMMENTS):
