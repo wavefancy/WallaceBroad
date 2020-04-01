@@ -1,5 +1,5 @@
 # Test for line header has two lines.
 # Have to make every column to show has two lines.
-# cat forest.middle-wgs.txt | Rscript ./ForestPlot.R -o test.pdf -W 9 -H 4.5 -g GROUP
-cat forest.middle_UKB_V2_sw.txt | Rscript ./ForestPlot.R -o test_UKB_sw.pdf -W 9 -H 4.5 -g GROUP
-#cat forest.middle_UKB_V2_ws.txt | Rscript ./ForestPlot.R -o test_UKB_ws.pdf -W 9 -H 4.5 -g GROUP --xlim 0,2.5
+ cat ./two_line_title_group.txt | Rscript ./ForestPlot.R -o two_line_title_group.pdf -W 9 -H 4.5 -g GROUP && open two_line_title_group.pdf
+ cat ./two_line_title_nogroup.txt | Rscript ./ForestPlot.R -o two_line_title_nogroup.pdf -W 9 -H 2.5 && open two_line_title_nogroup.pdf
+ cat ./one_line_title_nogroup.txt | Rscript ./ForestPlot.R -o one_line_title_nogroup.pdf -W 12 -H 3 && open one_line_title_nogroup.pdf
