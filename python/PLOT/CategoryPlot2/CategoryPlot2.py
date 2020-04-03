@@ -11,7 +11,7 @@
 
     Notes:
         1. Read results from stdin, and output results to stdout.
-        2. See example by -f.
+        2. Some functions were driven by 'COMMAND', See example by -f.
 
     Options:
         -x xtitle
@@ -507,6 +507,7 @@ if __name__ == '__main__':
     #print(legend)
     layout.update(legend)
 
+    # add for horizontal lines.
     hl_data = []
     if hlines:
         for y in hlines:
@@ -557,7 +558,7 @@ if __name__ == '__main__':
                     }
                 }
             )
-
+    # add for vertical lines.
     vl_data = []
     if vlines:
         for y in vlines:
@@ -581,7 +582,8 @@ if __name__ == '__main__':
     if alllines:
         h = {'shapes':alllines}
         layout.update(h)
-
+    
+    # layout update for y axis.
     yudict = dict(
         dtick = ydt, # '' empty string means auto ticks
         # autotick = True,
