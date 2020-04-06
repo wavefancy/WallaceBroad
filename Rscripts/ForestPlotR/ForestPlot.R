@@ -8,7 +8,7 @@ Notes:
   * INPUT format are tsv file.
 
 Usage:
-  ForestPlot.R -o <filename> -W float -H float [-g name] [-x xlabel] [--xlim nums]
+  ForestPlot.R -o <filename> -W float -H float [-g name] [-x xlabel] [--xlim nums] [--xr xratio]
 
 Options:
   -o <filename> Output file name, in pdf format. eg. example.pdf
@@ -16,6 +16,7 @@ Options:
   -H float      The height of the output figure.
   -g name       Split the input by "name", plot each susbset by a section.
   -x xlabel     Set the X label name, default "Log(Odds Ratio)".
+  --xr xratio   Set the ratio of text panel, default 0.8.
   --xlim nums   Set the xlim, num1,num2
 
   ' -> doc
@@ -45,6 +46,10 @@ if(is.null(opts$x) == F){
 xlim = c()
 if(is.null(opts$xlim) == F){
   xlim = as.numeric(unlist(strsplit(opts$xlim,',')))
+}
+myxratio=0.8
+if(is.null(opts$xratio) == F){
+  myxratio = as.numeric(opts$xratio)
 }
 
 # check.names = F, to make the header can contain special characters.
@@ -680,8 +685,9 @@ if(is.null(opts$xlim) == F){ # set the X lim.
                   ,xlab.line=1.8    # The space between X label with X tick values.
                   ,plot.log="x"
                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-                  ,order=c(1,2,3)
-                  ,xratio=c(0.8,0.1)
+                  #,order=c(1,2,3)
+                  #,xratio=c(0.8,0.1)
+                  ,xratio=myxratio
                   ,refline = 1,refline.col='black',refline.lty=2
                   ,refline.y.extend=refline.y.extend
                   ,xlim=xlim
@@ -710,9 +716,9 @@ if(is.null(opts$xlim) == F){ # set the X lim.
                   ,xlab.line=1.8    # The space between X label with X tick values.
                   ,plot.log="x"
                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-                  ,order=c(1,2,3)
-                  ,xratio=c(0.8,0.1)
-
+                  #,order=c(1,2,3)
+                  #,xratio=c(0.8,0.01)
+                  ,xratio=myxratio
                   ,refline = 1 ,refline.col='black',refline.lty=2
                   ,refline.y.extend=refline.y.extend
                   # ,xlim=NULL
