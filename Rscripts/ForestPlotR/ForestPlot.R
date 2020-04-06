@@ -48,8 +48,8 @@ if(is.null(opts$xlim) == F){
   xlim = as.numeric(unlist(strsplit(opts$xlim,',')))
 }
 myxratio=0.8
-if(is.null(opts$xratio) == F){
-  myxratio = as.numeric(opts$xratio)
+if(is.null(opts$xr) == F){
+  myxratio = as.numeric(opts$xr)
 }
 
 # check.names = F, to make the header can contain special characters.
