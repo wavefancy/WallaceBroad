@@ -90,7 +90,7 @@ def runApp():
 
         #output title line
         s_out = [ss[i] for i in P.outArrayId]
-        sys.stdout.write('\t'.join(s_out))
+        sys.stdout.write(P.odelimiter.join(s_out))
         sys.stdout.write('\n')
 
     def addValue(x):
