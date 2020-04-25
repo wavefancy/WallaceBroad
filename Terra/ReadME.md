@@ -11,12 +11,12 @@
 
 ### Derived ngs tools Docker image
 - Ported own python scripts and R scripts tools
-- update bash config files
+- Update bash config files
   - fix time Zone: `export TZ=America/New_York`
   - installed tmux, and tmux session save plugin [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect).
   - installed vim and plugins, fixed various problem.
   - fix vim color issue in tmux: `export TERM=xterm-256color`
     [Ref here](https://vi.stackexchange.com/questions/10708/no-syntax-highlighting-in-tmux)
     
-  - Installed ipython [bash kernel](https://github.com/takluyver/bash_kernel).
+- Installed ipython [bash kernel](https://github.com/takluyver/bash_kernel).
   
