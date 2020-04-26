@@ -19,4 +19,4 @@
     [Ref here](https://vi.stackexchange.com/questions/10708/no-syntax-highlighting-in-tmux)
     
 - Installed ipython [bash kernel](https://github.com/takluyver/bash_kernel).
-  
+- Add `body` function to bash config, [more details](https://unix.stackexchange.com/questions/11856/sort-but-keep-header-line-at-the-top).  
