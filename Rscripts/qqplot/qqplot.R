@@ -14,7 +14,7 @@
 Generate QQ plot based on input P values.
 
 Usage:
-    qqplot.R [-g <genes>] -o <filename> [--xlim nums] [--ylim nums] [--sy float] [--yb floats] [--ybl txts]
+    qqplot.R [-g <genes>] -o <filename> [--xlim nums] [--ylim nums] [--sy float] [--yb floats] [--ybl txts] [--tp float]
     qqplot.R -h [--help]
 
 Options:
@@ -24,6 +24,7 @@ Options:
    --yb floats   Set the tick breaks for Y axis.
    --ybl txts    Set the tick texts for Y axis.
    --sy float    The distance for shift on the Y axis, default 0.5.
+   --tp float    Horizontal line threshold for significance, [2.5e-6]. 
    -o <filename> Output file name, in pdf format. eg. example.pdf
 
 Notes:
@@ -83,11 +84,13 @@ gg_qqplot = function(df, genes, ci=0.95) {
   log10Po = expression(paste("Observed -log"[10], plain(P)))
   df$Label=""
   df$Label[df$GENENAME %in% genes]=as.character(df$GENENAME[df$GENENAME %in% genes])
-  thresh=thresh=log10(2.5e-6)*-1
+  thresh=log10(2.5e-6)*-1
+  if(is.null(opts$tp) == F){thresh = log10(as.numeric(opts$tp))*-1.0}
   gg = ggplot(df) +
     geom_abline(intercept=0, slope=1, alpha=0.5,size=2) +
     geom_point(aes(expected, observed), shape=19, alpha=0.7,size=4,color='darkblue') +
     # geom_point(aes(expected, observed), shape=21, alpha=0.7,size=4,color='black') +
+    # add the horizontal line.
     geom_hline(yintercept=thresh,color='red',size=0.7,,linetype='dashed') +
     xlab(log10Pe) +
     ylab(log10Po)+
