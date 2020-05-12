@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--tm topmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str] [--title txt] [--logY] [--errorw int]
+        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--tm topmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str] [--title txt] [--logY] [--errorw int] [--nogrid]
         CategoryPlot2.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -51,6 +51,7 @@
         --flc color   Fitting line color, default red.
         --op          Set open box, no right and top axis.
         --font str    Change the text font.
+        --nogrid      Hidden background grid line.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -107,6 +108,7 @@ if __name__ == '__main__':
     xtickangle = None
 
     errorBarWidth = int(args['--errorw']) if args['--errorw'] else 3
+    showGrid = False if args['--nogrid'] else True
     yrange = None
     ydt = '' # Distance between y ticks.
     xdt = '' # Distance between x ticks.
@@ -459,7 +461,7 @@ if __name__ == '__main__':
             'range'   : Xrange,
             'color'   :'black',
             #       range=[0, 500],
-            'showgrid':True,
+            'showgrid':showGrid,
             'showline':True,
             'ticks'   : 'outside',
             'showticklabels' : True,
@@ -598,7 +600,7 @@ if __name__ == '__main__':
         color   ='black',
         #type = 'linear',
         type = logY,
-        # showgrid = True,
+        showgrid = showGrid,
         showline = True,
         ticks =  'outside',
         showticklabels = True,
