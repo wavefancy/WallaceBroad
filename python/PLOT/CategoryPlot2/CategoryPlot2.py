@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--tm topmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str] [--title txt]
+        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--tm topmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str] [--title txt] [--logY] [--errorw int]
         CategoryPlot2.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,7 +20,9 @@
         -o outname    Output file name: output.html.
         --yerr yecol  Column index for y error bar. single valure or two values for lower and upper bound.
                         float | float1,float2 (lower,upper bound)
+        --errorw int  Set the error bar width, int, [3].
         --yr yrange   Set the yAxis plot range: float1,float2.
+        --logY        Set the yAxis show in log scale.
         --ydt float   Distance between y ticks.
         --xdt float   Distance between x ticks.
         --xr xrange   Set the xAxis plot range: float1,float2 | tight
@@ -104,6 +106,7 @@ if __name__ == '__main__':
     clrClm = ''  #value column for parse point color.
     xtickangle = None
 
+    errorBarWidth = int(args['--errorw']) if args['--errorw'] else 3
     yrange = None
     ydt = '' # Distance between y ticks.
     xdt = '' # Distance between x ticks.
@@ -142,7 +145,8 @@ if __name__ == '__main__':
             Xrange = 'tight'
         else:
             Xrange = list(map(float, args['--xr'].split(',')))
-
+    # show the Y axis in log scale.
+    logY = 'log' if args['--logY'] else 'linear'
     xanchor = 'right'
     yanchor = 'bottom'
     xlloc = 0.99
@@ -345,6 +349,7 @@ if __name__ == '__main__':
                         visible=True,
                         color=color,
                         thickness=size,
+                        width=errorBarWidth
                         )
                 ))
 
@@ -364,6 +369,7 @@ if __name__ == '__main__':
                         visible=True,
                         color=color,
                         thickness=size,
+                        width=errorBarWidth
                         )
                 ))
         else:
@@ -590,6 +596,8 @@ if __name__ == '__main__':
         mirror  = myMirror,
         range   =yrange,
         color   ='black',
+        #type = 'linear',
+        type = logY,
         # showgrid = True,
         showline = True,
         ticks =  'outside',
