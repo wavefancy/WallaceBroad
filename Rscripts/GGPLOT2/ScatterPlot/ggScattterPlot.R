@@ -24,7 +24,7 @@ Options:
    --cp colors   A list of color for color palette, eg. #00AFBB::#E7B800::#FC4E07.
    -l txt        Set the position for legend, default: right, c(“top”, “bottom”, “left”, “right”, “none”).
                     or vector c(x, y). Their values should be between 0 and 1 (not work now).
-   --lt txt      Set the legend title as 'txt', default use the color color name.
+   --lt txt      Set the legend title as 'txt', default by system group name. 'noshow' to hidden.
    --lfs num     Set the legend font size, [11].
    -s nums       Set the point size, [2].
    -a nums       Set the point alpha, [1].
@@ -94,7 +94,7 @@ pdf(ofile,width=W, height=H)
 
 p = ggscatter(dd,x = x, y = y, shape = sp, color = c,
         #legend=legend, legend.title = legendTitle,
-        legend=legend, legend.title = NULL,
+        legend=legend, legend.title = legendTitle,
         size = size, alpha = alpha,
     )
 
@@ -105,9 +105,14 @@ if(is.null(cp)){
 }
 if(length(xlim) > 0){p = p + xlim(xlim[1],xlim[2])}
 if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}
+
+# change the font size for legend.
+p = ggpar(p,font.legend = lfs)
+# no show legend title. 
+# more about legend. https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/
+if (legendTitle == 'noshow') {p = p + theme(legend.title = element_blank())}
+
 # add box
 p = p + border() 
-# change the font size for legend.
-ggpar(p,font.legend = lfs)
 p
 graphics.off()
