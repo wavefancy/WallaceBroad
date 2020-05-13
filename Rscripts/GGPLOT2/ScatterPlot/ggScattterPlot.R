@@ -13,7 +13,7 @@
 Create scatter plot using ggplot2
 
 Usage:
-    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [-s nums] [-a nums]
+    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--lfs num] [-s nums] [-a nums]
     ggScattterPlot.R -h --help
 
 Options:
@@ -25,6 +25,7 @@ Options:
    -l txt        Set the position for legend, default: right, c(“top”, “bottom”, “left”, “right”, “none”).
                     or vector c(x, y). Their values should be between 0 and 1 (not work now).
    --lt txt      Set the legend title as 'txt', default use the color color name.
+   --lfs num     Set the legend font size, [11].
    -s nums       Set the point size, [2].
    -a nums       Set the point alpha, [1].
    --xlim nums   Set the xlim, num1,num2
@@ -76,6 +77,7 @@ size  = if(is.null(opts$s)) 2 else {as.numeric(opts$s)}
 alpha = if(is.null(opts$a)) 1 else {as.numeric(opts$a)}
 
 legendTitle = if(is.null(opts$lt)) NULL else opts$lt
+lfs = if(is.null(opts$lfs)) 11 else as.numeric(opts$lfs)
 
 W = as.numeric(opts$W)
 H = as.numeric(opts$H)
@@ -91,7 +93,8 @@ pdf(ofile,width=W, height=H)
 
 
 p = ggscatter(dd,x = x, y = y, shape = sp, color = c,
-        legend=legend, legend.title = legendTitle,
+        #legend=legend, legend.title = legendTitle,
+        legend=legend, legend.title = NULL,
         size = size, alpha = alpha,
     )
 
@@ -104,5 +107,7 @@ if(length(xlim) > 0){p = p + xlim(xlim[1],xlim[2])}
 if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}
 # add box
 p = p + border() 
+# change the font size for legend.
+ggpar(p,font.legend = lfs)
 p
 graphics.off()
