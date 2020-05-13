@@ -110,8 +110,11 @@ if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}
 p = ggpar(p,font.legend = lfs)
 # no show legend title. 
 # more about legend. https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/
-#if (legendTitle == 'noshow') {p = p + theme(legend.title = element_blank())}
+# set the size as 0 is better than set theme(legend.title = element_blank()).
 if (legendTitle == 'noshow') {p = p + theme(legend.title = element_text(size=0))}
+# Note: the command legend.justification sets the corner that the position refers to.
+# https://www.r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
+p = p + theme(legend.justification = c("left", "top"))
 
 # add box
 p = p + border() 
