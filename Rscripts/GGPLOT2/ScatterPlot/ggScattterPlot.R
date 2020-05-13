@@ -113,11 +113,11 @@ p = ggpar(p,font.legend = lfs)
 if (legendTitle == 'noshow') {p = p + theme(legend.title = element_text(size=0))}
 # Note: the command legend.justification sets the corner that the position refers to.
 # https://www.r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
-p = p + theme(legend.justification = c("left", "top"),
-        # margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")
-        # https://ggplot2.tidyverse.org/reference/element.html
-        plot.margin = margin(4, 8, 4, 4, "points")
-)
+if (length(legend) == 2){ p = p + theme(legend.justification = c("left", "top"))}
+
+# margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")
+# https://ggplot2.tidyverse.org/reference/element.html
+p = p + theme(plot.margin = margin(4, 8, 4, 4, "points"))
 
 # add box
 p = p + border() 
