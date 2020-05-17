@@ -7,12 +7,14 @@
 Net reclassification index for binary trait by logistic model.
 
 Usage:
-    BinaryNRI.R -s stdmodel -n newmdoel
+    BinaryNRI.R -s stdmodel -n newmdoel [-c float]
     BinaryNRI.R -h [--help]
 
 Options:
    -s stdmodel  Standard model.
    -n newmdoel  New model.
+   -c float     The cut-off for the recognization of the prediction difference of two models.
+                A value of [0-1], a difference of two probabilities, default: 0.0.       
 
 Notes:
     1. Read data from stdin and output results to stdout.
@@ -36,6 +38,7 @@ opts <- docopt(doc)
 
 stdmodel = opts$s
 newmdoel = opts$n
+cutoff   = if(is.null(opts$c)) 0.0 else {as.numerical(opts$c)}
 
 #dd = read.table("test.txt",header = T)
 dd = read.table(file("stdin"),header = T)
@@ -51,7 +54,7 @@ summary(n)
 ## Calculation of risk difference NRI
 ## predicted risk
 # https://rdrr.io/cran/nricens/man/nricens-package.html
-res = nribin(mdl.std = s, mdl.new = n, cut = 0.02, niter = 200,
+res = nribin(mdl.std = s, mdl.new = n, cut = cutoff, niter = 200,
        updown = 'diff')
 out = rownames_to_column(res$nri)
 z = res$nri[,1]/res$nri[,2]
