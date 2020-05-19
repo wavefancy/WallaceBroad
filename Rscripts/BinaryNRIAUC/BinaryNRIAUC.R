@@ -40,8 +40,15 @@ stdmodel = opts$s
 newmdoel = opts$n
 cutoff   = if(is.null(opts$c)) 0.0 else {as.numerical(opts$c)}
 
+# Extract the header for all the colomns need to use in the model.
+temp  = opts$n  %>% strsplit(.,'~')   %>% unlist %>% str_trim
+pheno = temp[1]
+covs  = temp[2] %>% strsplit(.,'\\+') %>% unlist %>% str_trim
+
 #dd = read.table("test.txt",header = T)
 dd = read.table(file("stdin"),header = T)
+# only keep those columns we need to use.
+dd = dd[,c(pheno, covs)]
 # remove the rows with NA values.
 dd = na.omit(dd)
 
@@ -68,7 +75,6 @@ write.table(format(out, digits=4),'',quote=F,row.names=F)
 p.std = predict(s,type=c("response"))
 p.new = predict(n,type=c("response"))
 
-pheno = str_trim(unlist(strsplit(opts$s,'~'))[1])
 rocs = roc(dd[[pheno]], p.std)
 rocn = roc(dd[[pheno]], p.new)
 roc_res = roc.test(rocs, rocn, method='delong')
