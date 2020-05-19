@@ -109,7 +109,7 @@ if __name__ == '__main__':
                 ss[COL] = Transformers[ACTION](float(ss[COL]))
             except ValueError:
                 sys.stderr.write('WARNING: Can not parse number in line: %s\n'%(line))
-                ss[COL] = ACTION
+                # ss[COL] = ACTION
             sys.stdout.write('%s\n'%('\t'.join(ss)))
 
 sys.stdout.flush()
