@@ -1,5 +1,8 @@
 ## Optimized terra jupter Docker image 
 
+
+### Check out the latest version [here](https://hub.docker.com/r/wavefancy/terrawngs/tags)
+
 ### Updates in the base image
 - Based on the [Terra base images](https://github.com/DataBiosphere/terra-docker), April 20, 2020.
 - Upgrade to have root permission (atbroad)
