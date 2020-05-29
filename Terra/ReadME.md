@@ -2,7 +2,7 @@
 
 
 ### Check out the latest version [here](https://hub.docker.com/r/wavefancy/terrawngs/tags), in Terra make a custom ENV by `<image_name>:<tag>`
-- The latest version: `wavefancy/terrawngs:v1.2`
+- The latest version: `wavefancy/terrawngs:v1.3`
 - Terra will not remove your files if change VM config but not the disk size.
 
 ### Updates in the base image
@@ -23,5 +23,6 @@
   - fix vim color issue in tmux: `export TERM=xterm-256color`
     [Ref here](https://vi.stackexchange.com/questions/10708/no-syntax-highlighting-in-tmux)
     
-- Installed ipython [bash kernel](https://github.com/takluyver/bash_kernel).
+- Installed Jupyter [bash kernel](https://github.com/takluyver/bash_kernel).
+- Installed Jupyter R kernel.
 - Add `body` function to bash config, [more details](https://unix.stackexchange.com/questions/11856/sort-but-keep-header-line-at-the-top).  
