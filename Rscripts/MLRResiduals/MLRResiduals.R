@@ -31,7 +31,7 @@ opts <- docopt(doc)
 form   = opts$f
 
 #dd = read.table("test.txt",header = T)
-dd = read.table(file("stdin"),header = T)
+dd = read.table(file("stdin"),header = T,check.names=F)
 # remove the rows with NA values.
 dd = na.omit(dd)
 
