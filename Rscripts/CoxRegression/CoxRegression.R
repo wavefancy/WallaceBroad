@@ -17,6 +17,9 @@ Options:
 
 Notes:
     1. Read data from stdin and output results to stdout.
+
+Examples:
+    Rscript ./CoxRegression.R -f 'Surv(time, status) ~ age + sex + ph.ecog' --boot 3
 =======================================================================================
 " -> doc
 
