@@ -51,6 +51,7 @@ if __name__ == '__main__':
                     sys.stdout.write('%s\t%.4e\n'%(line, (vv - P.mean)/P.sd))
 
                 except ValueError:
+                    sys.stdout.write('%s\tNormedValue\n'%(line))
                     sys.stderr.write('Warning: parse value error at line (skiped): %s\n'%(line))
 
     else:
@@ -64,6 +65,7 @@ if __name__ == '__main__':
 
                     content.append((line, vv))
                 except ValueError:
+                    sys.stdout.write('%s\tNormedValue\n'%(line))
                     sys.stderr.write('Warning: parse value error at line (skiped): %s\n'%(line))
 
         vals = [x[1] for x in content]
