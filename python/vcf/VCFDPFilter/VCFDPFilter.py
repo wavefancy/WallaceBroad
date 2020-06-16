@@ -95,7 +95,7 @@ if __name__ == '__main__':
             Mask a sample vcf GT as missing. Given an VCF variant array, and the index for change.
         '''
         ss = RECORD_ARRAY[INDEX].strip().split(':')
-        ss[DP_COL] = '.'
+        ss[DP_COL] = './.'
         RECORD_ARRAY[INDEX] = ':'.join(ss)
 
     for variant in invcf:
