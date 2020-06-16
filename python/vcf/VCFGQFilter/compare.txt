@@ -1,0 +1,4 @@
+1a2
+> ##FILTER=<ID=PASS,Description="All filters passed">
+207a209
+> ##FILTER=<ID=VCFGQFilter.py,Description="Mask genotype as missing if GQ value  < 20">
