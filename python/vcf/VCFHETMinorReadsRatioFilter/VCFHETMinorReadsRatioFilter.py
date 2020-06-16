@@ -62,8 +62,9 @@ if __name__ == '__main__':
     # create a new vcf Writer using the input vcf as a template.
     # Only need to write out updated VCF header.
     # Other parts output as string.
-    outvcf = Writer('/dev/stdout', invcf)
-    outvcf.close()
+    sys.stdout.write('%s'%(invcf.raw_header))
+    # outvcf = Writer('/dev/stdout', invcf)
+    # outvcf.close()
     
     # Cache data for faster process.
     DATA_COL = 9
@@ -96,6 +97,7 @@ if __name__ == '__main__':
         #This is the sum of gt_ref_depths + gt_alt_depths, checked the code.
         rdp = variant.gt_ref_depths #ref depth
         adp = variant.gt_alt_depths #alt depth
+        tdp = variant.gt_depths     #ref + alt.
         alt_count = variant.gt_types # HOM_REF=0, HET=1. For gts012=True HOM_ALT=2, UKNOWN=3
         # print(rdp)
         # print(adp)
@@ -103,10 +105,17 @@ if __name__ == '__main__':
 
         # apply the filter only on het sites.
         is_het = alt_count == 1
+        # to avoid site has total dp as 0, devided by zero thereafter.
+        is_het = np.logical_and(is_het, tdp >0)
+
         is_het_index = np.nonzero(is_het)[0]
-        alt_ratio = adp[is_het]/(adp[is_het] + rdp[is_het])
+        alt_ratio = adp[is_het]/tdp[is_het]
         mrr_ratio = np.minimum(alt_ratio, 1-alt_ratio)
         mask_pos = is_het_index[mrr_ratio < MRR_THRESHOLD]
+        if mask_pos.size == 0: # no update, no split and combine.
+            sys.stdout.write(str(variant))
+            continue
+
         TOTAL_MAKSED += mask_pos.size
         # print(is_het_index)
         # print(mrr_ratio)
@@ -121,7 +130,7 @@ if __name__ == '__main__':
         [maskRecord(ss, x) for x in mask_pos]
         sys.stdout.write('%s\n'%('\t'.join(ss)))
         
-    sys.stderr.write('TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
+    sys.stderr.write('VCFHETMinorReadsRatioFilter.py: ' + 'TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
     invcf.close()
     # outvcf.close()
 sys.stdout.flush()

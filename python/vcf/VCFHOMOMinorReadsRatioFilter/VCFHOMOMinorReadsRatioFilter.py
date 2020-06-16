@@ -62,8 +62,9 @@ if __name__ == '__main__':
     # create a new vcf Writer using the input vcf as a template.
     # Only need to write out updated VCF header.
     # Other parts output as string.
-    outvcf = Writer('/dev/stdout', invcf)
-    outvcf.close()
+    sys.stdout.write('%s'%(invcf.raw_header))
+    # outvcf = Writer('/dev/stdout', invcf)
+    # outvcf.close()
     
     # Cache data for faster process.
     DATA_COL = 9
@@ -96,6 +97,7 @@ if __name__ == '__main__':
         #This is the sum of gt_ref_depths + gt_alt_depths, checked the code.
         rdp = variant.gt_ref_depths #ref depth
         adp = variant.gt_alt_depths #alt depth
+        tdp = variant.gt_depths     #ref + alt.
         alt_count = variant.gt_types # HOM_REF=0, HET=1. For gts012=True HOM_ALT=2, UKNOWN=3
         # print(rdp)
         # print(adp)
@@ -103,10 +105,19 @@ if __name__ == '__main__':
 
         # apply the filter only on HOMO sites.
         is_homo = np.logical_or(alt_count==0, alt_count==2)
+        # to avoid devided by zero, we skip total AD as zero.
+        is_homo = np.logical_and(is_homo, tdp >0)
+
         is_homo_index = np.nonzero(is_homo)[0]
-        alt_ratio = adp[is_homo]/(adp[is_homo] + rdp[is_homo])
+        alt_ratio = adp[is_homo]/tdp[is_homo]
+        # print(is_homo)
+        # print(alt_ratio)
         mrr_ratio = np.minimum(alt_ratio, 1-alt_ratio)
         mask_pos = is_homo_index[mrr_ratio >= MRR_THRESHOLD]
+        if mask_pos.size == 0: # no update, no split and combine.
+            sys.stdout.write(str(variant))
+            continue
+        
         TOTAL_MAKSED += mask_pos.size
         # print(is_het_index)
         # print(mrr_ratio)
@@ -121,7 +132,7 @@ if __name__ == '__main__':
         [maskRecord(ss, x) for x in mask_pos]
         sys.stdout.write('%s\n'%('\t'.join(ss)))
         
-    sys.stderr.write('TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
+    sys.stderr.write('VCFHOMOMinorReadsRatioFilter.py: '+'TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
     invcf.close()
     # outvcf.close()
 sys.stdout.flush()
