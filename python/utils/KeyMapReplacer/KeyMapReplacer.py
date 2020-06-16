@@ -73,7 +73,7 @@ Warning: Duplicate keys, only keep first entry. Skip: 2   a   10
 1       DEFAULT 3
 2       K       10      4
 3       DEFAULT 5
-          ''');
+          ''')
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='4.0')
@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     #read key-value pairs
     kv_map = {}
-    n_content = ''
+    n_content = 0
     for line in open(args['-p'],'r'):
         line = line.strip()
         if line:
@@ -164,6 +164,8 @@ if __name__ == '__main__':
     # add one more colum.
     MAX_SPLIT += 1
     if args['-a']:
+        # if n_content == 0, means empty key map.
+        n_content = 1 if n_content == 0 else n_content
         val = [args['-a'] for x in range(n_content)]
         for line in sys.stdin:
             line = line.strip()

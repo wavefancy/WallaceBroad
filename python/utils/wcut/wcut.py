@@ -6,23 +6,24 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        wcut.py (-f string | --tf file | -t titles) [-d string] [-c] [-a string] [--cs txt] [-r]
+        wcut.py (-f string | --tf file | -t titles) [-d string] [--od txt] [-c] [-a string] [--cs txt] [-r]
         wcut.py -h | --help | -v | --version | --format
 
     Options:
-        -f string  Specifiy the columns want to cut.(eg. -f4,3; -f4,2-1, -f5-2)
-        -t titles  Open title mode, one or more titles. eg. -t title1,title2,title3
-        -d string  Set the delimiter for fields. 'tab' for Tab.'\\t'
-        -r         Do reverse selection.
-        --tf file  Read title columns from file. (eg. -tf filename).
+        -f string   Specifiy the columns want to cut.(eg. -f4,3; -f4,2-1, -f5-2)
+        -t titles   Open title mode, one or more titles. eg. -t title1,title2,title3
+        -d string   Set the input delimiter for fields. 'tab' for Tab.'\\t'
+        --od string Set output delimiter, default 'tab' for Tab.'\\t'.
+        -r          Do reverse selection.
+        --tf file   Read title columns from file. (eg. -tf filename).
                         columns separated by WHITESPACE.
-        -c         Open copy mode, directly copy comment line to stdout, comments started by '#'.
-        --cs txt   Set the comment start string as 'txt', default it's '#'.
-        -a string  Set the default value as 'string' if column value is empty.
+        -c          Open copy mode, directly copy comment line to stdout, comments started by '#'.
+        --cs txt    Set the comment start string as 'txt', default it's '#'.
+        -a string   Set the default value as 'string' if column value is empty.
 
         -h --help     Show this screen.
         -v --version  Show version.
-        --format   Show input/output file format example.
+        --format      Show input/output file format example.
 
     Notes:
         1. (-f mode): Important, different with unix 'cut', the output columns' order
@@ -54,6 +55,7 @@ class P(object):
     title = False
     tArray = [] # title parameters.
     delimiter = ''
+    odelimiter = '\t' # default tab, using the same as delimiter if set.
     #toEnd = False #output all the column from a starting point.
     First = True
     copyComments = False
@@ -88,7 +90,7 @@ def runApp():
 
         #output title line
         s_out = [ss[i] for i in P.outArrayId]
-        sys.stdout.write('\t'.join(s_out))
+        sys.stdout.write(P.odelimiter.join(s_out))
         sys.stdout.write('\n')
 
     def addValue(x):
@@ -100,7 +102,7 @@ def runApp():
 
     COMMENTS = args['--cs'] if args['--cs'] else '#'
     for line in sys.stdin:
-        line = line.strip()
+        line = line.rstrip('\n\r')
         if line:
             if P.copyComments:
                 if line.startswith(COMMENTS):
@@ -133,10 +135,11 @@ def runApp():
                     pset = set(P.outArrayId)
                     rs = [x for x in range(len(ss)) if x not in pset]
                     P.outArrayId = rs
-
-            if not P.isSplitFixed:
-                P.maxSplitTime = max(P.outArrayId) +1
-                P.isSplitFixed = True
+                
+                # This only need set once, so move into P.First section, 04-09-2020.
+                if not P.isSplitFixed:
+                    P.maxSplitTime = max(P.outArrayId) +1
+                    P.isSplitFixed = True
 
             #output one line
             try:
@@ -149,7 +152,7 @@ def runApp():
             if P.aVal:
                 s_n  = [addValue(x) for x in s_n]
 
-            sys.stdout.write('\t'.join(s_n))
+            sys.stdout.write(P.odelimiter.join(s_n))
             sys.stdout.write('\n')
 
     sys.stdout.close()
@@ -163,6 +166,10 @@ if __name__ == '__main__':
         P.delimiter = args['-d']
         if P.delimiter == 'tab':
             P.delimiter = '\t'
+
+    P.odelimiter = args['--od'] if args['--od'] else P.odelimiter
+    if P.odelimiter == 'tab':
+        P.odelimiter = '\t'
 
     if args['-c']:
         P.copyComments = True

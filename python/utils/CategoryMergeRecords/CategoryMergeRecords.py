@@ -99,7 +99,8 @@ if __name__ == '__main__':
                 c_temp.append((name,ss))
 
     #deal with the last category.
-    processOne(c_temp)
+    if c_temp:
+        processOne(c_temp)
 
 sys.stdout.flush()
 sys.stdout.close()

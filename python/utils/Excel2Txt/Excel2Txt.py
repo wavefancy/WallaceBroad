@@ -26,6 +26,12 @@ from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE,SIG_DFL)
 
+# If the writer has the problem for encoding, error like below:
+# UnicodeEncodeError: 'ascii' codec can't encode character u'\xa0' in position 0
+# Solution
+# export PYTHONIOENCODING=utf-8
+# https://stackoverflow.com/questions/492483/setting-the-correct-encoding-when-piping-stdout-in-python
+
 class P(object):
     delimeter = '\t'
 

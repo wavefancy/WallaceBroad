@@ -6,12 +6,12 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--tm topmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str] [--title txt]
+        CategoryPlot2.py -x xtitle -y ytitle -o outname [--yerr ycol] [--yr yrange] [--vl vline] [--hl hline] [--ab abline] [--ms msize] [--mt mtype] [--lloc lloc] [--lfs lfs] [--lm lmargin] [--bm bmargin] [--tm topmargin] [--ydt float] [--xdt float] [--clr int] [--xta int] [--xr xrange] [--tfs int] [--ifs int] [--ctxt int] [--fl] [--flc color] [--op] [--cms int] [--font str] [--title txt] [--logY] [--errorw int] [--nogrid]
         CategoryPlot2.py -h | --help | -v | --version | -f | --format
 
     Notes:
         1. Read results from stdin, and output results to stdout.
-        2. See example by -f.
+        2. Some functions were driven by 'COMMAND', See example by -f.
 
     Options:
         -x xtitle
@@ -20,7 +20,9 @@
         -o outname    Output file name: output.html.
         --yerr yecol  Column index for y error bar. single valure or two values for lower and upper bound.
                         float | float1,float2 (lower,upper bound)
+        --errorw int  Set the error bar width, int, [3].
         --yr yrange   Set the yAxis plot range: float1,float2.
+        --logY        Set the yAxis show in log scale.
         --ydt float   Distance between y ticks.
         --xdt float   Distance between x ticks.
         --xr xrange   Set the xAxis plot range: float1,float2 | tight
@@ -49,6 +51,7 @@
         --flc color   Fitting line color, default red.
         --op          Set open box, no right and top axis.
         --font str    Change the text font.
+        --nogrid      Hidden background grid line.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -104,6 +107,8 @@ if __name__ == '__main__':
     clrClm = ''  #value column for parse point color.
     xtickangle = None
 
+    errorBarWidth = int(args['--errorw']) if args['--errorw'] else 3
+    showGrid = False if args['--nogrid'] else True
     yrange = None
     ydt = '' # Distance between y ticks.
     xdt = '' # Distance between x ticks.
@@ -142,7 +147,8 @@ if __name__ == '__main__':
             Xrange = 'tight'
         else:
             Xrange = list(map(float, args['--xr'].split(',')))
-
+    # show the Y axis in log scale.
+    logY = 'log' if args['--logY'] else 'linear'
     xanchor = 'right'
     yanchor = 'bottom'
     xlloc = 0.99
@@ -345,6 +351,7 @@ if __name__ == '__main__':
                         visible=True,
                         color=color,
                         thickness=size,
+                        width=errorBarWidth
                         )
                 ))
 
@@ -364,6 +371,7 @@ if __name__ == '__main__':
                         visible=True,
                         color=color,
                         thickness=size,
+                        width=errorBarWidth
                         )
                 ))
         else:
@@ -453,7 +461,7 @@ if __name__ == '__main__':
             'range'   : Xrange,
             'color'   :'black',
             #       range=[0, 500],
-            'showgrid':True,
+            'showgrid':showGrid,
             'showline':True,
             'ticks'   : 'outside',
             'showticklabels' : True,
@@ -507,6 +515,7 @@ if __name__ == '__main__':
     #print(legend)
     layout.update(legend)
 
+    # add for horizontal lines.
     hl_data = []
     if hlines:
         for y in hlines:
@@ -557,7 +566,7 @@ if __name__ == '__main__':
                     }
                 }
             )
-
+    # add for vertical lines.
     vl_data = []
     if vlines:
         for y in vlines:
@@ -581,14 +590,17 @@ if __name__ == '__main__':
     if alllines:
         h = {'shapes':alllines}
         layout.update(h)
-
+    
+    # layout update for y axis.
     yudict = dict(
         dtick = ydt, # '' empty string means auto ticks
         # autotick = True,
         mirror  = myMirror,
         range   =yrange,
         color   ='black',
-        # showgrid = True,
+        #type = 'linear',
+        type = logY,
+        showgrid = showGrid,
         showline = True,
         ticks =  'outside',
         showticklabels = True,

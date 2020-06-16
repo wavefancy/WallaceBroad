@@ -25,6 +25,7 @@ Notes:
 
 suppressMessages(library(docopt))
 suppressMessages(library(pROC))
+suppressMessages(library(data.table))
 
 opts <- docopt(doc)
 # print(opts)
@@ -89,6 +90,8 @@ RsqGLM <- function(obs = NULL, pred = NULL, model = NULL) {
 
 #dd = read.table("test.txt",header = T)
 dd = read.table(file("stdin"),header = T)
+# remove the rows with NA values.
+dd = na.omit(dd)
 # https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables
 # auto convert the colnames as formula.
 form = sub('\\+','~',paste(c(colnames(dd),inter), collapse = '+'))
