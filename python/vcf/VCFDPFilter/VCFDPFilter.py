@@ -17,7 +17,9 @@
 
     Options:
         --mindp int     Minimum value for total AD tag(read depth), int.
+                            Mask genotype as missing if total AD < 'mindp'.
         --maxdp int     Maximum value for total AD tag(read depth), int.
+                             Mask genotype as missing if total AD > 'maxdp'.
         -h --help       Show this screen.
         -v --version    Show version.
         -f --format     Show format example.
