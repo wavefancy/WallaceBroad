@@ -95,13 +95,24 @@ if __name__ == '__main__':
     for variant in invcf:
         # print(variant.start+1)
         #This is the sum of gt_ref_depths + gt_alt_depths, checked the code.
-        rdp = variant.gt_ref_depths #ref depth
-        adp = variant.gt_alt_depths #alt depth
-        tdp = variant.gt_depths     #ref + alt.
-        alt_count = variant.gt_types # HOM_REF=0, HET=1. For gts012=True HOM_ALT=2, UKNOWN=3
+        # rdp = variant.gt_ref_depths #ref depth
+        # adp = variant.gt_alt_depths #alt depth
+        # tdp = variant.gt_depths     #ref + alt.
+        # alt_count = variant.gt_types # HOM_REF=0, HET=1. For gts012=True HOM_ALT=2, UKNOWN=3
         # print(rdp)
         # print(adp)
         # print(alt_count)
+
+        # The above code do not support multi-allelic sites.
+        # We support multi-allelic sites as below.
+        dparray = variant.format('AD')
+         # set missing (negative value) to as 0.
+        dparray[dparray<0] = 0
+        # total DP.
+        tdp = np.sum(dparray,axis=1)
+        rdp = dparray[:,0]
+        adp = np.sum(dparray[:,1:],axis=1)
+        alt_count = variant.gt_types # HOM_REF=0, HET=1. For gts012=True HOM_ALT=2, UKNOWN=3
 
         # apply the filter only on het sites.
         is_het = alt_count == 1
