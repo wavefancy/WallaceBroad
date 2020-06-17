@@ -69,8 +69,9 @@ if __name__ == '__main__':
     # create a new vcf Writer using the input vcf as a template.
     # Only need to write out updated VCF header.
     # Other parts output as string.
-    outvcf = Writer('/dev/stdout', invcf)
-    outvcf.close()
+    sys.stdout.write('%s'%(invcf.raw_header))
+    # outvcf = Writer('/dev/stdout', invcf)
+    # outvcf.close()
     
     # Cache data for faster process.
     DATA_COL = 9
@@ -101,8 +102,18 @@ if __name__ == '__main__':
     for variant in invcf:
         # This is the sum of gt_ref_depths + gt_alt_depths, check the code.
         # And confirmed by experiment.
-        dp = variant.gt_depths
-        # print(dp)
+        # dp = variant.gt_depths
+        # rdp = variant.gt_ref_depths
+        # adp = variant.gt_alt_depths
+
+        # The above code do not support multi-allelic sites.
+        # We support multi-allelic sites as below.
+        dparray = variant.format('AD')
+         # set missing (negative value) to as 0.
+        dparray[dparray<0] = 0
+        # total DP.
+        dp = np.sum(dparray,axis=1)
+ 
         ss = str(variant).split()
         updateDPCOL(ss[FMT_COL])
 
@@ -120,7 +131,7 @@ if __name__ == '__main__':
         # Finished genotype updates.
         sys.stdout.write('%s\n'%('\t'.join(ss)))
 
-    sys.stderr.write('TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
+    sys.stderr.write('VCFDPFilter.py: ' + 'TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
     invcf.close()
 sys.stdout.flush()
 sys.stdout.close()
