@@ -3,6 +3,8 @@
 """
 
     Extract the information from the AD field.
+    The depth in AD field are effective read depth.
+    # https://gatk.broadinstitute.org/hc/en-us/articles/360035532252-Allele-Depth-AD-is-lower-than-expected
 
     @Author: wavefancy@gmail.com
 
@@ -13,7 +15,7 @@
     Notes:
         1. Read vcf file from stdin, output the results to stdout.
         2. With support multiple allelic sites.
-        3. Output results to stdout.
+        3. Missing values were coded as np.nan (output string nan).
 
     Options:
         -t              Extract the total read depth, sum of AD field.
@@ -68,14 +70,17 @@ if __name__ == '__main__':
         # The above code do not support multi-allelic sites.
         # We support multi-allelic sites as below.
 
-        dparray = variant.format('AD')
-        # set missing (negative value) to as 0.
-        dparray[dparray<0] = 0
+        # convert int array to float for coding missing as np.nan
+        dparray = variant.format('AD').astype(float)
+        # set missing (negative value) to as np.nan.
+        dparray[dparray<0] = np.nan
         # get the total, alt and ref depth.
-
+        # print(dparray)
         # Convert from 0 based to 1 based.
         out = [variant.CHROM, str(variant.start+1), variant.REF, ','.join(variant.ALT)]
-        np.set_printoptions(threshold=sys.maxsize,linewidth=sys.maxsize)
+        np.set_printoptions(threshold=sys.maxsize,linewidth=sys.maxsize,
+                # %.f format to output as int for non-missing, nan for mssing.  
+                formatter={'float_kind':lambda x: "%.f" % x})
         if args['-t']:
             dp = np.sum(dparray,axis=1)
         if args['-a']:
