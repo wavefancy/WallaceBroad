@@ -56,6 +56,7 @@ if __name__ == '__main__':
     # sys.stdout.write('%s'%(invcf.raw_header))
     # outvcf = Writer('/dev/stdout', invcf)
     # outvcf.close()
+    sys.stdout.write('CHROM\tPOS\tREF\tALT\t%s\n'%('\t'.join(invcf.samples)))
     
     for variant in invcf:
         # This is the sum of gt_ref_depths + gt_alt_depths, check the code.
