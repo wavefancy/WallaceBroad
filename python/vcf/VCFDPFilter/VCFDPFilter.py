@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        VCFDPFilter.py [--mindp int] [--maxdp int]
+        VCFDPFilter.py [--mindp int] [--maxdp int] [--field text]
         VCFDPFilter.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,6 +20,8 @@
                             Mask genotype as missing if total AD < 'mindp'.
         --maxdp int     Maximum value for total AD tag(read depth), int.
                              Mask genotype as missing if total AD > 'maxdp'.
+        --field text    From which part the total reads depths were extracted.
+                            DP|AD, [DP].
         -h --help       Show this screen.
         -v --version    Show version.
         -f --format     Show format example.
@@ -45,8 +47,9 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
     
-    minDP = int(args['--mindp']) if args['--mindp'] else -1
-    maxDP = int(args['--maxdp']) if args['--maxdp'] else -1
+    minDP = int(args['--mindp'])     if args['--mindp'] else -1
+    maxDP = int(args['--maxdp'])     if args['--maxdp'] else -1
+    field = args['--field'].upper()  if args['--field'] else 'DP'
     if minDP < 0 and maxDP <0:
         sys.stderr.write('ERROR: please specify at least one option of "--mindp" or "--maxpd"\n')
         sys.exit(-1)
@@ -105,21 +108,24 @@ if __name__ == '__main__':
         # dp = variant.gt_depths
         # rdp = variant.gt_ref_depths
         # adp = variant.gt_alt_depths
-
-        # The above code do not support multi-allelic sites.
-        # We support multi-allelic sites as below.
-        dparray = variant.format('AD')
-         # set missing (negative value) to as 0.
-        dparray[dparray<0] = 0
-        # total DP.
-        dp = np.sum(dparray,axis=1)
+        if field == 'DP':
+            dp = variant.format('DP').flatten() # convert to one row.
+        else:
+            # The above code do not support multi-allelic sites.
+            # We support multi-allelic sites as below.
+            dparray = variant.format('AD')
+            # set missing (negative value) to as 0.
+            dparray[dparray<0] = 0
+            # total DP.
+            dp = np.sum(dparray,axis=1)
  
         ss = str(variant).split()
         updateDPCOL(ss[FMT_COL])
 
         # shift to the wright pos for mask the genotype.
         if minDP > 0:
-            min_mask_pos = np.nonzero(dp < minDP)[0] + DATA_COL
+            # negative value already as missing, just skipped.
+            min_mask_pos = np.nonzero(np.logical_and(dp < minDP, dp > 0))[0] + DATA_COL
             [maskRecord(ss, x) for x in min_mask_pos]
             TOTAL_MAKSED += min_mask_pos.size
 

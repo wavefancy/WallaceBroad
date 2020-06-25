@@ -59,8 +59,9 @@ if __name__ == '__main__':
     # create a new vcf Writer using the input vcf as a template.
     # Only need to write out updated VCF header.
     # Other parts output as string.
-    outvcf = Writer('/dev/stdout', invcf)
-    outvcf.close()
+    sys.stdout.write('%s'%(invcf.raw_header))
+    # outvcf = Writer('/dev/stdout', invcf)
+    # outvcf.close()
     
     # Cache data for faster process.
     DATA_COL = 9
@@ -104,7 +105,7 @@ if __name__ == '__main__':
         # Finished genotype updates.
         sys.stdout.write('%s\n'%('\t'.join(ss)))
 
-    sys.stderr.write('TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
+    sys.stderr.write('VCFGQFilter.py: '+'TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
     invcf.close()
 sys.stdout.flush()
 sys.stdout.close()
