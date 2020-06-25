@@ -35,8 +35,9 @@ A       B       C
 0       1       3
 1       2       4
 #----------------
-A       B       C
-0.66666667      1.5             3.33333333
+STATS   A       B       C
+MEAN    0.66666667      1.5             3.33333333
+COUNTS  3       2       3
     ''')
 
 if __name__ == '__main__':
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     TITLE = False
     for line in sys.stdin:
         if not TITLE:
-            sys.stdout.write(line)
+            sys.stdout.write('STATS\t'+line)
             l = len(line.strip().split())
             data_sum   = np.zeros(l)
             data_count = np.zeros(l,dtype=int)
@@ -75,7 +76,8 @@ if __name__ == '__main__':
     # print(data_count)
     #output the results.
     np.set_printoptions(threshold=sys.maxsize,linewidth=sys.maxsize)
-    sys.stdout.write(np.array2string(data_sum/data_count,separator='\t')[1:-1])
+    sys.stdout.write('MEAN\t'+np.array2string(data_sum/data_count,separator='\t')[1:-1])
+    sys.stdout.write('\nCOUNTS\t'+np.array2string(data_count,separator='\t')[1:-1])
     sys.stdout.write('\n')
 
 sys.stdout.flush()
