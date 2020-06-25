@@ -17,3 +17,11 @@ wecho "
         | ppawk.py -u --rq 'f[:4]+[sum([int(y) for y in x.split(::,::)]) for x in f[4:]]'
     )
 "
+# Compare the extract the DP field.
+wecho "
+    diff
+    <(gunzip -dc ../VCFDPFilter/QC.EH_LCR_SEGDUP_GQ_DP_MRR_MISSING.chrM.vcf.gz | wcut -f1-100 -c --cs '##' | python3 ./VCFExtractDP.py -d | wcut -f1- | tail -n +2 | sed 's|nan|0|g')
+    <(gunzip -dc ../VCFDPFilter/QC.EH_LCR_SEGDUP_GQ_DP_MRR_MISSING.chrM.vcf.gz | wcut -f1-100 -c --cs '##'
+        | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t[\t%DP]\n' | wcut -f1- | sed 's|\.|0|g'
+    )
+"
