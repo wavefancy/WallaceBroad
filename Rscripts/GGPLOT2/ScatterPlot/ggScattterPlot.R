@@ -13,7 +13,7 @@
 Create scatter plot using ggplot2
 
 Usage:
-    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int]
+    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int]
     ggScattterPlot.R -h --help
 
 Options:
@@ -26,6 +26,8 @@ Options:
                     or vector c(x, y). Their values should be between 0 and 1 (not work now).
    --lt txt      Set the legend title as 'txt', default by system group name. 'noshow' to hidden.
    --lfs num     Set the legend font size, [11].
+   --cl txts     Custom the order of legend elements, 
+                    the text and total number of elements should match with the input, eg. 'B::C::A'.
    -s nums       Set the point size, [2].
    -a nums       Set the point alpha, [1].
    --xlim nums   Set the xlim, num1,num2
@@ -70,7 +72,9 @@ if(is.null(opts$ylim) == F){
 c  = if(is.null(opts$c)) '#0073C1' else {opts$c}
 sp  = if(is.null(opts$sp)) 19 else {opts$sp}
 
-cp = if(is.null(opts$cp)) NULL else {unlist(strsplit(opts$cp,'::'))}
+cp = if(is.null(opts$cp)) 'jco' else {unlist(strsplit(opts$cp,'::'))}
+# Custom the order of legend.
+cl = if(is.null(opts$cl)) NULL else {unlist(strsplit(opts$cl,'::'))}
 legend = if(is.null(opts$l)) 'right' else {opts$l}
 if(startsWith(legend,'c(')){
     legend = eval(parse(text=legend))
@@ -129,11 +133,12 @@ if (gl==T){
     p = p + geom_line(aes_string(color=c),size=gls)
 }
 
-if(is.null(cp)){
-    p = p + ggpubr::color_palette("jco")
-}else{
-    p = p + ggpubr::color_palette(cp)
-}
+# if(is.null(cp)){
+#     p = p + ggpubr::color_palette("jco")
+# }else{
+#     p = p + ggpubr::color_palette(cp)
+# }
+p = p + ggpubr::color_palette(cp)
 # if(length(xlim) > 0){p = p + xlim(xlim[1],xlim[2])}
 if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}
 
@@ -159,6 +164,9 @@ if(is.null(myylab) == F){ p = p + ylab(myylab)}
 # https://ggplot2.tidyverse.org/reference/element.html
 p = p + theme(plot.margin = margin(4, 8, 4, 4, "points"))
 
+# Define the order of legends, https://rpkgs.datanovia.com/ggpubr/reference/get_palette.html
+# https://ggplot2.tidyverse.org/reference/scale_manual.html
+if(is.null(cl) == F){p = p + scale_color_manual(breaks = cl,values=get_palette(cp, length(cl)),labels=cl)}
 
 # add box
 p = p + border() 
