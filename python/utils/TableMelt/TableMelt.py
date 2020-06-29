@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     data = pd.read_csv(sys.stdin,header=0,delimiter=DELIMITER, dtype='str')
     out = pd.melt(frame=data,id_vars=ID,var_name=VAR_NAME,value_name=VALUE_NAME)
-    out.to_csv(sys.stdout, index=False, sep='\t')
+    out.to_csv(sys.stdout, index=False)
 
 sys.stdout.flush()
 sys.stdout.close()
