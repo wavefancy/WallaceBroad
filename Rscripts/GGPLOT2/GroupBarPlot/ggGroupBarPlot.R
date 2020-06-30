@@ -34,6 +34,7 @@ Notes:
 " -> doc
 
 # load the docopt library
+options(warn=-1)
 suppressMessages(library(docopt))
 suppressMessages(library(ggplot2))
 suppressMessages(library(tidyverse))
