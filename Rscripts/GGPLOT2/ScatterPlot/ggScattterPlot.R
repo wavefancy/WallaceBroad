@@ -13,13 +13,16 @@
 Create scatter plot using ggplot2
 
 Usage:
-    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num]
+    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num] [--revx]
     ggScattterPlot.R -h --help
 
 Options:
    -x name       Column name for x axis.
    -y name       Column name for y axis.
    -c name       Column name for color, or a single color for all points, [#0073C1]. 
+   -o <filename> Output file name, in pdf format. eg. example.pdf
+   -W float      The width of the output figure.
+   -H float      The height of the output figure.
    --sp name     Colomn name for point shapes, or a single number for R point shapes, [19].
    --cp colors   A list of color for color palette, eg. #00AFBB::#E7B800::#FC4E07.
    -l txt        Set the position for legend, default: right, c(“top”, “bottom”, “left”, “right”, “none”).
@@ -42,9 +45,7 @@ Options:
    --ab nums     Add abline to the plot, format: intercept,slop. eg. 0,1
    --abc color   Set the color of the abline, ['red'].
    --abs num     Set the the size for the abline, [1.5].
-   -o <filename> Output file name, in pdf format. eg. example.pdf
-   -W float      The width of the output figure.
-   -H float      The height of the output figure.
+   --revx        Reverse the X axis.
 
 Notes:
     1. Read data from stdin
@@ -179,6 +180,6 @@ if(is.null(cl) == F){p = p + scale_color_manual(breaks = cl,values=get_palette(c
 
 # add box
 p = p + border() 
-p
+
 ggsave(ofile, width = W, height = H)
 # graphics.off()
