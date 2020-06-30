@@ -108,7 +108,7 @@ dd = read.csv(file("stdin"),check.names=F)
 cat(colnames(dd), file = stderr())
 cat("\n", file = stderr())
 
-pdf(ofile,width=W, height=H)
+# pdf(ofile,width=W, height=H)
 # Force these columns to number, otherwise will have error.
 dd[[ymax]] = as.numeric(unlist(dd[ymax]))
 dd[[ymin]] = as.numeric(unlist(dd[ymin]))
@@ -159,4 +159,5 @@ p = p + theme(plot.margin = margin(4, 8, 4, 4, "points"))
 # add box
 p = p + border() 
 p
-graphics.off()
+ggsave(ofile, width = W, height = H)
+# graphics.off()

@@ -66,7 +66,7 @@ if(is.null(opts$ylim) == F){
 
 dd = read.table(file("stdin"),header = T,sep="\t")
 
-pdf(ofile,width=W, height=H)
+# pdf(ofile,width=W, height=H)
 
 # mapping promatically.
 # https://ggplot2.tidyverse.org/reference/aes_.html
@@ -88,4 +88,5 @@ if(!is.na(ymin)){
 # Use https://stackoverflow.com/questions/5936112/rescaling-the-y-axis-in-bar-plot-causes-bars-to-disappear-r-ggplot2
 if(length(ylim) > 0){p = p + coord_cartesian(ylim = ylim)}
 p
-graphics.off()
+ggsave(ofile, width = W, height = H)
+# graphics.off()

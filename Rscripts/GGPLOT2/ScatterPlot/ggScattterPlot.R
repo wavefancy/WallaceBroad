@@ -118,7 +118,7 @@ H = as.numeric(opts$H)
 dd = read.table(file("stdin"),header = T,sep="\t",check.names = F)
 message(paste0(colnames(dd),sep="\t"))
 
-pdf(ofile,width=W, height=H)
+# pdf(ofile,width=W, height=H)
 
 # dd[[x]] = as.numeric(unlist(dd[x]))
 # dd[[y]] = as.numeric(unlist(dd[y]))
@@ -171,4 +171,5 @@ if(is.null(cl) == F){p = p + scale_color_manual(breaks = cl,values=get_palette(c
 # add box
 p = p + border() 
 p
-graphics.off()
+ggsave(ofile, width = W, height = H)
+# graphics.off()
