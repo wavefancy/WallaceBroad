@@ -13,7 +13,7 @@
 Create scatter plot using ggplot2
 
 Usage:
-    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int]
+    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num]
     ggScattterPlot.R -h --help
 
 Options:
@@ -37,8 +37,11 @@ Options:
    --gl          Add lines for the scatter plot, by 'geom_line', aes color by '-c'
    --gls int     Set the geom_line size, [1].
    --rx int      Rotate the x axis label of degree 'int'.
-   --xb nums    Set the breaks for x axis.
-   --xl txts    Set the x labels for breaks, [--xb]. 
+   --xb nums     Set the breaks for x axis.
+   --xl txts     Set the x labels for breaks, [--xb]. 
+   --ab nums     Add abline to the plot, format: intercept,slop. eg. 0,1
+   --abc color   Set the color of the abline, ['red'].
+   --abs num     Set the the size for the abline, [1.5].
    -o <filename> Output file name, in pdf format. eg. example.pdf
    -W float      The width of the output figure.
    -H float      The height of the output figure.
@@ -68,6 +71,10 @@ ylim = NULL
 if(is.null(opts$ylim) == F){
   ylim = as.numeric(unlist(strsplit(opts$ylim,',')))
 }
+
+ab   = if(is.null(opts$ab))  NULL else {as.numeric(unlist(strsplit(opts$ab,',')))}
+abc  = if(is.null(opts$abc)) 'red' else {opts$abc}
+abs  = if(is.null(opts$abs)) 1.5 else {as.numeric(opts$abs)}
 
 c  = if(is.null(opts$c)) '#0073C1' else {opts$c}
 sp  = if(is.null(opts$sp)) 19 else {opts$sp}
@@ -133,11 +140,12 @@ if (gl==T){
     p = p + geom_line(aes_string(color=c),size=gls)
 }
 
-# if(is.null(cp)){
-#     p = p + ggpubr::color_palette("jco")
-# }else{
-#     p = p + ggpubr::color_palette(cp)
-# }
+#add abline
+if(is.null(ab) == F ){
+    p = p+ geom_abline(intercept = ab[1], slope = ab[2], color=abc, 
+                      linetype="dashed", size=abs)
+}
+
 p = p + ggpubr::color_palette(cp)
 # if(length(xlim) > 0){p = p + xlim(xlim[1],xlim[2])}
 if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}

@@ -17,4 +17,7 @@ wecho "
         --xl 'A,B,C'
         --xlab 'myx' --ylab 'myy'
         --ylim 0,30
+        --ab 0,2
+        --abc 'blue'
+        --abs '3'
 "
