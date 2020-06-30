@@ -159,6 +159,5 @@ p = p + theme(plot.margin = margin(4, 8, 4, 4, "points"))
 
 # add box
 p = p + border() 
-p
 ggsave(ofile, width = W, height = H)
 # graphics.off()

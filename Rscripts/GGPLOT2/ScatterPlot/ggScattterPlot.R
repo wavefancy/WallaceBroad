@@ -89,6 +89,9 @@ if(startsWith(legend,'c(')){
     legend = eval(parse(text=legend))
 }
 
+legendTitle = if(is.null(opts$lt)) NULL else opts$lt
+lfs = if(is.null(opts$lfs)) 11 else as.numeric(opts$lfs)
+
 # Set property for X axis.
 rx = if(is.null(opts$rx)) NULL else {as.numeric(opts$rx)}
 xticks = "waiver()" # function to use the default values.
@@ -117,9 +120,6 @@ gls = if(is.null(opts$gls)) 1 else {as.numeric(opts$gls)}
 # Set the point size and alpha.
 size  = if(is.null(opts$s)) 2 else {as.numeric(opts$s)}
 alpha = if(is.null(opts$a)) 1 else {as.numeric(opts$a)}
-
-legendTitle = if(is.null(opts$lt)) NULL else opts$lt
-lfs = if(is.null(opts$lfs)) 11 else as.numeric(opts$lfs)
 
 W = as.numeric(opts$W)
 H = as.numeric(opts$H)
@@ -152,6 +152,7 @@ p = p + ggpubr::color_palette(cp)
 # if(length(xlim) > 0){p = p + xlim(xlim[1],xlim[2])}
 if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}
 
+
 # Change theme things.
 p = p + theme_pubr(legend=legend)
 # change the font size for legend.
@@ -163,6 +164,8 @@ if (legendTitle == 'noshow') {p = p + theme(legend.title = element_text(size=0))
 # Note: the command legend.justification sets the corner that the position refers to.
 # https://www.r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
 if (length(legend) == 2){ p = p + theme(legend.justification = c("left", "top"))}
+
+
 if(is.null(rx) == F){p = p + rotate_x_text(rx)}
 # https://ggplot2.tidyverse.org/reference/scale_continuous.html
 p = p + scale_x_continuous(trans=logx, breaks=eval(parse(text=xbreaks)),labels=eval(parse(text=xticks)),limits=xlim)

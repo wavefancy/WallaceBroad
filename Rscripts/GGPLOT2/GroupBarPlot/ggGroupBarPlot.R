@@ -88,6 +88,5 @@ if(!is.na(ymin)){
 # for barplot, do not use ylim.
 # Use https://stackoverflow.com/questions/5936112/rescaling-the-y-axis-in-bar-plot-causes-bars-to-disappear-r-ggplot2
 if(length(ylim) > 0){p = p + coord_cartesian(ylim = ylim)}
-p
 ggsave(ofile, width = W, height = H)
 # graphics.off()
