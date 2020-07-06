@@ -15,11 +15,12 @@ Detect outliers based on 1.5xIQR rule.
     are below Q1−1.5⋅IQR and high outliers are above Q3+1.5⋅IQR.
 
 Usage:
-    IQROutliers.R -n name
+    IQROutliers.R -n name [-t num]
     IQROutliers.R -h [--help]
 
 Options:
    -n name   Column name for checking outliers.
+   -t num    Set the IQR threshold for declearing outliers, [1.5].
 
 Notes:
     1. Read tsv data from stdin and output results to stdout.
@@ -30,6 +31,7 @@ options(warn=-1)
 suppressMessages(library(docopt))
 
 opts <- docopt(doc)
+threshold = if(is.null(opts$t)) 1.5 else {as.numeric(opts$t)}
 
 # define a function to remove outliers
 FindOutliers <- function(data) {
@@ -37,8 +39,8 @@ FindOutliers <- function(data) {
   upperq = quantile(data)[4]
   iqr = upperq - lowerq #Or use IQR(data)
   # we identify extreme outliers
-  extreme.threshold.upper = (iqr * 1.5) + upperq
-  extreme.threshold.lower = lowerq - (iqr * 1.5)
+  extreme.threshold.upper = (iqr * threshold) + upperq
+  extreme.threshold.lower = lowerq - (iqr * threshold)
   result <- which(data > extreme.threshold.upper | data < extreme.threshold.lower)
 }
 
