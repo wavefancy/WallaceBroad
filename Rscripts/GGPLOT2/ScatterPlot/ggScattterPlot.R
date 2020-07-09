@@ -13,7 +13,7 @@
 Create scatter plot using ggplot2
 
 Usage:
-    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num] [--revx]
+    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num] [--revx] [--gtr txts] [--gtrs num]
     ggScattterPlot.R -h --help
 
 Options:
@@ -27,7 +27,7 @@ Options:
    --cp colors   A list of color for color palette, eg. #00AFBB::#E7B800::#FC4E07.
    -l txt        Set the position for legend, default: right, c(“top”, “bottom”, “left”, “right”, “none”).
                     or vector c(x, y). Their values should be between 0 and 1 (not work now).
-   --lt txt      Set the legend title as 'txt', default by system group name. 'noshow' to hidden.
+   --lt txt      Set the legend title as 'txt', default ['noshow']. 'noshow' to hidden.
    --lfs num     Set the legend font size, [11].
    --cl txts     Custom the order of legend elements, 
                     the text and total number of elements should match with the input, eg. 'B::C::A'.
@@ -46,6 +46,9 @@ Options:
    --abc color   Set the color of the abline, ['red'].
    --abs num     Set the the size for the abline, [1.5].
    --revx        Reverse the X axis.
+   --gtr txts    Add text to plot by 'geom_text_repel',TSV,in as: filename::col_x::col_y::col_text.
+   --gtrs num    Set the text size for the gtr texts,[4].
+
 
 Notes:
     1. Read data from stdin
@@ -59,6 +62,7 @@ suppressMessages(library(docopt))
 suppressMessages(library(ggplot2))
 suppressMessages(library(tidyverse))
 suppressMessages(library(ggpubr))
+suppressMessages(library(ggrepel))
 # suppressMessages(library(rio))
 # retrieve the command-line arguments
 opts <- docopt(doc)
@@ -89,7 +93,7 @@ if(startsWith(legend,'c(')){
     legend = eval(parse(text=legend))
 }
 
-legendTitle = if(is.null(opts$lt)) NULL else opts$lt
+legendTitle = if(is.null(opts$lt)) 'noshow' else opts$lt
 lfs = if(is.null(opts$lfs)) 11 else as.numeric(opts$lfs)
 
 # Set property for X axis.
@@ -124,10 +128,8 @@ alpha = if(is.null(opts$a)) 1 else {as.numeric(opts$a)}
 W = as.numeric(opts$W)
 H = as.numeric(opts$H)
 
-dd = read.table(file("stdin"),header = T,sep="\t",check.names = F)
+dd = read.table(file("stdin"),header = T, sep="\t",check.names = F)
 message(paste0(colnames(dd),sep="\t"))
-
-# pdf(ofile,width=W, height=H)
 
 # dd[[x]] = as.numeric(unlist(dd[x]))
 # dd[[y]] = as.numeric(unlist(dd[y]))
@@ -148,10 +150,32 @@ if(is.null(ab) == F ){
                       linetype="dashed", size=abs)
 }
 
+# https://mran.microsoft.com/snapshot/2017-08-20/web/packages/ggrepel/vignettes/ggrepel.html
+# https://www.rdocumentation.org/packages/ggrepel/versions/0.8.2/topics/geom_label_repel
+if(is.null(opts$gtr) == F){
+    gtr = unlist(strsplit(opts$gtr,'::'))
+    # data for text
+    text_dd = read.table(gtr[1],header = T, sep="\t",check.names = F)
+
+    gtrs  = if(is.null(opts$gtrs)) 4 else {as.numeric(opts$gtrs)}
+    sy = 1.0
+    if(is.null(opts$sy) == F){sy = as.numeric(opts$sy)}
+    p = p + geom_text_repel(mapping = aes_string(gtr[2],gtr[3],label=gtr[4])
+          ,data = text_dd
+          ,size=gtrs,fontface='italic'
+          ,nudge_y = sy
+          #,nudge_x=sy
+          ,segment.size = 0.5 # shift on Y, and the line size is 0.5.
+          ,direction='both' # try to make no overalp on the X direction.
+          ,min.segment.length = 0.5
+          #,point.padding = 1.6
+        )
+}
+
+
 p = p + ggpubr::color_palette(cp)
 # if(length(xlim) > 0){p = p + xlim(xlim[1],xlim[2])}
 if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}
-
 
 # Change theme things.
 p = p + theme_pubr(legend=legend)
