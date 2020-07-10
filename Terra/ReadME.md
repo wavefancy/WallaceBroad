@@ -2,7 +2,7 @@
 
 
 ### Check out the latest version [here](https://hub.docker.com/r/wavefancy/terrawngs/tags), in Terra make a custom ENV by `<image_name>:<tag>`
-- The latest version: `wavefancy/terrawngs:v1.4`
+- The latest version: `wavefancy/terrawngs:v1.5`
 - Terra will not remove your files if change VM config but not the disk size.
 
 ### Updates in the base image
