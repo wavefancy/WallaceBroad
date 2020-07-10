@@ -25,4 +25,5 @@
     
 - Installed Jupyter [bash kernel](https://github.com/takluyver/bash_kernel).
 - Installed Jupyter R kernel.
+- Add/Change/Check Jupyter kernel config: `jupyter kernelspec list`
 - Add `body` function to bash config, [more details](https://unix.stackexchange.com/questions/11856/sort-but-keep-header-line-at-the-top).  
