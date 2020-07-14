@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        wcut.py (-f string | --tf file | -t titles) [-d string] [--od txt] [-c] [-a string] [--cs txt] [-r]
+        wcut.py (-f string | --tf file | -t titles) [-d string] [--od txt] [-c] [-a string] [--cs txt] [-r] [--fix]
         wcut.py -h | --help | -v | --version | --format
 
     Options:
@@ -20,6 +20,8 @@
         -c          Open copy mode, directly copy comment line to stdout, comments started by '#'.
         --cs txt    Set the comment start string as 'txt', default it's '#'.
         -a string   Set the default value as 'string' if column value is empty.
+        --fix       If the number of columns is truncated for some rows, 
+                        fill in [NA] or '-a' for fix the row.
 
         -h --help     Show this screen.
         -v --version  Show version.
@@ -62,8 +64,11 @@ class P(object):
 
     maxSplitTime = 0
     isSplitFixed = False #whether split a fix number of times.
-    aVal = '' #whether add value to empty fields.
+    addEmpty = False
+    aVal = 'NA' #whether add value to empty fields.
     reverseSelection = False
+    maxcols = 0  #the maximum of columns detect from the first line.
+    fixRow = False 
 
 def runApp():
     # print(P.delimiter)
@@ -140,16 +145,22 @@ def runApp():
                 if not P.isSplitFixed:
                     P.maxSplitTime = max(P.outArrayId) +1
                     P.isSplitFixed = True
+                    P.maxcols = max(P.outArrayId)+1
 
             #output one line
             try:
+                # fix the truncated row.
+                if P.fixRow:
+                    while(len(ss) < P.maxcols):
+                        ss.append(P.aVal)
+                # print(P.maxcols)
                 s_n = [ss[i] for i in P.outArrayId]
             except IndexError:
                 sys.stderr.write('ERROR: array index error: %d\n'%(len(ss)))
                 sys.stderr.write('Line content: %s\n'%(ss))
                 sys.exit(-1)
 
-            if P.aVal:
+            if P.addEmpty:
                 s_n  = [addValue(x) for x in s_n]
 
             sys.stdout.write(P.odelimiter.join(s_n))
@@ -184,6 +195,7 @@ if __name__ == '__main__':
                 [P.tArray.append(x) for x in ss]
     if args['-a']:
         P.aVal = args['-a']
+        P.addEmpty  = True
 
     add = False
     if args['-f']:
@@ -213,4 +225,6 @@ if __name__ == '__main__':
     if args['-r']:
         P.reverseSelection = True
 
+    if args['--fix']:
+        P.fixRow = True
     runApp()
