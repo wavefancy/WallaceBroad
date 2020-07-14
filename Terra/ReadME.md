@@ -2,7 +2,7 @@
 
 
 ### Check out the latest version [here](https://hub.docker.com/r/wavefancy/terrawngs/tags), in Terra make a custom ENV by `<image_name>:<tag>`
-- The latest version: `wavefancy/terrawngs:v1.4`
+- The latest version: `wavefancy/terrawngs:v1.5`
 - Terra will not remove your files if change VM config but not the disk size.
 
 ### Updates in the base image
@@ -25,4 +25,5 @@
     
 - Installed Jupyter [bash kernel](https://github.com/takluyver/bash_kernel).
 - Installed Jupyter R kernel.
+- Add/Change/Check Jupyter kernel config: `jupyter kernelspec list`
 - Add `body` function to bash config, [more details](https://unix.stackexchange.com/questions/11856/sort-but-keep-header-line-at-the-top).  
