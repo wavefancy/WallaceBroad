@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        VCFSetID.py [-i] [-s]
+        VCFSetID.py [-i] [-s] [-m int]
         VCFSetID.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
     Options:
         -i              Include old rsID.
         -s              Sort the ref and alt alleles, sorted([ref,alt])
+        -m int          Set the maxmium ID lenght as int.
         -h --help       Show this screen.
         -v --version    Show version.
         -f --format     Show format example.
@@ -50,6 +51,8 @@ if __name__ == '__main__':
     if args['-i']:
         IncludeOld = True
 
+    MAX_ID_LEN = int(args['-m']) if args['-m'] else -1
+
     # infile.close()
     output = False
     for line in sys.stdin:
@@ -66,6 +69,10 @@ if __name__ == '__main__':
                     ss[2] = ss[0] + ':' + ss[1] + ':' + stemp[0] + ':' + stemp[1] + ':' + ss[2]
                 else:
                     ss[2] = ss[0] + ':' + ss[1] + ':' + stemp[0] + ':' + stemp[1]
+
+                if MAX_ID_LEN > 0:
+                    ss[2] = ss[2][0:MAX_ID_LEN]
+                
                 sys.stdout.write('%s\n'%('\t'.join(ss)))
                 #sys.stdout.write('%s\n'%('\t'.join([ss[x] for x in idIndex])))
 
