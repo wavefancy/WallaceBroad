@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        SubsetByKey.py (-f keyfile | -v vals) (-k|-r) (-c ints | -t txts) [--title] [-m] [-d txt]
+        SubsetByKey.py (-f keyfile | -v vals) (-k|-r) (-c ints | -t txts) [--title] [-m] [-d txt] [--cs txt]
         SubsetByKey.py -h | --help | --version | -f | --format
 
     Notes:
@@ -22,7 +22,8 @@
         -k            Keep key indicated records.
         -r            Remove key indicated records.
         -c ints       Column index for comparing with keys, eg. 1|1,2. 1 based.
-        -m            Directly copy comment lines, startswith '#'.
+        -m            Directly copy comment lines, startswith '--cs'.
+        --cs txt      Set the start characters for comment line, [#]. 
         -d txt        Column delimiter, default white-spaces. tab for '\\t'.
         --title       Indicate first non-comment line as title, no filterring.
         -h --help     Show this screen.
@@ -57,6 +58,7 @@ if __name__ == '__main__':
     COPY_COMMENTS  = True if args['-m'] else False
     KEYS           = [int(x)-1 for x in args['-c'].split(',')] if args['-c'] else []
     DELIMITER      = args['-d'] if args['-d'] else None
+    COMMENTS_START = args['--cs'] if args['--cs'] else '#'
     if DELIMITER and DELIMITER.lower() == 'tab':
         DELIMITER = '\t'
     # Select by title keys.
@@ -81,7 +83,7 @@ if __name__ == '__main__':
     for line in sys.stdin:
         line = line.strip()
         if line:
-            if COPY_COMMENTS and line.startswith('#'):
+            if COPY_COMMENTS and line.startswith(COMMENTS_START):
                 sys.stdout.write('%s\n'%(line))
                 continue
 
