@@ -50,8 +50,10 @@ suppressMessages(library(docopt))
 suppressMessages(library(ggplot2))
 suppressMessages(library(tidyverse))
 suppressMessages(library(ggpubr))
+
+# conda install -c conda-forge r-ggbeeswarm r-gghalves
+suppressMessages(library(gghalves))
 suppressMessages(library(ggbeeswarm))
-# conda install -c conda-forge r-ggbeeswarm
 
 # retrieve the command-line arguments
 opts <- docopt(doc)
@@ -126,25 +128,44 @@ if(length(notfound) > 0){
 }
 
 dd[[x]] = as.factor(dd[[x]])
+dd[[c]] = as.factor(dd[[c]])
 # Order the factor the order we want.
 if(is.null(xo)==F) {dd[[x]] = factor(dd[[x]], levels = xo)}
 wl = if(is.null(opts$wl)) 1.5 else as.numeric(opts$wl)
 
+if(x!=c){ # Each group has subgroups, currently only support two.
+    p = ggplot(dd, aes_string(x = x, y = y, fill=c, color=c))
+    p = p + geom_boxplot(
+          ,color='black'
+          ,width = 0.5
+          # set NA to hidden outliers.
+          ,outlier.color = NA
+          # The distance between box, https://ggplot2.tidyverse.org/reference/position_dodge.html
+          ,position = position_dodge2(padding = 0.2)) 
+      # geom_half_dotplot(method="dotdensity", stackdir="up",dotsize=0.8)
+    p = p + geom_beeswarm(aes_string(x = x, y = y, fill=c, color=c)
+        ,beeswarmArgs=list(side=1)
+        ,size=0.9
+        # the distance between groups.
+        ,dodge.width=1.25)
+}else{
+    mynudge = 0.14
+    p = ggplot(dd, aes_string(x = x, y = y, fill=c, color=c))
+    p = p + geom_boxplot(
+          ,color='black'
+          ,width = 0.4
+          # set NA to hidden outliers.
+          ,outlier.color = NA
+          # The shift on axis
+          ,position = position_nudge(x = -1 * mynudge)) 
+    # p = p + geom_beeswarm(aes_string(x = x, y = y, fill=c, color=c)
+    # https://www.rdocumentation.org/packages/gghalves/versions/0.1.0/topics/geom_half_dotplot
+    p = p + geom_half_dotplot(aes_string(x = x, y = y, fill=c, color=c)
+        ,dotsize=0.8
+        # The shift on axis
+        ,position = position_nudge(x = mynudge))
+}
 
-p = ggplot(dd, aes_string(x = x, y = y, fill=c, color=c))
-p = p + geom_boxplot(
-       ,color='black'
-       ,width = 0.5
-       # set NA to hidden outliers.
-       ,outlier.color = NA
-       # The distance between box, https://ggplot2.tidyverse.org/reference/position_dodge.html
-       ,position = position_dodge2(padding = 0.2)) 
-  # geom_half_dotplot(method="dotdensity", stackdir="up",dotsize=0.8)
-p = p + geom_beeswarm(aes_string(x = x, y = y, fill=c, color=c)
-    ,beeswarmArgs=list(side=1)
-    ,size=0.9
-    # the distance between groups.
-    ,dodge.width=1.25)
 
 #==============END PROJECT SPECIFIC CODE====================
 
