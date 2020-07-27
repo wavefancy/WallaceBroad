@@ -8,7 +8,7 @@
 Create dot/bar plot with error bar using ggplot2
 
 Usage:
-    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--sy] [--cl txts] [--xo txts]
+    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--sy] [--cl txts] [--xo txts] [--rx int]
     ggBarDotErrorBar.R -h --help
 
 Options:
@@ -42,6 +42,7 @@ Options:
    --js num      Set the jitter size for within group elements, [0.3].
    --logy text   Set up the log tranformation of Y axis, log2|log10|sqrt.
    --logx text   Set up the log tranformation of X axis, log2|log10|sqrt.
+   --rx int      Rotate the x axis label of degree 'int'.
    --sy          Show the Y value on the plot.
    -o <filename> Output file name, in pdf format. eg. example.pdf
    -W float      The width of the output figure.
@@ -135,6 +136,10 @@ if(opts$dot){
     p  = p + geom_point(aes_string(color = c),size=ds, position = position_dodge(js))
 }
 
+# Convert x and c as factor.
+dd[[c]] = factor(dd[[c]])
+dd[[x]] = factor(dd[[x]])
+
 # https://rstudio-pubs-static.s3.amazonaws.com/7433_4537ea5073dc4162950abb715f513469.html
 # Custom the order of legend.
 cl = if(is.null(opts$cl)) NULL else {unlist(strsplit(opts$cl,'::'))}
@@ -213,6 +218,7 @@ p = p + scale_y_continuous(trans=logy, breaks=eval(parse(text=yticks)),labels=ev
 if(class(dd[[x]]) != 'factor'){
     p = p + scale_x_continuous(trans=logx, breaks=xbreaks,labels=xticks,limits=xlim)
 }
+if(is.null(opts$rx) == F){p = p + rotate_x_text(as.numeric(opts$rx))}
 
 # margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")
 # https://ggplot2.tidyverse.org/reference/element.html
