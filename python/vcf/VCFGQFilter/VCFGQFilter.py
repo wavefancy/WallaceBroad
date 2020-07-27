@@ -14,6 +14,8 @@
         1. Read vcf file from stdin, mask genotype as missing if GQ < 'mingq'.
         2. With support multiple allelic sites.
         3. Output results to stdout.
+        4. Ignore the filter if the site call is already missing,  
+               will not count into the final summary.
 
     Options:
         --mingq int     Minimum value for GQ, int.
@@ -93,12 +95,17 @@ if __name__ == '__main__':
         # This is the sum of gt_ref_depths + gt_alt_depths, check the code.
         # And confirmed by experiment.
         gq = variant.gt_quals
+
+        # gt_types is array of 0,1,2,3==HOM_REF, HET, HOM_ALT, UNKNOWN
+        gt_types = variant.gt_types
+
         # print(dp)
         ss = str(variant).split()
         updateDPCOL(ss[FMT_COL])
 
-        # shift to the wright pos for mask the genotype.
-        min_mask_pos = np.nonzero(gq < mingq)[0] + DATA_COL
+        # shift to the right pos for mask the genotype.
+        # Only apply to the filter to the call the genotype is non-missing.
+        min_mask_pos = np.nonzero(np.logical_and(gq < mingq, gt_types!=3))[0] + DATA_COL
         [maskRecord(ss, x) for x in min_mask_pos]
         TOTAL_MAKSED += min_mask_pos.size
         
