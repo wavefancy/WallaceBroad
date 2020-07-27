@@ -14,6 +14,8 @@
         1. Read vcf file from stdin, mask genotype as missing if failed the filter.
         2. With support multiple allelic sites.
         3. Output results to stdout.
+        4. Ignore the filter if the site call is already missing,  
+               will not count into the final summary.
 
     Options:
         --mindp int     Minimum value for total AD tag(read depth), int.
@@ -59,23 +61,20 @@ if __name__ == '__main__':
     # https://brentp.github.io/cyvcf2/docstrings.html#api
     invcf = VCF('/dev/stdin', lazy=True, gts012=True)
     # invcf = VCF('test.vcf.gz', lazy=True)
-    
-    # adjust the header to contain the new field
-    # the keys 'ID', 'Description', 'Type', and 'Number' are required.
+
+    header = invcf.raw_header.split('\n')
+    sys.stdout.write('%s\n'%('\n'.join(header[:-2])))
     if minDP >= 0:
-        invcf.add_filter_to_header({'ID': 'VCFDPFilter.py', 
-            'Description': 'Mask the genotype as missing if the total read depth (AD) < '+str(minDP)})
+        sys.stdout.write('##FILTER=<ID=VCFDPFilter.py,Description="Mask the genotype as missing if the total read depth (%s) < %d">\n'%(field, minDP))
+        # invcf.add_filter_to_header({'ID': 'VCFDPFilter.py', 
+        #     'Description': 'Mask the genotype as missing if the total read depth (%s) < '%(field)+str(minDP)})
     if maxDP >= 0:
-        invcf.add_filter_to_header({'ID': 'VCFDPFilter.py', 
-            'Description': 'Mask the genotype as missing if the total read depth (AD) > '+str(maxDP)})
-    
-    # create a new vcf Writer using the input vcf as a template.
-    # Only need to write out updated VCF header.
-    # Other parts output as string.
-    sys.stdout.write('%s'%(invcf.raw_header))
-    # outvcf = Writer('/dev/stdout', invcf)
-    # outvcf.close()
-    
+        sys.stdout.write('##FILTER=<ID=VCFDPFilter.py,Description="Mask the genotype as missing if the total read depth (%s) > %d">\n'%(field, maxDP))
+        # print('here')
+        # invcf.add_filter_to_header({'ID': 'VCFDPFilter.py', 
+        #     'Description': 'Mask the genotype as missing if the total read depth (%s) > '%(field)+str(maxDP)})
+    sys.stdout.write('%s\n'%(header[-2]))
+       
     # Cache data for faster process.
     DATA_COL = 9
     FMT_COL  = 8
@@ -114,15 +113,24 @@ if __name__ == '__main__':
             # The above code do not support multi-allelic sites.
             # We support multi-allelic sites as below.
             dparray = variant.format('AD')
-            # set missing (negative value) to as 0.
+            # set missing (negative value) to as 0, will do nothing on these sites.
+            # print(dparray)
+            # print('=======')
+            # This will broadcast to every elements, so its fine even for a 2D array.
             dparray[dparray<0] = 0
             # total DP.
+            # print(dparray)
             dp = np.sum(dparray,axis=1)
- 
+    
+        # gt_types is array of 0,1,2,3==HOM_REF, HET, HOM_ALT, UNKNOWN
+        gt_types = variant.gt_types
+        # set genotype missing to as 0, will do nothing on these sites.
+        dp[gt_types==3] = 0
+        
         ss = str(variant).split()
         updateDPCOL(ss[FMT_COL])
 
-        # shift to the wright pos for mask the genotype.
+        # shift to the right pos for mask the genotype.
         if minDP > 0:
             # negative value already as missing, just skipped.
             min_mask_pos = np.nonzero(np.logical_and(dp < minDP, dp > 0))[0] + DATA_COL
