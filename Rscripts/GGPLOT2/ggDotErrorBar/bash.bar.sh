@@ -10,7 +10,7 @@ wecho "
         --cp '#00AFBB::#E7B800::#FC4E07'
         --js 0.7
         --bar
-        --sy
+        --gt ymi
         --ec 'lightblue'
         -o test.bar.pdf
         #--ylim 3,50
