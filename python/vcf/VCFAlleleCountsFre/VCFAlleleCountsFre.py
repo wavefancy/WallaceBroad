@@ -142,7 +142,7 @@ if __name__ == '__main__':
         if alt + ref == 0:
             sys.stdout.write('%s\t%d\t%d\tNA\n'%('\t'.join(out), ref+alt, alt))
         else:
-            sys.stdout.write('%s\t%d\t%d\t%.4f\n'%('\t'.join(out), ref+alt, alt, alt*1.0/(alt + ref)))
+            sys.stdout.write('%s\t%d\t%d\t%g\n'%('\t'.join(out), ref+alt, alt, alt*1.0/(alt + ref)))
 
     def outputGPGenotype(ss):
         '''output genotype frequency based on imputation GP tag'''
