@@ -79,11 +79,20 @@ def runApp():
         else:
             ss = line.strip().split()
 
+        # UPDATE the performance for finding title index.
+        INDMAP = {}
+        for x,y in zip(range(len(ss)),ss):
+            if y in INDMAP:
+                sys.stderr.write('ERROR: duplicate entry in title line: %s\n'%(y))
+                sys.exit(-1)
+            else:
+                INDMAP[y] = x
+
         for x in P.tArray:
             try:
-                ii = ss.index(x)
+                ii = INDMAP[x]
                 P.outArrayId.append(ii)
-            except ValueError:
+            except KeyError:
                 sys.stderr.write('WARN: In title,can\'t find: %s\n'%(x))
                 # sys.exit(-1)
 
