@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        wlines.py (-n index | -f file) [-e index] [-a number] [-r number]
+        wlines.py (-n index | -f file | -l ints) [-e index] [-a number] [-r number]
         wlines.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -20,6 +20,7 @@
         -a number     Set the end line as '-n index' + 'number', (inclusive).
         -r number     From start line, repeatly copy one line then skip 'number' lines, until reach file end.
         -f file       Read line index from 'file', one line one index, load all in memory.
+        -l ints       List of lines, eg. 1|1,2,5,8
         -h --help     Show this screen.
         -v --version  Show version.
 
@@ -57,6 +58,10 @@ if __name__ == '__main__':
         P.nskip = int(args['-r'])
     if args['-f']:
         ll = [int(x) for x in open(args['-f'], 'r')]
+        P.maxLine = max(ll)
+        P.lineSet = set(ll)
+    if args['-l']:
+        ll = [int(x) for x in args['-l'].split(',')]
         P.maxLine = max(ll)
         P.lineSet = set(ll)
 
