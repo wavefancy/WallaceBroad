@@ -7,7 +7,7 @@
 Do logistic regression by R, with the function to add interaction terms.
 
 Usage:
-    logisticRegression.R [-i interactions] [-c] [-r]
+    logisticRegression.R [-i interactions] [-c] [-r] [--rl txt]
     logisticRegression.R -h [--help]
 
 Options:
@@ -15,6 +15,7 @@ Options:
    -c                 Output 95CI for the effects of each predictors.
    -r                 Output R2 measures for logistic model: 
                           CoxSnellR2, NagelkerkeR2, McFaddenR2 and TjurR2.
+   --rl txt           Reset the reference level, format VarName,RefLevel. e.g. G,B.
 
 Notes:
     1. Read data from stdin, auto generate formula based on input title.
@@ -90,6 +91,14 @@ RsqGLM <- function(obs = NULL, pred = NULL, model = NULL) {
 
 #dd = read.table("test.txt",header = T)
 dd = read.table(file("stdin"),header = T)
+if(is.null(opts$rl)==F){
+    RL = unlist(strsplit(opts$rl,','))
+    t = paste0('dd = within(dd,',RL[1],'<-relevel(',RL[1],',ref="',RL[2],'"))')
+    eval(parse(text=t))
+}
+
+# reset level if necessary.
+
 # remove the rows with NA values.
 dd = na.omit(dd)
 # https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables
