@@ -21,8 +21,13 @@ Options:
 
   ' -> doc
 
+
 # Generate Forest plot.
 # Worked version : Publish_2019.12.04 prodlim_2018.04.18
+
+# conda create -n forestplot r-essentials r-base r-data.table r-tidyverse r-docopt r-rio
+# install.packages('Publish')
+
 suppressMessages(library(Publish))
 suppressMessages(library(tidyverse))
 suppressMessages(library(docopt))
