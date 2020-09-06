@@ -48,7 +48,7 @@ xname = 'Odds Ratio'
 if(is.null(opts$x) == F){
   xname = opts$x
 }
-xlim = NULL
+xlim = c()
 if(is.null(opts$xlim) == F){
   xlim = as.numeric(unlist(strsplit(opts$xlim,',')))
 }
@@ -241,8 +241,7 @@ plotConfidence = function (x, y.at, lower, upper, pch = 16, cex = 1, lwd = 1,
   }
   if (missing(upper)) 
     upper <- x$upper
-  # if (missing(xlim)) 
-  if (is.null(xlim)) # wavefancy@gmail.com, set default missing value as NULL.
+  if (missing(xlim)) 
     xlim <- c(min(lower) - 0.1 * min(lower), max(upper) + 
                 0.1 * min(upper))
   if (missing(xlab)) 
@@ -678,107 +677,72 @@ pdf(ofile,width=W, height=H, pointsize=16)
 # the default
 # print(par('mar')) # 5.1 4.1 4.1 2.1
 par(mar = c(3.5, 0, 3, 2))
-
-
-plotConfidence(
-                #x = exp(data$BETA),lower = exp(data$BETAL), upper = exp(data$BETAR)
-                x = data$OR,lower = data$OR_CI_L, upper = data$OR_CI_R
-                ,labels = texts
-                #,title.labels=tnames
-                ,xlab = xname
-                ,xaxis.cex=1.0    # font size for x axis.
-                ,xlab.cex=0.8     # font size for x label.
-                ,xlab.line=1.8    # The space between X label with X tick values.
-                ,plot.log="x"
-                ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-                #,order=c(1,2,3)
-                #,xratio=c(0.8,0.01)
-                ,xratio=myxratio
-                ,refline = 1 ,refline.col='black',refline.lty=2
-                ,refline.y.extend=refline.y.extend
-                ,xlim=xlim
-                ,y.title.offset=my_y_title_offset # the vertical space between title line with data.
-                ,section.sep=my_section_sep    # the space between groups(splits).
-                ,titleBase = titleBase
-                ,title.line.col='black'
-                ,title.line.lwd = 1
-                ,title.labels.cex = 1 # Set the font size for title line.
-                ,arrows.col='black'
-                ,points.col='black'
-                ,points.cex=1.5
-                ,arrows.lwd = 1.5
-                # ,leftmargin=0.015
-#                 ,title.labels.pos=3
-#                 ,title.labels.y=10.5
-#                 ,title.labels.offset=0.5
-)
-
-# #print(par('oma'))
-# if(is.null(opts$xlim) == F){ # set the X lim.
-#   plotConfidence(
-#                   #x = data$BETA,lower = data$BETAL, upper = data$BETAR
-#                   x = data$OR,lower = data$OR_CI_L, upper = data$OR_CI_R
-#                   ,labels = texts
-#                   #,title.labels=tnames
-#                   ,xlab = xname
-#                   ,xaxis.cex=1.0    # font size for x axis.
-#                   ,xlab.cex=0.8     # font size for x label.
-#                   ,xlab.line=1.8    # The space between X label with X tick values.
-#                   ,plot.log="x"
-#                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-#                   #,order=c(1,2,3)
-#                   #,xratio=c(0.8,0.1)
-#                   ,xratio=myxratio
-#                   ,refline = 1,refline.col='black',refline.lty=2
-#                   ,refline.y.extend=refline.y.extend
-#                   ,xlim=xlim
-#                   ,y.title.offset=my_y_title_offset # the vertical space between title line and data.
-#                   ,section.sep=my_section_sep
-#                   ,titleBase = titleBase
-#                   ,title.line.col='black'
-#                   ,title.labels.cex = 1 # Set the font size for title line.
-#                   ,arrows.col='black'
-#                   ,points.col='black'
-#                   ,points.cex=1.5
-#                   ,arrows.lwd = 1.5
-#   #                 ,title.labels.pos=3
-#   #                 ,title.labels.y=10.5
-#   #                 ,title.labels.offset=0.5
-#   )
-# }else{
-#   plotConfidence(
-#                   #x = exp(data$BETA),lower = exp(data$BETAL), upper = exp(data$BETAR)
-#                   x = data$OR,lower = data$OR_CI_L, upper = data$OR_CI_R
-#                   ,labels = texts
-#                   #,title.labels=tnames
-#                   ,xlab = xname
-#                   ,xaxis.cex=1.0    # font size for x axis.
-#                   ,xlab.cex=0.8     # font size for x label.
-#                   ,xlab.line=1.8    # The space between X label with X tick values.
-#                   ,plot.log="x"
-#                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-#                   #,order=c(1,2,3)
-#                   #,xratio=c(0.8,0.01)
-#                   ,xratio=myxratio
-#                   ,refline = 1 ,refline.col='black',refline.lty=2
-#                   ,refline.y.extend=refline.y.extend
-#                   # ,xlim=NULL
-#                   ,y.title.offset=my_y_title_offset # the vertical space between title line with data.
-#                   ,section.sep=my_section_sep    # the space between groups(splits).
-#                   ,titleBase = titleBase
-#                   ,title.line.col='black'
-#                   ,title.line.lwd = 1
-#                   ,title.labels.cex = 1 # Set the font size for title line.
-#                   ,arrows.col='black'
-#                   ,points.col='black'
-#                   ,points.cex=1.5
-#                   ,arrows.lwd = 1.5
-#                   # ,leftmargin=0.015
-#   #                 ,title.labels.pos=3
-#   #                 ,title.labels.y=10.5
-#   #                 ,title.labels.offset=0.5
-#   )
-# }
+#print(par('oma'))
+if(is.null(opts$xlim) == F){ # set the X lim.
+  plotConfidence(
+                  #x = data$BETA,lower = data$BETAL, upper = data$BETAR
+                  x = data$OR,lower = data$OR_CI_L, upper = data$OR_CI_R
+                  ,labels = texts
+                  #,title.labels=tnames
+                  ,xlab = xname
+                  ,xaxis.cex=1.0    # font size for x axis.
+                  ,xlab.cex=0.8     # font size for x label.
+                  ,xlab.line=1.8    # The space between X label with X tick values.
+                  ,plot.log="x"
+                  ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
+                  #,order=c(1,2,3)
+                  #,xratio=c(0.8,0.1)
+                  ,xratio=myxratio
+                  ,refline = 1,refline.col='black',refline.lty=2
+                  ,refline.y.extend=refline.y.extend
+                  ,xlim=xlim
+                  ,y.title.offset=my_y_title_offset # the vertical space between title line and data.
+                  ,section.sep=my_section_sep
+                  ,titleBase = titleBase
+                  ,title.line.col='black'
+                  ,title.labels.cex = 1 # Set the font size for title line.
+                  ,arrows.col='black'
+                  ,points.col='black'
+                  ,points.cex=1.5
+                  ,arrows.lwd = 1.5
+  #                 ,title.labels.pos=3
+  #                 ,title.labels.y=10.5
+  #                 ,title.labels.offset=0.5
+  )
+}else{
+  plotConfidence(
+                  #x = exp(data$BETA),lower = exp(data$BETAL), upper = exp(data$BETAR)
+                  x = data$OR,lower = data$OR_CI_L, upper = data$OR_CI_R
+                  ,labels = texts
+                  #,title.labels=tnames
+                  ,xlab = xname
+                  ,xaxis.cex=1.0    # font size for x axis.
+                  ,xlab.cex=0.8     # font size for x label.
+                  ,xlab.line=1.8    # The space between X label with X tick values.
+                  ,plot.log="x"
+                  ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
+                  #,order=c(1,2,3)
+                  #,xratio=c(0.8,0.01)
+                  ,xratio=myxratio
+                  ,refline = 1 ,refline.col='black',refline.lty=2
+                  ,refline.y.extend=refline.y.extend
+                  # ,xlim=NULL
+                  ,y.title.offset=my_y_title_offset # the vertical space between title line with data.
+                  ,section.sep=my_section_sep    # the space between groups(splits).
+                  ,titleBase = titleBase
+                  ,title.line.col='black'
+                  ,title.line.lwd = 1
+                  ,title.labels.cex = 1 # Set the font size for title line.
+                  ,arrows.col='black'
+                  ,points.col='black'
+                  ,points.cex=1.5
+                  ,arrows.lwd = 1.5
+                  # ,leftmargin=0.015
+  #                 ,title.labels.pos=3
+  #                 ,title.labels.y=10.5
+  #                 ,title.labels.offset=0.5
+  )
+}
 
 
 #mtext('Top percentile',side=3, at=c(-4),line=1.5)

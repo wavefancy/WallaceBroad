@@ -5,22 +5,25 @@ Notes:
   * Read data from stdin and output results to files.
   * The "OR,OR_CI_L,OR_CI_R" are required 3 colums, for OR and ORCI.
   * All the other colums are copied and to show on the plot.
-  * INPUT format are tsv file.
+  * - INPUT format are tsv file.
+  * - Support two columns or three columns layout.
 
 Usage:
-  ForestPlot.R -o <filename> -W float -H float [-g name] [-x xlabel] [--xlim nums] [--xr xratio]
+  ForestPlot.R -o <filename> -W float -H float [--rp txts] [-g name] [-x xlabel] [--xlim nums] [--xr xratio]
 
 Options:
   -o <filename> Output file name, in pdf format. eg. example.pdf
   -W float      The width of the output figure.
   -H float      The height of the output figure.
   -g name       Split the input by "name", plot each susbset by a section.
-  -x xlabel     Set the X label name, default "Log(Odds Ratio)".
-  --xr xratio   Set the ratio of text panel, default 0.8.
-  --xlim nums   Set the xlim, num1,num2
-
+  --rp txts     The column names to plot on the right, eg. PVALUE|OR[95CI]::PVALUE.
+  -x xlabel     Set the X label name, default "Odds Ratio".
+  --xr xratio   Set the width ratio for panels. 
+                  One value for two columns，two values for three columns.
+                  *** two values, set the width for the first and last column.
+                  default 0.8 for two columns or 0.60::0.2 for three three columns.
+  --xlim nums   Set the xlim, eg. num1::num2
   ' -> doc
-
 
 # Generate Forest plot.
 # Worked version : Publish_2019.12.04 prodlim_2018.04.18
@@ -40,27 +43,49 @@ opts <- docopt(doc)
 ofile = opts$o
 W = as.numeric(opts$W)
 H = as.numeric(opts$H)
-group = NA
-if(is.null(opts$g) == F){
-  group = opts$g
-}
-xname = 'Odds Ratio'
-if(is.null(opts$x) == F){
-  xname = opts$x
-}
-xlim = NULL
-if(is.null(opts$xlim) == F){
-  xlim = as.numeric(unlist(strsplit(opts$xlim,',')))
-}
-myxratio=0.8
-if(is.null(opts$xr) == F){
-  myxratio = as.numeric(opts$xr)
-}
+group      = if(is.null(opts$g)) NA else opts$g
+xname      = if(is.null(opts$x)) 'Odds Ratio' else opts$x
+myxlim     = if(is.null(opts$xlim)) NULL else as.numeric(unlist(strsplit(opts$xlim,'::')))
+rightpanel = if(is.null(opts$rp)) c() else unlist(strsplit(opts$rp,'::'))
 
 # check.names = F, to make the header can contain special characters.
 data = read.table(file("stdin"),header = T,sep="\t", check.names = FALSE)
+# Partition the data set up as three column display.
+myxratio=0.8 # Set the panel size, one for two columns, 2 for three columns.
+if(length(rightpanel)>0){
+    rp = data %>% select(all_of(rightpanel))
+    data = data %>% select(!all_of(rightpanel))
+    myxratio = if(is.null(opts$xr)) c(0.6,0.2) else as.numeric(unlist(strsplit(opts$xr,'::')))
+
+    colnames(rp) = str_replace_all(colnames(rp),'X_n_','\n')
+    colnames(rp) = str_replace_all(colnames(rp),'_n_','\n')
+}else{
+    myxratio = if(is.null(opts$xr)) 0.8 else as.numeric(opts$xr)
+}
+
+# Format the title as two line title.
 colnames(data) = str_replace_all(colnames(data),'X_n_','\n')
 colnames(data) = str_replace_all(colnames(data),'_n_','\n')
+
+#rnames = c('BETA','BETAL','BETAR') #columns for required.
+rnames = c('OR','OR_CI_L','OR_CI_R') #columns for required.
+# TEXTs to toshow
+texts = data %>% select(-!!rnames) %>% as.data.table()
+
+# make single line title to double line title to normalize the layout.
+if(sum(str_detect(colnames(texts),'\n')) == 0){
+    y = rep('\n', length(colnames(texts)))
+    colnames(texts) = paste0(y, colnames(texts))
+}
+if(length(rightpanel)>0){
+    if(sum(str_detect(colnames(rp),'\n')) == 0){
+        y = rep('\n', length(colnames(rp)))
+        colnames(rp) = paste0(y, colnames(rp))
+    }
+}
+
+# Set the right panel rp as FALSE if only show as two columns. 
+rp = if(length(rightpanel)>0) rp %>% as.list() else FALSE
 
 # Format P value.
 if ('\nPVALUE' %in% colnames(data)){
@@ -68,18 +93,6 @@ if ('\nPVALUE' %in% colnames(data)){
 }
 if ('PVALUE' %in% colnames(data)){
     data[,'PVALUE'] = formatC(data[,'PVALUE'], digits = 2, format = "e")
-}
-#print(data)
-
-
-#rnames = c('BETA','BETAL','BETAR') #columns for required.
-rnames = c('OR','OR_CI_L','OR_CI_R') #columns for required.
-# TEXTs to toshow
-texts = data %>% select(-!!rnames) %>% as.data.table()
-# make single line title to double line title to normalize the layout.
-if(sum(str_detect(colnames(texts),'\n')) == 0){
-    y = rep('\n', length(colnames(texts)))
-    colnames(texts) = paste0(y, colnames(texts))
 }
 
 layout_with_group = F
@@ -105,8 +118,9 @@ if (layout_with_group == F){
     texts$'group' = ''
     texts = split(texts,by='group',keep.by = F)
     my_section_sep=0
-    my_y_title_offset = 1.6 # the vertical space between title line and data.
-    titleBase = 2.1
+    my_y_title_offset = 1.3 #1.6, the vertical space between title line and data.
+    titleBase = 2.0
+    refline.y.extend = 1.1
 }
 
 #----------------------------------------------------------------------
@@ -687,20 +701,23 @@ plotConfidence(
                 #,title.labels=tnames
                 ,xlab = xname
                 ,xaxis.cex=1.0    # font size for x axis.
-                ,xlab.cex=0.8     # font size for x label.
+                ,xlab.cex=0.7     # font size for x label.
                 ,xlab.line=1.8    # The space between X label with X tick values.
                 ,plot.log="x"
-                ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-                #,order=c(1,2,3)
-                #,xratio=c(0.8,0.01)
+                # To show as three column.
+                ,values=rp     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
+                ,order=c(1,2,3)
+                # ,xratio=c(0.65,0.2,0.15)
                 ,xratio=myxratio
                 ,refline = 1 ,refline.col='black',refline.lty=2
                 ,refline.y.extend=refline.y.extend
-                ,xlim=xlim
+                ,xlim=myxlim
                 ,y.title.offset=my_y_title_offset # the vertical space between title line with data.
                 ,section.sep=my_section_sep    # the space between groups(splits).
                 ,titleBase = titleBase
-                ,title.line.col='black'
+                # ,title.values.offset = 0.5 # this set the horizontal move of the title for values column.
+                ,title.values.pos = 4
+                ,title.line.col=rgb(0,0,0,0) # no show the title line, last 0 set as totally tranparent.
                 ,title.line.lwd = 1
                 ,title.labels.cex = 1 # Set the font size for title line.
                 ,arrows.col='black'
@@ -712,74 +729,6 @@ plotConfidence(
 #                 ,title.labels.y=10.5
 #                 ,title.labels.offset=0.5
 )
-
-# #print(par('oma'))
-# if(is.null(opts$xlim) == F){ # set the X lim.
-#   plotConfidence(
-#                   #x = data$BETA,lower = data$BETAL, upper = data$BETAR
-#                   x = data$OR,lower = data$OR_CI_L, upper = data$OR_CI_R
-#                   ,labels = texts
-#                   #,title.labels=tnames
-#                   ,xlab = xname
-#                   ,xaxis.cex=1.0    # font size for x axis.
-#                   ,xlab.cex=0.8     # font size for x label.
-#                   ,xlab.line=1.8    # The space between X label with X tick values.
-#                   ,plot.log="x"
-#                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-#                   #,order=c(1,2,3)
-#                   #,xratio=c(0.8,0.1)
-#                   ,xratio=myxratio
-#                   ,refline = 1,refline.col='black',refline.lty=2
-#                   ,refline.y.extend=refline.y.extend
-#                   ,xlim=xlim
-#                   ,y.title.offset=my_y_title_offset # the vertical space between title line and data.
-#                   ,section.sep=my_section_sep
-#                   ,titleBase = titleBase
-#                   ,title.line.col='black'
-#                   ,title.labels.cex = 1 # Set the font size for title line.
-#                   ,arrows.col='black'
-#                   ,points.col='black'
-#                   ,points.cex=1.5
-#                   ,arrows.lwd = 1.5
-#   #                 ,title.labels.pos=3
-#   #                 ,title.labels.y=10.5
-#   #                 ,title.labels.offset=0.5
-#   )
-# }else{
-#   plotConfidence(
-#                   #x = exp(data$BETA),lower = exp(data$BETAL), upper = exp(data$BETAR)
-#                   x = data$OR,lower = data$OR_CI_L, upper = data$OR_CI_R
-#                   ,labels = texts
-#                   #,title.labels=tnames
-#                   ,xlab = xname
-#                   ,xaxis.cex=1.0    # font size for x axis.
-#                   ,xlab.cex=0.8     # font size for x label.
-#                   ,xlab.line=1.8    # The space between X label with X tick values.
-#                   ,plot.log="x"
-#                   ,values=FALSE     # Hidden to show the values for beta and CI for beta. to want to show OR text instead.
-#                   #,order=c(1,2,3)
-#                   #,xratio=c(0.8,0.01)
-#                   ,xratio=myxratio
-#                   ,refline = 1 ,refline.col='black',refline.lty=2
-#                   ,refline.y.extend=refline.y.extend
-#                   # ,xlim=NULL
-#                   ,y.title.offset=my_y_title_offset # the vertical space between title line with data.
-#                   ,section.sep=my_section_sep    # the space between groups(splits).
-#                   ,titleBase = titleBase
-#                   ,title.line.col='black'
-#                   ,title.line.lwd = 1
-#                   ,title.labels.cex = 1 # Set the font size for title line.
-#                   ,arrows.col='black'
-#                   ,points.col='black'
-#                   ,points.cex=1.5
-#                   ,arrows.lwd = 1.5
-#                   # ,leftmargin=0.015
-#   #                 ,title.labels.pos=3
-#   #                 ,title.labels.y=10.5
-#   #                 ,title.labels.offset=0.5
-#   )
-# }
-
 
 #mtext('Top percentile',side=3, at=c(-4),line=1.5)
 #text(-0.5,0,'TESTTESTTESTTEST')
