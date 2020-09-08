@@ -1,0 +1,113 @@
+%\documentclass[12pt]{extarticle} % using extarticle for easy change font size globally.
+\documentclass{article}
+\usepackage{mathptmx}
+
+% change the font size to Helvetica
+% have problem use this please refer to: "Latex summary" in evernote.
+% https://gist.github.com/Pni0/2923266
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[scaled=1]{helvet}
+%\usepackage[helvet]{sfmath}
+%\everymath={\sf}
+
+
+\usepackage{graphicx}
+\usepackage{subfig}
+%\usepackage{multirow}
+\usepackage{array}
+
+\usepackage{setspace}
+%\usepackage{lipsum}
+
+% Make the title and legend for subfigures.
+% Change the number here for the position of three strings: /A/B/C.
+% https://tex.stackexchange.com/questions/55472/how-to-make-text-aligned-left-center-right-in-the-same-line/55476
+\newcommand\textline[4][t]{%
+  \par\smallskip\noindent\parbox[#1]{.100\textwidth}{\raggedright\texttt{}#2}%
+  %control the text location for the title of subfigures.
+  \parbox[#1]{.302\textwidth}{\centering#3}%
+  \parbox[#1]{.422\textwidth}{\raggedleft\texttt{#4}}\par\smallskip%
+}
+
+% Change margins
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,200mm},
+ left=10mm,
+ right=10mm,
+ top=20mm,
+ }
+% hidden page numbers.
+\pagenumbering{gobble}
+
+% make file name can contain dot
+\usepackage{grffile}
+
+\begin{document}
+
+% Layout template: https://tex.stackexchange.com/questions/9584/how-to-put-subfigures-in-several-rows/9617#9617
+
+% Using for picture environment.
+\setlength{\unitlength}{1mm}
+\def \myloc {75}  % location for A B C D label.
+\def \picwidth {80}
+\def \picheight {80}
+\def \figsize {80}
+\def \rowly {33} % Row label position
+\def \rowlx {-7} % Row label x
+
+\begin{figure}
+\centering
+\begin{tabular}{cccc}
+
+%%% ROW ONE
+\subfloat{
+	\begin{picture}(\picwidth, \picheight)
+	\put(0,0){\includegraphics[width=\figsize mm]{../paper_figures/pca.only.UKB.SAS.pc12.pdf}}
+	\put(0,\myloc){
+	\textline[t]{\large A}{\large UK Biobank SAS}{}
+	}
+	\put(\rowlx,\rowly){ \rotatebox[origin=c]{90}{ } }
+	\end{picture}
+} & 
+\subfloat{
+	\begin{picture}(\picwidth, \picheight)
+	\put(0,0){\includegraphics[width=\figsize mm]{../paper_figures/pca.only.UKB.SAS.pc34.pdf}}
+	\put(0,\myloc){
+	\textline[t]{}{\large UK Biobank SAS}{}
+	}
+	\end{picture}
+} \\
+
+\subfloat{
+	\begin{picture}(\picwidth, 1)
+	\line(1,0){165}
+	\end{picture}
+} \\
+
+%%%% ROW TWO
+\subfloat{
+	\begin{picture}(\picwidth, \picheight)
+	\put(0,0){\includegraphics[width=\figsize mm]{../paper_figures/pca.only.BRAVE.pc12.pdf}}
+	\put(0,\myloc){
+	\textline[t]{\large B}{\large BRAVE samples}{}
+	}
+	\put(\rowlx,\rowly){ \rotatebox[origin=c]{90}{ } }
+	\end{picture}
+} & 
+\subfloat{
+	\begin{picture}(\picwidth, \picheight)
+	\put(0,0){\includegraphics[width=\figsize mm]{../paper_figures/pca.only.BRAVE.pc34.pdf}}
+	\put(0,\myloc){
+	\textline[t]{}{\large BRAVE samples}{}
+	}
+	\end{picture}
+} \\
+
+\end{tabular}
+%\caption{Many figures}
+\end{figure}
+
+
+\end{document}
