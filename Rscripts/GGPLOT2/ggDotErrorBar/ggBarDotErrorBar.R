@@ -6,9 +6,10 @@
 "
 =======================================================================================
 Create dot/bar plot with error bar using ggplot2
+- Input format is CSV.
 
 Usage:
-    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--gt txts] [--cl txts] [--xo txts] [--rx int]
+    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--gt txts] [--cl txts] [--xo txts] [--rx int] [--nb]
     ggBarDotErrorBar.R -h --help
 
 Options:
@@ -49,6 +50,7 @@ Options:
    -o <filename> Output file name, in pdf format. eg. example.pdf
    -W float      The width of the output figure.
    -H float      The height of the output figure.
+   --nb          No box border for plot, default with box border. 
 
 Notes:
     1. Read data from stdin, input are 'CSV'.
@@ -139,7 +141,7 @@ if(opts$dot){
 }
 
 # Convert x and c as factor.
-dd[[c]] = factor(dd[[c]])
+if(is.null(opts$c)==F){dd[[c]] = factor(dd[[c]])}
 dd[[x]] = factor(dd[[x]])
 
 # https://rstudio-pubs-static.s3.amazonaws.com/7433_4537ea5073dc4162950abb715f513469.html
@@ -229,6 +231,6 @@ if(is.null(opts$rx) == F){p = p + rotate_x_text(as.numeric(opts$rx))}
 p = p + theme(plot.margin = margin(4, 8, 4, 4, "points"))
 
 # add box
-p = p + border() 
+if(opts$nb==F){p = p + border()}
 ggsave(ofile, width = W, height = H)
 # graphics.off()
