@@ -1,0 +1,15 @@
+,,Grouped by death,Grouped by death,Grouped by death,Grouped by death,Grouped by death
+,,Missing,0,1,P-Value,Test
+n,,,864,136,,
+"Age, median [Q1,Q3]",,0,"66.0 [52.8,78.0]","75.0 [62.0,83.0]",<0.001,Kruskal-Wallis
+"SysABP, mean (SD)",,291,115.4 (38.3),107.6 (49.4),0.134,Two Sample T-test
+"Height, mean (SD)",,475,170.3 (23.2),168.5 (11.3),0.304,Two Sample T-test
+"Weight, mean (SD)",,302,83.0 (23.6),82.3 (25.4),0.782,Two Sample T-test
+"ICU, n (%)",CCU,0,137 (15.9),25 (18.4),<0.001,Chi-squared
+"ICU, n (%)",CSRU,,194 (22.5),8 (5.9),,
+"ICU, n (%)",MICU,,318 (36.8),62 (45.6),,
+"ICU, n (%)",SICU,,215 (24.9),41 (30.1),,
+"MechVent, mean (SD)",,0,0.5 (0.5),0.5 (0.5),0.791,Two Sample T-test
+"LOS, median [Q1,Q3]",,0,"10.0 [6.0,17.0]","10.0 [6.0,17.2]",0.964,Kruskal-Wallis
+"death, n (%)",0,0,864 (100.0),,<0.001,Chi-squared
+"death, n (%)",1,,,136 (100.0),,

@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        Tableone.py [-c txt] [-g txt] [-n txt] [-f filename] [--fmt txt]
+        Tableone.py [-c txt] [-g txt] [-n txt] [-f filename] [--fmt txt] [--ff txt] [--debug]
         Tableone.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -22,7 +22,9 @@
                         usually the case/control status.
         -n text       Column names for non-normal variables.
         -f filename   Copy results to file, output format specified by '--fmt'
+        --ff txt      Force convert these columns as float, eg. C1|C1,C2.
         --fmt  txt    Output file format, csv|latex|html, default csv.
+        --debug       Output more info. for help of debug.
         -h --help     Show this screen.
         -v --version  Show version.
         --format   Show input/output file format example.
@@ -57,11 +59,16 @@ if __name__ == '__main__':
     pval         = True          if args['-g']    else False
     outfile      = args['-f']    if args['-f']    else None
     outFMT       = args['--fmt'].lower() if args['--fmt'] else 'csv'
+    FORCECONVERT = args['--ff'].split(',') if args['--ff'] else []
 
     from tableone import TableOne
     import pandas as pd
 
     data = pd.read_csv(sys.stdin)
+    if(args['--debug']): 
+        sys.stderr.write('%s\n'%(data.dtypes))
+    for f in FORCECONVERT:
+        data[f] = data[f].astype(float)
     # create grouped_table with p values
     # API: https://tableone.readthedocs.io/en/latest/tableone.html
     # Example: https://github.com/tompollard/tableone/blob/master/tableone.ipynb
