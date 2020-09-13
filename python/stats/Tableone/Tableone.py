@@ -12,17 +12,15 @@
 
     Notes:
         1. Read cvs data from stdin, and output results to stdout.
-        2. Line starts with '#' will be copy to stdout directly, useful for title.
-        3. Count the number of algorithms with damaging predction, and output the
-            records meet the threshold (>=).
+        2. Automatic set 'object' column as 'categorical' variable.
 
     Options:
-        -c text       Column names for categorical variable, eg. title1,title2.
+        -c text       Column names for categorical variable, eg. title1::title2.
         -g text       Column name  for categorical variable stratification, 
                         usually the case/control status.
-        -n text       Column names for non-normal variables.
+        -n text       Column names for non-normal variables, eg. T1::T2.
         -f filename   Copy results to file, output format specified by '--fmt'
-        --ff txt      Force convert these columns as float, eg. C1|C1,C2.
+        --ff txt      Force convert these columns as float, eg. C1|C1::C2.
         --fmt  txt    Output file format, csv|latex|html, default csv.
         --debug       Output more info. for help of debug.
         -h --help     Show this screen.
@@ -43,7 +41,7 @@ def ShowFormat():
 # cat pn2012_demo.csv | python3 Tableone.py -c ICU,death -n Age,LOS -f out.csv -g death
 
 # cat pn2012_demo.csv | python3 Tableone.py -c ICU,death -n Age,LOS -f out.csv
-    ''');
+''')
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
@@ -53,13 +51,13 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    categorical  = args['-c'].split(',') if args['-c'] else None
-    nonnormal    = args['-n'].split(',') if args['-n'] else None
+    categorical  = args['-c'].split('::') if args['-c'] else []
+    nonnormal    = args['-n'].split('::') if args['-n'] else None
     group        = args['-g']    if args['-g']    else None
     pval         = True          if args['-g']    else False
     outfile      = args['-f']    if args['-f']    else None
     outFMT       = args['--fmt'].lower() if args['--fmt'] else 'csv'
-    FORCECONVERT = args['--ff'].split(',') if args['--ff'] else []
+    FORCECONVERT = args['--ff'].split('::') if args['--ff'] else []
 
     from tableone import TableOne
     import pandas as pd
@@ -69,10 +67,21 @@ if __name__ == '__main__':
         sys.stderr.write('%s\n'%(data.dtypes))
     for f in FORCECONVERT:
         data[f] = data[f].astype(float)
+
+    #Auto set up categorical variables based on data type.
+    # print(data.dtypes.index)
+    # print(data.dtypes.values)
+    MYCATEGORICAL = set()
+    for name,mytype in zip(data.dtypes.index,data.dtypes.values):
+        if mytype == object:
+            MYCATEGORICAL.add(name)
+    for c in categorical:
+        MYCATEGORICAL.add(c)
+    MYCATEGORICAL = list(MYCATEGORICAL) if len(MYCATEGORICAL) > 0 else None
     # create grouped_table with p values
     # API: https://tableone.readthedocs.io/en/latest/tableone.html
     # Example: https://github.com/tompollard/tableone/blob/master/tableone.ipynb
-    grouped_table = TableOne(data, categorical=categorical, groupby=group, 
+    grouped_table = TableOne(data, categorical=MYCATEGORICAL, groupby=group, 
         nonnormal=nonnormal, label_suffix=True, pval = pval)
     print(grouped_table)
 
