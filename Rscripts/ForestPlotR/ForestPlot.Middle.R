@@ -7,6 +7,7 @@ Notes:
   * All the other colums are copied and to show on the plot.
   * - INPUT format are tsv file.
   * - Support two columns or three columns layout.
+  * - Add "_n_" to make the title start a new line.
 
 Usage:
   ForestPlot.R -o <filename> -W float -H float [--rp txts] [-g name] [-x xlabel] [--xlim nums] [--xr xratio]
@@ -50,6 +51,15 @@ rightpanel = if(is.null(opts$rp)) c() else unlist(strsplit(opts$rp,'::'))
 
 # check.names = F, to make the header can contain special characters.
 data = read.table(file("stdin"),header = T,sep="\t", check.names = FALSE)
+
+# Format P value.
+if ('_n_PVALUE' %in% colnames(data)){
+    data[,'_n_PVALUE'] = formatC(data[,'_n_PVALUE'], digits = 2, format = "e")
+}
+if ('PVALUE' %in% colnames(data)){
+    data[,'PVALUE'] = formatC(data[,'PVALUE'], digits = 2, format = "e")
+}
+
 # Partition the data set up as three column display.
 myxratio=0.8 # Set the panel size, one for two columns, 2 for three columns.
 if(length(rightpanel)>0){
@@ -86,14 +96,6 @@ if(length(rightpanel)>0){
 
 # Set the right panel rp as FALSE if only show as two columns. 
 rp = if(length(rightpanel)>0) rp %>% as.list() else FALSE
-
-# Format P value.
-if ('\nPVALUE' %in% colnames(data)){
-    data[,'\nPVALUE'] = formatC(data[,'\nPVALUE'], digits = 2, format = "e")
-}
-if ('PVALUE' %in% colnames(data)){
-    data[,'PVALUE'] = formatC(data[,'PVALUE'], digits = 2, format = "e")
-}
 
 layout_with_group = F
 if( is.na(group) == F){
