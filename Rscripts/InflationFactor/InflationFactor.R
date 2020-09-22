@@ -24,7 +24,7 @@ inData = read.table(file("stdin"))
 pvalue = inData[,col]
 chisq <- qchisq(1-pvalue,1)
 lambda = median(chisq)/qchisq(0.5,1)
-
+lambda = formatC(lambda, digits = 2, format = "f")
 #re = estlambda(inData[,col], plot = F)
 #out = matrix(re, nrow =1)
 #colnames(out) = c('estimate','se')
