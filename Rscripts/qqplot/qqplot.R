@@ -14,17 +14,18 @@
 Generate QQ plot based on input P values.
 
 Usage:
-    qqplot.R [-g <genes>] -o <filename> [--xlim nums] [--ylim nums] [--sy float] [--yb floats] [--ybl txts] [--tp float]
+    qqplot.R [-g <genes>] -o <filename> [--xlim nums] [--ylim nums] [--sy float] [--yb floats] [--ybl txts] [--tp float] [--l text]
     qqplot.R -h [--help]
 
 Options:
-   -g <genes>    Gene list to label in the figure. eg. gene1|gene1,gene2.
-   --xlim nums   Set the xlim, num1,num2
-   --ylim nums   Set the ylim, num1,mum2
-   --yb floats   Set the tick breaks for Y axis.
-   --ybl txts    Set the tick texts for Y axis.
+   -g <genes>    Gene list to label in the figure. eg. gene1|gene1::gene2.
+   --xlim nums   Set the xlim, num1::num2
+   --ylim nums   Set the ylim, num1::mum2
+   --yb floats   Set the tick breaks for Y axis, eg. 1,2,3,4.
+   --ybl txts    Set the tick texts for Y axis,  eg. a,b,c,d.
    --sy float    The distance for shift on the Y axis, default 0.5.
-   --tp float    Horizontal line threshold for significance, [2.5e-6]. 
+   --tp float    Horizontal line threshold for significance, [noshow]. 
+   --l text      Add inflation lambda to the plot, format: X::Y::Value.
    -o <filename> Output file name, in pdf format. eg. example.pdf
 
 Notes:
@@ -69,7 +70,7 @@ ybl = c()
 if(is.null(opts$ybl) == F){
   ybl = as.numeric(unlist(strsplit(opts$ybl,',')))
 }
-# str(xlim[1])
+lambda = if(is.null(opts$l)==F) unlist(strsplit(opts$l,'::')) else NULL
 
 dd = read.table(file("stdin"),header = T)
 
@@ -84,14 +85,13 @@ gg_qqplot = function(df, genes, ci=0.95) {
   log10Po = expression(paste("Observed -log"[10], plain(P)))
   df$Label=""
   df$Label[df$GENENAME %in% genes]=as.character(df$GENENAME[df$GENENAME %in% genes])
-  thresh=log10(2.5e-6)*-1
-  if(is.null(opts$tp) == F){thresh = log10(as.numeric(opts$tp))*-1.0}
+  # thresh=log10(2.5e-6)*-1
   gg = ggplot(df) +
     geom_abline(intercept=0, slope=1, alpha=0.5,size=2) +
     geom_point(aes(expected, observed), shape=19, alpha=0.7,size=4,color='darkblue') +
     # geom_point(aes(expected, observed), shape=21, alpha=0.7,size=4,color='black') +
     # add the horizontal line.
-    geom_hline(yintercept=thresh,color='red',size=0.7,,linetype='dashed') +
+    # geom_hline(yintercept=thresh,color='red',size=0.7,,linetype='dashed') +
     xlab(log10Pe) +
     ylab(log10Po)+
     geom_text_repel(aes(expected,observed,label=Label),size=6,fontface='italic'
@@ -111,6 +111,20 @@ gg_qqplot = function(df, genes, ci=0.95) {
       panel.border = element_rect(linetype = "solid", colour = "black", size=1.5),
       axis.ticks.length = unit(7, "pt"), # Change the length of tick marks
     )
+  # add horizontal dashed line, default no show.
+  if(is.null(opts$tp) == F){
+      thresh = log10(as.numeric(opts$tp))*-1.0
+      gg = gg + geom_hline(yintercept=thresh,color='red',size=0.7,,linetype='dashed')
+  }
+
+  # add lambda values.
+  if(is.null(lambda)==F){
+    # math annotation in R
+    # https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/plotmath.html
+    # style italic not work here.
+    gg = gg + geom_text(x=as.numeric(lambda[1]), y=as.numeric(lambda[2]), label=paste('italic(lambda ==',lambda[3],')'),fontface='italic', parse=T,size=5)
+  }
+  
   # make highlight of the label.
   red = df %>% filter(Label != "")
   if(dim(red)[1] > 0) {gg = gg + geom_point(data=red,aes(x=expected,y=observed), colour='#C21B90',size=4)}
