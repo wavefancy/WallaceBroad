@@ -5,10 +5,11 @@ Notes:
   * Read data from stdin and output results to files.
 
 Usage:
-  ForestPlot.R -o <filename> 
+  ForestPlot.R -o <filename> [-l]
 
 Options:
   -o <filename> Output file name, audo add extension ".docx" . eg. example
+  -l            Set the page layout as landscape
   ' -> doc
 
 # conda install -c conda-forge r-officer r-flextable
@@ -32,7 +33,7 @@ data = read.table(file("stdin"),header = T,sep=",", check.names = FALSE)
 psize = 5
 ft = flextable(data)
 ft = ft %>% theme_zebra(., odd_header = "transparent", even_header = "transparent") %>%
-    # hline(., border = fp_border(width = .5, color = "#007FA6"), part = "body" ) %>%
+    # hline(., border = fp_border(width = .5, color = "#007FA6"), part = "body" ) %>%hy
     hline(., border = fp_border(width = 2, color = "#007FA6"), part = "header" ) %>%
     # line_spacing + valign not work properly in MS world, so we use padding instead.
     #line_spacing(., space=1.5, part="all") %>%
@@ -44,5 +45,14 @@ ft = ft %>% theme_zebra(., odd_header = "transparent", even_header = "transparen
     autofit
 
 doc <- read_docx()
-doc <- body_add_flextable(doc, value = ft)
+# How to set set up page layout.
+# https://rdrr.io/cran/officer/man/prop_section.html
+# https://davidgohel.github.io/officer/articles/offcran/word.html
+
+doc <- doc %>% body_add_flextable(., value = ft)
+#     #body_end_section_continuous()%>% 
+#     body_add_flextable(., value = ft) %>% body_end_section_landscape() 
+if(opts$l){
+    doc <- doc %>% body_end_section_landscape() 
+}
 print(doc, target = ofile)
