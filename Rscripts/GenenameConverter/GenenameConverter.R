@@ -2,7 +2,17 @@
 # Covert gene names between different annotations.
 # @Wallace Wang, wavefancy@gmail.com
 # --------------------------------
-# Dependent packages.
+# - conda install -c bioconda bioconductor-clusterprofiler
+# - conda install -c bioconda bioconductor-org.hs.eg.db
+# 
+# - R version 3.15 or higher
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+# BiocManager::install()
+# BiocManager::install(c("clusterProfiler", "org.Hs.eg.db"))
+# 
+# --------------------------------
+# - Dependent packages.
 # source("https://bioconductor.org/biocLite.R")
 # biocLite("org.Hs.eg.db")
 # source("https://bioconductor.org/biocLite.R")
