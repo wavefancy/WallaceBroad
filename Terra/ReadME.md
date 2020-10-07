@@ -1,7 +1,8 @@
 ## Optimized terra jupter Docker image 
 
 ## Version 1.6
-- `sudo apt-get install datamash`
+- Installed `datamash` `sudo apt-get install datamash`
+- Installed `pysam` for python `conda install -c bioconda pysam`
 
 ### Check out the latest version [here](https://hub.docker.com/r/wavefancy/terrawngs/tags), in Terra make a custom ENV by `<image_name>:<tag>`
 - The latest version: `wavefancy/terrawngs:v1.5`
