@@ -5,11 +5,16 @@ Notes:
   * Read data from stdin and output results to files.
 
 Usage:
-  ForestPlot.R -o <filename> [-l]
+  ForestPlot.R -o <filename> [-l] [-w ints] [--fn name] [--fs int]
 
 Options:
   -o <filename> Output file name, audo add extension ".docx" . eg. example
   -l            Set the page layout as landscape
+  -w ints       Set the column width. eg. 2|2,2,3
+                  A single number set all column the same width.
+                  A list of number set for each column, should match with input.
+  --fs int      Set the font size, [11].
+  --fn name     Set the font name, [Calibri].
   ' -> doc
 
 # conda install -c conda-forge r-officer r-flextable
@@ -23,7 +28,10 @@ suppressMessages(library(docopt))
 opts <- docopt(doc)
 # what are the options? Note that stripped versions of the parameters are added to the returned list
 # str(opts)
-ofile = paste(opts$o,'.docx',sep = '')
+ofile  = paste(opts$o,'.docx',sep = '')
+cwidth = if(is.null(opts$w)) c() else opts$w %>% strsplit(.,',') %>% unlist %>% as.numeric()
+fn     = if(is.null(opts$fn)) 'Calibri' else opts$fn
+fs     = if(is.null(opts$fs)) 11        else as.numeric(opts$fs)
 
 # check.names = F, to make the header can contain special characters.
 # read in csv file.
@@ -43,6 +51,24 @@ ft = ft %>% theme_zebra(., odd_header = "transparent", even_header = "transparen
     align(., j=1,align = "left", part = "all") %>%
     padding(.,padding.top=psize, padding.bottom = psize, part = "all") %>%
     autofit
+
+if(length(cwidth) >0 ){
+    if(length(cwidth) == 1){
+        ft = width(ft, width = cwidth[1])
+    }else{
+        if(dim(data)[2] != length(cwidth)){
+            message('ERROR: The number of elements for -w should match the number of input column!')
+            q()
+        }else{
+            for(i in 1:length(cwidth)){
+                ft = width(ft, j = i, width = cwidth[i])
+            }
+        }
+    }
+}
+# Set up the font size and font name.
+ft = font(ft, fontname = fn, part = "all")
+ft = fontsize(ft, size = fs, part = "all")
 
 doc <- read_docx()
 # How to set set up page layout.
