@@ -1,10 +1,14 @@
 ## Optimized terra jupter Docker image 
 
-
 ### Check out the latest version [here](https://hub.docker.com/r/wavefancy/terrawngs/tags), in Terra make a custom ENV by `<image_name>:<tag>`
 - The latest version: `wavefancy/terrawngs:v1.5`
 - Terra will not remove your files if change VM config but not the disk size.
 
+## Version 1.6
+- Installed `datamash` `sudo apt-get install datamash`
+- Installed `pysam` for python `conda install -c bioconda pysam`
+
+## Version 1.5
 ### Updates in the base image
 - Based on the [Terra base images](https://github.com/DataBiosphere/terra-docker), April 20, 2020.
 - Upgrade to have root permission (atbroad)
