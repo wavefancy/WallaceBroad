@@ -60,6 +60,10 @@ if ('PVALUE' %in% colnames(data)){
     data[,'PVALUE'] = formatC(data[,'PVALUE'], digits = 2, format = "e")
 }
 
+if ('P Value' %in% colnames(data)){
+    data[,'P Value'] = formatC(data[,'P Value'], digits = 2, format = "e")
+}
+
 # Partition the data set up as three column display.
 myxratio=0.8 # Set the panel size, one for two columns, 2 for three columns.
 if(length(rightpanel)>0){
