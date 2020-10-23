@@ -94,7 +94,7 @@ gg_qqplot = function(df, genes, ci=0.95) {
     # geom_hline(yintercept=thresh,color='red',size=0.7,,linetype='dashed') +
     xlab(log10Pe) +
     ylab(log10Po)+
-    geom_text_repel(aes(expected,observed,label=Label),size=6,fontface='italic'
+    geom_text_repel(aes(expected,observed,label=Label),size=5,fontface='italic'
       ,nudge_y = sy,segment.size = 0.5 # shift on Y, and the line size is 0.5.
       ,direction='x' # try to make no overalp on the X direction.
       #,point.padding = 1.6
@@ -106,7 +106,8 @@ gg_qqplot = function(df, genes, ci=0.95) {
       axis.title.y = element_text(vjust = 1,size=20,,face="bold",margin = unit(c(0, 5, 0, 0),"mm"),colour = 'black'),
       axis.text = element_text(size=16, colour = 'black'),
       axis.ticks = element_line(colour = 'black', size = 1),
-      panel.grid.major = element_line(colour="gray", size=0.5,linetype = "dotted"),
+      # panel.grid.major = element_line(colour="gray", size=0.5,linetype = "dotted"),
+      panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
       panel.border = element_rect(linetype = "solid", colour = "black", size=1.5),
       axis.ticks.length = unit(7, "pt"), # Change the length of tick marks
