@@ -42,7 +42,8 @@ psize = 5
 ft = flextable(data)
 ft = ft %>% theme_zebra(., odd_header = "transparent", even_header = "transparent") %>%
     # hline(., border = fp_border(width = .5, color = "#007FA6"), part = "body" ) %>%hy
-    hline(., border = fp_border(width = 2, color = "#007FA6"), part = "header" ) %>%
+    hline(., border = fp_border(width = 1.5, color = "black"), part = "header" ) %>%
+    #hline(., border = fp_border(width = 2, color = "#007FA6"), part = "header" ) %>%
     # line_spacing + valign not work properly in MS world, so we use padding instead.
     #line_spacing(., space=1.5, part="all") %>%
     #valign(.,valign = "bottom", part = "all") %>%
