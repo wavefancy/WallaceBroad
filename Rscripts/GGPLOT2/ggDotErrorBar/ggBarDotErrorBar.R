@@ -6,7 +6,7 @@
 "
 =======================================================================================
 Create dot/bar plot with error bar using ggplot2
-- Input format is CSV.
+*** Input format is CSV.
 
 Usage:
     ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--gt txts] [--cl txts] [--xo txts] [--rx int] [--nb]
