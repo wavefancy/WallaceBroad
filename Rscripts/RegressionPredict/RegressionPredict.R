@@ -8,12 +8,14 @@ Fit the a regression model from the data of stdin based on the formula,
 and predict a new value for the new data.
 
 Usage:
-    RegressionPredict.R -f formula -n file
+    RegressionPredict.R -f formula -n file [--fam text]
     RegressionPredict.R -h [--help]
 
 Options:
    -f formula   Formula to run the cox model.
    -n file      The file contain the new data to predict.
+   --fam text   Link function family name for glm, [gaussian].
+                    https://www.statmethods.net/advstats/glm.html
 
 Notes:
     1. Read data from stdin and output results to stdout.
@@ -36,13 +38,15 @@ opts <- docopt(doc)
 # print(opts)
 
 form   = opts$f
+fam = if(is.null(opts$fam)) 'gaussian' else opts$fam
 
 dd      = read.table(file("stdin"),header = T,check.names=F)
 newdata = read.table(opts$n,header = T,check.names=F)
 # remove the rows with NA values.
 dd = na.omit(dd)
 
-lr = glm(as.formula(form),data = dd, family='gaussian')
+lr = glm(as.formula(form),data = dd, family=fam)
+
 pre_out_se = predict(lr,type=c("response"),se.fit = TRUE,newdata = newdata)
 pre_out    = interval(lr,newdata=newdata,type='response')
 # Combine predict se with confidence interval.
