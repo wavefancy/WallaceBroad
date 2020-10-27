@@ -64,6 +64,7 @@ suppressMessages(library(docopt))
 suppressMessages(library(ggplot2))
 suppressMessages(library(tidyverse))
 suppressMessages(library(ggpubr))
+suppressMessages(library(scales))
 # suppressMessages(library(rio))
 # retrieve the command-line arguments
 opts <- docopt(doc)
@@ -135,22 +136,27 @@ cat("\n", file = stderr())
 # p  = ggplot(dd, aes_string(x,y)) +
 # p  = p + geom_point(aes_string(color = c),size=ds, position = position_dodge(js))
 
+# Set the x axis item order.
+# https://rstudio-pubs-static.s3.amazonaws.com/7433_4537ea5073dc4162950abb715f513469.html
+# Custom the order of legend.
+cl = if(is.null(opts$cl)) NULL else {unlist(strsplit(opts$cl,'::'))}
+# Order the factor the order we want.
+if(is.null(cl)==F) {dd[[c]] = factor(dd[[c]], levels = cl)}
+# Order the x axis, a universal way to set the order in ggplot.
+xo = if(is.null(opts$xo)) NULL else {unlist(strsplit(opts$xo,'::'))}
+if(is.null(opts$xo)==F) {dd[[x]] = factor(dd[[x]], levels = xo)}
+
 if(opts$dot){
     p  = ggplot(dd, aes_string(x,y))
-    p  = p + geom_point(aes_string(color = c),size=ds, position = position_dodge(js))
+    p  = p + geom_point(aes_string(color = c),
+            # order=xo,
+            size=ds, position = position_dodge(js))
 }
 
 # Convert x and c as factor.
 if(is.null(opts$c)==F){dd[[c]] = factor(dd[[c]])}
 dd[[x]] = factor(dd[[x]])
 
-# https://rstudio-pubs-static.s3.amazonaws.com/7433_4537ea5073dc4162950abb715f513469.html
-# Custom the order of legend.
-cl = if(is.null(opts$cl)) NULL else {unlist(strsplit(opts$cl,'::'))}
-# Order the factor the order we want.
-if(is.null(cl)==F) {dd[[c]] = factor(dd[[c]], levels = cl)}
-# Set the x axis item order.
-xo = if(is.null(opts$xo)) NULL else {unlist(strsplit(opts$xo,'::'))}
 
 # https://rpkgs.datanovia.com/ggpubr/reference/ggbarplot.html
 if(opts$bar){
@@ -158,7 +164,7 @@ if(opts$bar){
     p = ggbarplot(dd, x = x, y = y, 
             color = c, 
             fill=c,
-            order=xo,
+            # order=xo,
             position = position_dodge(js))
 }
 
@@ -220,7 +226,15 @@ if (legendTitle == 'noshow') {p = p + theme(legend.title = element_text(size=0))
 # https://www.r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
 if (length(legend) == 2){ p = p + theme(legend.justification = c("left", "top"))}
 # https://ggplot2.tidyverse.org/reference/scale_continuous.html
-p = p + scale_y_continuous(trans=logy, breaks=eval(parse(text=yticks)),labels=eval(parse(text=yticks)),limits=ylim)
+# An elegant way to preserve bar when set ylim. oob=rescale_none, on the scale framework.
+# https://stackoverflow.com/questions/10365167/geom-bar-bars-not-displaying-when-specifying-ylim/47296966
+# Use `squish` to keep the padding on X-axis. 
+# https://stackoverflow.com/questions/56097381/adding-some-space-between-the-x-axis-and-the-bars-in-ggplot
+p = p + scale_y_continuous(trans=logy, 
+    breaks=eval(parse(text=yticks)),labels=eval(parse(text=yticks)),
+    limits=ylim,oob=squish)
+# p = p + coord_cartesian(ylim=ylim)
+
 if(class(dd[[x]]) != 'factor'){
     p = p + scale_x_continuous(trans=logx, breaks=xbreaks,labels=xticks,limits=xlim)
 }
