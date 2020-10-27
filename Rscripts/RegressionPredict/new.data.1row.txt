@@ -1,0 +1,2 @@
+prestige	census	type
+68.8	1113	prof
