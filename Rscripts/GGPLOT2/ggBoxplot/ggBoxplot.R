@@ -8,7 +8,7 @@
 Create boxplot using ggplot2
 
 Usage:
-    ggBoxplot.R -x name -y name -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--cl txts] [--xo txts] [--wl num]
+    ggBoxplot.R -x name -y name -o <filename> -W float -H float [--bwidth float] [--dwidth float] [--dsize float] [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--cl txts] [--xo txts] [--wl num] [--nb]
     ggBoxplot.R -h --help
 
 Options:
@@ -38,6 +38,10 @@ Options:
    --logx text   Set up the log tranformation of X axis, log2|log10|sqrt.
    
    --wl num      Set the lenght of whiskers as 'num'*IQR, [1.5].
+   --bwidth float Set the width for the box, [0.8].
+   --dwidth float Set the width for the dots, [0.5].
+   --dsize float  Set the dot size, [1]. 
+   --nb           No box border for plot, default with box border. 
 
 Notes:
     1. Read data from stdin, input are 'CSV'.
@@ -50,6 +54,8 @@ suppressMessages(library(docopt))
 suppressMessages(library(ggplot2))
 suppressMessages(library(tidyverse))
 suppressMessages(library(ggpubr))
+
+suppressMessages(library(ggbeeswarm))
 # suppressMessages(library(rio))
 # retrieve the command-line arguments
 opts <- docopt(doc)
@@ -95,6 +101,9 @@ if(startsWith(legend,'c(')){
 }
 legendTitle = if(is.null(opts$lt)) 'noshow' else opts$lt
 lfs = if(is.null(opts$lfs)) 11 else as.numeric(opts$lfs)
+bwidth = if(is.null(opts$bwidth)) 0.8 else as.numeric(opts$bwidth)
+dwidth = if(is.null(opts$dwidth)) 0.5 else as.numeric(opts$dwidth)
+dsize = if(is.null(opts$dsize)) 1 else as.numeric(opts$dsize)
 
 # Set figure width and height.
 W = as.numeric(opts$W)
@@ -130,7 +139,9 @@ if(is.null(xo)==F) {dd[[x]] = factor(dd[[x]], levels = xo)}
 wl = if(is.null(opts$wl)) 1.5 else as.numeric(opts$wl)
 
 p = ggplot(dd, aes_string(x, y, fill=c))
-p = p + geom_boxplot(coef=wl)
+p = p + geom_boxplot(coef=wl,outlier.shape=NA,width=bwidth)
+# dotsColor = c('red','black','yellow')
+p = p + geom_quasirandom(aes_string(color=x),width=dwidth,size=dsize)
 
 # print('here1')
 #==============PROJECT SPECIFIC CODE====================
@@ -175,6 +186,7 @@ p = p + theme(plot.margin = margin(4, 8, 4, 4, "points"))
 
 # print('here3')
 # add box
-p = p + border() 
+# p = p + border() 
+if(opts$nb==F){p = p + border()}
 ggsave(ofile, width = W, height = H)
 # graphics.off()
