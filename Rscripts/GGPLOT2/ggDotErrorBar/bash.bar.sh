@@ -8,6 +8,7 @@ wecho "
         -c supp
         -H 5 -W 5
         --cp '#00AFBB::#E7B800::#FC4E07'
+        #--cp 'black::white'
         --js 0.7
         --bar
         --gt ymi

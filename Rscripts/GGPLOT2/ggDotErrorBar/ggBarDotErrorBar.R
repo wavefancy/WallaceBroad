@@ -9,7 +9,7 @@ Create dot/bar plot with error bar using ggplot2
 *** Input format is CSV.
 
 Usage:
-    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--gt txts] [--cl txts] [--xo txts] [--rx int] [--nb]
+    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--bc name] [--bw float] [--gt txts] [--cl txts] [--xo txts] [--rx int] [--nb] [--oob text]
     ggBarDotErrorBar.R -h --help
 
 Options:
@@ -27,6 +27,8 @@ Options:
    --xl txts     Set the x labels for breaks, [--xb], deimiter as ::. '-n' as line breaker. 
    -c name       Column name for color, or a single color for all points, [#0073C1].
    --ec name     Set the error bar as a single color, default as '-c'. 
+   --bc name     Set the border line color for bar. Column name for color, or a single color, [black].
+   --bw float    Set the width for the box, [NULL], NULL auto by system..
    --cp colors   A list of color for color palette, eg. #00AFBB::#E7B800::#FC4E07.
    -l txt        Set the position for legend, default: right, c(“top”, “bottom”, “left”, “right”, “none”).
                     or vector c(x, y). Their values should be between 0 and 1 (not work now).
@@ -50,7 +52,10 @@ Options:
    -o <filename> Output file name, in pdf format. eg. example.pdf
    -W float      The width of the output figure.
    -H float      The height of the output figure.
-   --nb          No box border for plot, default with box border. 
+   --nb          No box border for plot, default with box border.
+   --oob text    Set the value, squish|rescale_none, [squish]. 
+                    `squish` alwasy set padding on x-axis.
+                    `rescale_none` and set `ylim` value can adjustment the padding. 
 
 Notes:
     1. Read data from stdin, input are 'CSV'.
@@ -106,7 +111,7 @@ es  = if(is.null(opts$es)) 1 else as.numeric(opts$es)
 ew  = if(is.null(opts$ew)) 0 else as.numeric(opts$ew)
 ds  = if(is.null(opts$ds)) 3 else as.numeric(opts$ds)
 js  = if(is.null(opts$js)) 0.3 else as.numeric(opts$js)
-
+oob = if(is.null(opts$oob)) 'squish' else opts$oob
 
 # Column for color
 c  = if(is.null(opts$c)) '#0073C1' else {opts$c}
@@ -114,6 +119,9 @@ c  = if(is.null(opts$c)) '#0073C1' else {opts$c}
 cp = if(is.null(opts$cp)) NULL else {unlist(strsplit(opts$cp,'::'))}
 # Set a single color for error bar.
 ec = if(is.null(opts$ec)) NULL else opts$ec
+# Border line color for box.
+bc = if(is.null(opts$bc)) 'black' else opts$bc
+bw = if(is.null(opts$bw)) NULL    else as.numeric(opts$bw)
 
 # Set legend.
 legend = if(is.null(opts$l)) 'right' else {opts$l}
@@ -162,8 +170,9 @@ dd[[x]] = factor(dd[[x]])
 if(opts$bar){
     dd[[y]] = as.numeric(unlist(dd[y]))
     p = ggbarplot(dd, x = x, y = y, 
-            color = c, 
+            color = bc, 
             fill=c,
+            width = bw,
             # order=xo,
             position = position_dodge(js))
 }
@@ -228,11 +237,13 @@ if (length(legend) == 2){ p = p + theme(legend.justification = c("left", "top"))
 # https://ggplot2.tidyverse.org/reference/scale_continuous.html
 # An elegant way to preserve bar when set ylim. oob=rescale_none, on the scale framework.
 # https://stackoverflow.com/questions/10365167/geom-bar-bars-not-displaying-when-specifying-ylim/47296966
-# Use `squish` to keep the padding on X-axis. 
+# Use `squish` to keep the padding on X-axis. rescale_none: no padding on X-axis.
 # https://stackoverflow.com/questions/56097381/adding-some-space-between-the-x-axis-and-the-bars-in-ggplot
 p = p + scale_y_continuous(trans=logy, 
     breaks=eval(parse(text=yticks)),labels=eval(parse(text=yticks)),
-    limits=ylim,oob=squish)
+    # breaks=yticks,labels=yticks,
+    limits=ylim,oob=eval(parse(text=oob)))
+    # limits=ylim,oob=squish)
 # p = p + coord_cartesian(ylim=ylim)
 
 if(class(dd[[x]]) != 'factor'){
