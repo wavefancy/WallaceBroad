@@ -40,7 +40,8 @@ data = read.table(file("stdin"),header = T,sep=",", check.names = FALSE)
 
 psize = 5
 ft = flextable(data)
-ft = ft %>% theme_zebra(., odd_header = "transparent", even_header = "transparent") %>%
+ft = ft %>% 
+    #theme_zebra(., odd_header = "transparent", even_header = "transparent") %>%
     # hline(., border = fp_border(width = .5, color = "#007FA6"), part = "body" ) %>%hy
     hline(., border = fp_border(width = 1.5, color = "black"), part = "header" ) %>%
     #hline(., border = fp_border(width = 2, color = "#007FA6"), part = "header" ) %>%
