@@ -9,7 +9,7 @@ Ref: A Fast and Accurate Algorithm to Test for Binary Phenotypes and Its Applica
 Notes:
   * Read gene level score from stdin and output results to stdout.
   * The output SPA P value has been signed, for indicating the effect direction.
-  * For the SPA test, we use fastSPA=0.1, minmac = 1.
+  * For the SPA test, we use fastSPA=2, minmac = 1.
   * This load all version is 3x faster than read line by line.
 
 Usage:
@@ -41,7 +41,7 @@ covnames= ifelse(is.null(opts$c)==F, opts$c, NULL)
 datacol = if(is.null(opts$dc)) 8 else as.numeric(opts$dc)
 firthP  = if(is.null(opts$firthP)) 1.0 else as.numeric(opts$firthP)
 
-mf = function(x){formatC(x, digits = 4, format = "E")}
+mf = function(x){if(is.na(x)) 'NA' else formatC(x, digits = 4, format = "E")}
 MSGE <- function(...) cat(sprintf(...), sep='', file=stderr())
 # v("name: %s  age: %d\n", name, age)
 # https://stackoverflow.com/questions/15784373/process-substitution
@@ -117,7 +117,7 @@ for (line in readLines(input)){
     if(binaryPheno){
         # SPA test for binary phenotype.
         # If the number of carriers less than 3, skip the estimation.
-        if (rare_count <= 1){
+        if (rare_count < 1){
             out = c(out, "NA", "NA", "NA", "NA", "NA")
         }else{
             if (is.null(covnames)){
