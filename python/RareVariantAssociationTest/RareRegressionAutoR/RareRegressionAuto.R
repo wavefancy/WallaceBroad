@@ -13,7 +13,7 @@ Notes:
   * This load all version is 3x faster than read line by line.
 
 Usage:
-  RareRegressionAuto.R -f file -p pheno -i id [-c covariates] [--dc int] [--firthP float]
+  RareRegressionAuto.R -f file -p pheno -i id [-c covariates] [--dc int] [--firthP float] [--cap1]
 
 Options:
   -f file         Covariates file (including ID, Phenotype and covariates).
@@ -24,6 +24,7 @@ Options:
   --dc int        From which column the individual score data starts [8], index start from 1.
   --firthP float  The P value cut-off from SPA to call the firth logistic regression 
                       for estimating beta and beta_se, [1.0].
+  --cap1          Set the maximum score as `one`, if larger that one.
   ' -> doc
 
 # load the docopt library and parse options.
@@ -111,6 +112,10 @@ for (line in readLines(input)){
     
     genos = as.numeric(ss[common_id_index])
     rare_count = length(which(genos>0))
+    if(opts$cap1){
+        genos = pmin(genos, 1)
+    }
+    # print(genos)
 
     out = c(ss[1:datacol], length(genos), mf(rare_count*1.0/length(genos)))
     genos

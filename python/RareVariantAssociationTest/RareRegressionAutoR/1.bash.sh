@@ -13,7 +13,7 @@ wecho "
         -f ./test.ped.txt
         -p PHENO -i ID
         -c 'COV1,COV2'
-        --dc 2
+        --dc 2 --cap1
     | bgzip > out.test.binary.txt.gz
 "
 # Test for continuous.
