@@ -24,11 +24,10 @@ wecho "
     | bgzip > out.keep.txt.gz
 "
 wecho "
-    python3 VCFCountScore4GeneMask.py
+    python3 VCFCountScore4GeneMask.MAFMAC.py
         -g ./j.group.LOFHC.gene.txt
         -v ./hg19.gene.ANGPTL8.vcf.gz
         --weight file
-        --max-maf 1
         --maf-bin 0.01,1
         --mac-bin 1,3,5
         -s <(bgzip -dc ./ped.CAD.ped.gz | wcut -t IND_ID | tail -n +2)
