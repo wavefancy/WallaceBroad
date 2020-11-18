@@ -26,7 +26,8 @@ wecho "
 "
 # Test the -k keep option, supass the maf filterring.
 wecho "
-    python3 ./PLINKCountScore4GeneMask.py
+/Users/minxian/Broad/Program/miniconda3/envs/ngstools3/bin/python3
+        ./PLINKCountScore4GeneMask.py
         -g ./test.group.txt
         -p ./test.indels.missing
         --weight file
@@ -37,7 +38,8 @@ wecho "
     | bgzip > out.keep.txt.gz
 "
 wecho "
-    python3 ./PLINKCountScore4GeneMask.py
+/Users/minxian/Broad/Program/miniconda3/envs/ngstools3/bin/python3
+        ./PLINKCountScore4GeneMask.py
         -g ./j.group.LOFHC.gene.txt
         -p ./hg19.gene.ANGPTL8
         --weight file

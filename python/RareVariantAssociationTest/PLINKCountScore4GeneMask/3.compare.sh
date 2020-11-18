@@ -2,6 +2,10 @@
 # Ignore the first three columns, plink version only counts the validated markers
 # which goes into the analysis.
 
+# A full compare by real data for a whole chromosome.
+# The PLINK/bim version is about 40 times faster than the VCF version.
+# /medpop/esp2/wallace/projects/Amit/MI_EOMI_BURDEN_AUTO/SoftwareBechmark/UKB_13K/BURDEN_TEST
+
 wecho "
     diff <(gunzip -dc out.ANGPTL8.txt.gz| wcut -f4-) <(gunzip -dc ../VCFCountScore4GeneMask/out.ANGPTL8.txt.gz | wcut -f4-) > ./diff.ANGPTL8.txt
 
