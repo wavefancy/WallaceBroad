@@ -14,8 +14,8 @@
         2. See example by -f.
 
     Options:
-        -c col         Column index for transformer to be applied.
-        -t transformer Transform action:
+        -c col         Column (index|name) for transformer to be applied.
+        -t transformer Transform action, name are case sensitive:
                        maf : to minor allele frequency. min(1-p,p)
                        nlog: negative log. val --> -1.0 * math.log10(float(val))
                        log: val -> math.log(val), log base as e.
@@ -25,6 +25,8 @@
                        entropy: val -> -1*val*math.log10(val)
                        LODP: linkage LOD score to P value.
                        LODX2: linkage LOD score to chisq value, degree of one.
+                       P2Z:sign_col: convert P value to Z score, assume the P value is two-sided P value.
+                            'sign_col' (int or name), set the sign for Z score based on this column. 
                        format: apply the '-f' format pattern to the value.
         -f text        Format string for output, eg: %.4e| %.4f default: %g.
         -h --help      Show this screen.
@@ -32,6 +34,8 @@
         --format    Show input/output file format example.
 """
 import sys
+from scipy import stats
+import scipy as sp
 from docopt import docopt
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE,SIG_DFL) #prevent IOError: [Errno 32] Broken pipe. If pipe closed by 'head'.
@@ -39,7 +43,18 @@ signal(SIGPIPE,SIG_DFL) #prevent IOError: [Errno 32] Broken pipe. If pipe closed
 def ShowFormat():
     '''Input File format example:'''
     print('''
-    ''');
+# Input
+# -----------------
+Z P ZfromP
+1.25500e+01 3.97510e-36 3.97510e-36
+-3.01130e+00 2.60132e-03 2.60132e-03
+
+#  cat ./in.p2v.2sided.txt | python3 ./ColumnTransformator.py -c ZfromP -t P2Z:Z
+# -----------------
+Z       P       ZfromP
+1.25500e+01     3.97510e-36     12.55
+-3.01130e+00    2.60132e-03     -3.0113
+    ''')
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
@@ -49,8 +64,14 @@ if __name__ == '__main__':
         ShowFormat()
         sys.exit(-1)
 
-    COL = int(args['-c']) -1
-    ACTION = args['-t'].lower()
+    try:
+        COL = int(args['-c']) -1
+    except ValueError:
+        # COL is as name not by index.
+        COL = -1
+    
+    # ACTION = args['-t'].lower()
+    ACTION = args['-t']
     FORMATS = args['-f'] if args['-f'] else '%g'
 
 #### ***** Define the function map for transformer ****####
@@ -80,14 +101,19 @@ if __name__ == '__main__':
     def log(val):
         return FORMATS%(math.log(val))
     @trans
-    def lodp(val):
+    def P2Z(val, sign_val):
+        # stats.norm.ppf is qnorm in R, working on left side below.
+        v = sp.sign(sign_val) * -1.0 * stats.norm.ppf(val / 2.0)
+        return FORMATS%(v)
+    @trans
+    def LODP(val):
         val = val * 4.6 # (2*ln10) = 4.6
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.chi2.html
         # convert chi2 to P value.
         p = stats.chi2.sf(val, 1) / 2
         return FORMATS%(p)
     @trans
-    def lodx2(val):
+    def LODX2(val):
         val = val * 4.6 # (2*ln10) = 4.6
         return FORMATS%(val)
     @trans
@@ -95,21 +121,39 @@ if __name__ == '__main__':
         return FORMATS%(val)
 #### *****END Define the function map for transformer ****####
 
-    if ACTION not in Transformers.keys():
+    if ACTION.split(':')[0] not in Transformers.keys():
         sys.stderr.write('Transformer "%s" is not supported! Please check!\n'%(ACTION))
         sys.exit(-1)
 
     import math
     from scipy import stats
+    name_index_map = {}
     for line in sys.stdin:
         line = line.strip()
         if line:
             ss = line.split()
-            try:
-                ss[COL] = Transformers[ACTION](float(ss[COL]))
-            except ValueError:
-                sys.stderr.write('WARNING: Can not parse number in line: %s\n'%(line))
-                # ss[COL] = ACTION
+            if COL < 0:
+                # parse the title line and set an index map.
+                for i,val in enumerate(ss):
+                    if val in name_index_map:
+                         sys.stderr.write('ERROR: duplicated key in title line: %s\n'%(val))
+                    else:
+                        name_index_map[val] = i
+                COL = name_index_map[args['-c']]
+            else:
+                try:
+                    if ACTION.startswith('P2Z'):
+                        t = ACTION.split(':')
+                        try:
+                            sign_col = int(t[1])
+                        except ValueError:
+                            sign_col = name_index_map[t[1]]
+                        ss[COL] = Transformers[t[0]](float(ss[COL]),float(ss[sign_col]))
+                    else:
+                        ss[COL] = Transformers[ACTION](float(ss[COL]))
+                except ValueError:
+                    sys.stderr.write('WARNING: Can not parse number in line: %s\n'%(line))
+                    # ss[COL] = ACTION
             sys.stdout.write('%s\n'%('\t'.join(ss)))
 
 sys.stdout.flush()
