@@ -23,7 +23,7 @@
         -t float   Threshold for the credible set.
         -h --help     Show this screen.
         --version  Show version.
-        --format   Show input/output file format example.
+        -f --format   Show input/output file format example.
 
 """
 import sys
