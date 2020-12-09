@@ -1,0 +1,4 @@
+Total number of line: 7
+Total number of line: 7
+MYLOG. Total number of line: 7
+STDIN. Total number of line: 3
