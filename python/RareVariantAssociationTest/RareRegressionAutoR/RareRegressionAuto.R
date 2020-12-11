@@ -38,9 +38,10 @@ opts <- docopt(doc)
 pedfile = ifelse(is.null(opts$f)==F, opts$f, NULL)
 pheno   = ifelse(is.null(opts$p)==F, opts$p, NULL)
 idname  = ifelse(is.null(opts$i)==F, opts$i, NULL)
-covnames= ifelse(is.null(opts$c)==F, opts$c, NULL)
-datacol = if(is.null(opts$dc)) 8 else as.numeric(opts$dc)
-firthP  = if(is.null(opts$firthP)) 1.0 else as.numeric(opts$firthP)
+# covnames= ifelse(is.null(opts$c)==F, opts$c, NULL)
+covnames = if(is.null(opts$c)==F) opts$c else NULL
+datacol  = if(is.null(opts$dc)) 8 else as.numeric(opts$dc)
+firthP   = if(is.null(opts$firthP)) 1.0 else as.numeric(opts$firthP)
 
 mf = function(x){if(is.na(x)) 'NA' else formatC(x, digits = 4, format = "E")}
 MSGE <- function(...) cat(sprintf(...), sep='', file=stderr())
@@ -128,7 +129,8 @@ for (line in readLines(input)){
             if (is.null(covnames)){
                 # CALL fastSPA-2 for get the results return quickly, 
                 # detail please check the AJHG paper: A Fast and Accurate Algorithm to Test for Binary Phenotypes and Its Application to PheWAS
-                fit = ScoreTest_SPA_wMeta(genos,ped[pheno],minmac=1,Cutoff=2,
+                cov_1 = rep(1,dim(ped)[1])
+                fit = ScoreTest_SPA_wMeta(genos,ped[pheno],cov_1,minmac=1,Cutoff=2,
                           output="metaspline",beta.out=T,beta.Cutoff = firthP)
             }else{
                 fit = ScoreTest_SPA_wMeta(genos,ped[pheno],ped[COVS],

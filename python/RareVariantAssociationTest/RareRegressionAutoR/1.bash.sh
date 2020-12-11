@@ -26,3 +26,13 @@ wecho "
         --dc 2
     | bgzip > out.test.glm.txt.gz
 "
+# Check did SPA scaled the score.
+# By the iris data, we can confirm that SPA didn't scale the input score [genotype score].
+wecho "
+    cat ./iris.score.txt
+    | Rscript ./RareRegressionAuto.R
+        -f ./iris.data.tsv
+        -p pheno -i ID
+        --dc 2
+    | bgzip > out.test.scale.txt.gz
+"
