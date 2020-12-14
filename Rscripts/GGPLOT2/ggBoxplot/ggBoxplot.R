@@ -17,7 +17,7 @@ Options:
    -o <filename> Output file name, in pdf format. eg. example.pdf
    -W float      The width of the output figure.
    -H float      The height of the output figure.
-   -c name       Column name for color.
+   -c name       Column name for the box `fill` color, missing fill in all as `white`.
    --xlab text   Set x axis label, ['-x'].
    --ylab text   Set y axis label, ['-y'].
    --ylabe text  Set y axis label, ['-y'], interpreted as expression, for supporting format.
