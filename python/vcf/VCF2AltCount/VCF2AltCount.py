@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        VCF2AltCount.py
+        VCF2AltCount.py [-m]
         VCF2AltCount.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,6 +16,8 @@
         3. Mising was imputed as ref.
 
     Options:
+        -m              Keep missing, code missing as -1. Default impute to ref.
+                            If in this mode, missing in any of ref/alt will be treated as missing.
         -h --help       Show this screen.
         -v --version    Show version.
         -f --format     Show format example.
@@ -41,14 +43,16 @@ if __name__ == '__main__':
 
     from pysam import VariantFile
 
+    KEEPMISSING = True if args['-m'] else False
 
     vcfMetaCols=9       #number of colummns for vcf meta information.
     tags = set(['GT'])
 
     def getGeno(geno):
         '''get genotype info. impute missing to ref.'''
-        if geno[0] == '.': # if complete missing, output to ref.
-            geno = '0/0'
+        if geno[0] == '.': # if complete missing.
+            if KEEPMISSING == False: # impute to ref.
+                geno = '0/0'
         else:
             ss = geno.split(':')
             try:
@@ -63,8 +67,9 @@ if __name__ == '__main__':
         if len(geno) ==1:
             geno = [geno[0],'/',geno[0]]
 
-        geno[0] = '0 ' if geno[0] == '.' else geno[0]
-        geno[2] = '0' if geno[2] == '.' else geno[2]
+        if KEEPMISSING == False: # impute to ref.
+            geno[0] = '0' if geno[0] == '.' else geno[0]
+            geno[2] = '0' if geno[2] == '.' else geno[2]
 
         return geno
 
@@ -78,7 +83,7 @@ if __name__ == '__main__':
                 outGenoArrayIndex.append(i)
 
         if not outGenoArrayIndex:
-            sys.stderr.write('ERROR: can not find tag: GT, from input vcf FORMAT field.\n'%(x))
+            sys.stderr.write('ERROR: can not find tag: GT, from input vcf FORMAT field.\n'%(oldFormatTags))
             sys.exit(-1)
 
     def outputALTCount(ss):
@@ -94,6 +99,9 @@ if __name__ == '__main__':
                 count += 1
             if genotye[2] != '0':
                 count += 1
+            # coding missing in any part as missing, -1.
+            if KEEPMISSING and (genotye[0] == '.' or genotye[2]=='.'):
+                count = -1
             out.append('%d'%(count))
 
         sys.stdout.write('%s\n'%('\t'.join(out)))
