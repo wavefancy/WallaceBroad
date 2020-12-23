@@ -10,7 +10,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        wcat.py [-i] [-c file] [-a] [-m txt] [<files>...]
+        wcat.py [-i] [-c file] [-a] [-m txt] [-n] [<files>...]
         wcat.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -23,6 +23,7 @@
                         and log the message to file.
         -m txt        Set the log message for parameter '-c'.
         -a            Append the log message to file ['-c'], instead of a new file.
+        -n            If read from file list, add file name to each output line.
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -85,10 +86,13 @@ if __name__ == '__main__':
                 files.append(open(f,'r',encoding="utf-8"))
 
         # sys.stdout.reconfigure(encoding='utf-8')
-        for file in files:
+        for file,name in zip(files, names):
             for line in file:
                 TotalLines += 1
-                sys.stdout.write(line)
+                if args['-n']:
+                    sys.stdout.write('%s: %s'%(name, line))
+                else:
+                    sys.stdout.write(line)
 
         #close files.
         [f.close() for f in files]
