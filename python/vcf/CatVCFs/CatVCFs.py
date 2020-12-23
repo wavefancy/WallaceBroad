@@ -3,6 +3,7 @@
 """
 
     Combine VCF files (in put as gz or flat text files).
+        Support read VCF file from arg list or from stdin.
     @Author: wavefancy@gmail.com
 
     Usage:
@@ -13,6 +14,7 @@
         1. Concatenate multiple VCF files together, order as the appearence in parameters.
         2. Only keep the header from the first vcf.
         3. input vcf files either in ziped(.gz) or flat txt model.
+        4. *** Read VCF file name from arg list or from stdin. ***
 
     Options:
         -h --help     Show this screen.
