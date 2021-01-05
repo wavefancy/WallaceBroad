@@ -9,6 +9,7 @@ The regression was run by the R glm framework, analysis formula specified by use
 Notes:
   * Read the score file from stdin and output results to stdout.
   * The LRT was performed by `mdscore` package, `lr.test` function.
+  * The LRT was performed by `lmtest` package, `lrtest` function.
 
 Usage:
   GLMCovariateRegressor.R -c file -b formula -s formula -i id [--dc int] [--gf family]
@@ -28,6 +29,7 @@ suppressPackageStartupMessages(library(docopt))
 suppressPackageStartupMessages(library(stringi))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(mdscore))
+# suppressPackageStartupMessages(library(lmtest))
 opts <- docopt(doc)
 
 # str(opts)
@@ -106,30 +108,28 @@ for (line in readLines(input)){
     # print(glmfamily)
     b = glm(as.formula(bformula),data = ped, family = glmfamily)
     s = glm(as.formula(sformula),data = ped, family = glmfamily)
-    r = lr.test(s,b)
+    r = lr.test(s,b) # confirmed this has the exact same results as 'lrtest(s, b)' from the `lmtest` package.
 
     # Compute the mdscore
     X = model.matrix(b)
-   #  print(X)
     b_entries = colnames(model.matrix(b))
     s_entries = colnames(model.matrix(s))
-   #  s_entries = sformula %>% stri_split_regex(.,pattern='[~+*]') %>% unlist %>% str_trim %>% tail(.,-1) %>% unique(.)
-   #  print(b_entries)
-   #  print(s_entries)
     diff = seq(1,length(b_entries))[is.na(match(b_entries,s_entries))==T]
-   #  print(diff)
     X1 = X[,diff]
-   #  print(X1)
-    m_test = mdscore(s, X1 = X1) # null model, the diff columns with the full model.
-   #  print('here1')
-    sm = 'test'
+    m_test = mdscore(s, X1 = X1) # null model, the diff columns with the full model.'
     sm = quiet(summary(m_test))
-   #  print(sm)
+
+    # LT test by lrtest in lmtest package.
+   #  lr = lrtest(s, b)
+   #  print(names(lr))
+   #  print(lr[['Pr(>Chisq)']][2])
+   #  print(lr[['Df']][2])
    #  print(summary(m_test)[1,3])
    #  print('here!')
     if(outtitle==T){ #output title line
       #   h = rbind(paste(rn,'_BETA',sep=''), paste(rn,'_BETA.SE',sep=''), paste(rn,'_PVALUE',sep='')) %>% as.vector(.)
-        h = c('LR_PValue','Score_PValue','MDS_PValue','DF')
+      #   h = c('LR_PValue','Score_PValue','MDS_PValue','MDS_DF','LRTEST_PValue','LR_DF')
+        h = c('LR_PValue','Score_PValue','MDS_PValue','MDS_DF')
         out = c(myhead[1:datacol], h)
         cat(out,sep="\t")
         cat("\n")
@@ -143,6 +143,7 @@ for (line in readLines(input)){
    #  beta_se = r[,2]
    #  pvalue  = r[,4]
    #  h = rbind(beta, beta_se, pvalue) %>% as.vector(.) %>% mf(.)
+   #  h = c(r$pvalue, sm[1,3], sm[2,3],sm[2,1],lr[['Pr(>Chisq)']][2],lr[['Df']][2]) %>% as.vector(.) %>% mf(.)
     h = c(r$pvalue, sm[1,3], sm[2,3],sm[2,1]) %>% as.vector(.) %>% mf(.)
     out = c(out, h)
    #  print(out)
