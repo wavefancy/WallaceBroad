@@ -120,6 +120,7 @@ for (line in readLines(input)){
     sm = quiet(summary(m_test))
 
     # LT test by lrtest in lmtest package.
+    # confirmed this has the exact same results as 'lr.test(s, b)' from the `mdscore` package.
    #  lr = lrtest(s, b)
    #  print(names(lr))
    #  print(lr[['Pr(>Chisq)']][2])
@@ -145,6 +146,7 @@ for (line in readLines(input)){
    #  h = rbind(beta, beta_se, pvalue) %>% as.vector(.) %>% mf(.)
    #  h = c(r$pvalue, sm[1,3], sm[2,3],sm[2,1],lr[['Pr(>Chisq)']][2],lr[['Df']][2]) %>% as.vector(.) %>% mf(.)
     h = c(r$pvalue, sm[1,3], sm[2,3],sm[2,1]) %>% as.vector(.) %>% mf(.)
+   #  h = c(lr[['Pr(>Chisq)']][2], sm[1,3], sm[2,3],sm[2,1]) %>% as.vector(.) %>% mf(.)
     out = c(out, h)
    #  print(out)
     cat(out,sep="\t")
