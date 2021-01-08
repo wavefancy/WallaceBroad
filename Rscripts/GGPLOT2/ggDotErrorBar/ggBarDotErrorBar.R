@@ -9,7 +9,7 @@ Create dot/bar plot with error bar using ggplot2
 *** Input format is CSV.
 
 Usage:
-    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--bc name] [--bw float] [--gt txts] [--cl txts] [--xo txts] [--rx int] [--nb] [--oob text]
+    ggBarDotErrorBar.R -x name -y name (--bar|--dot) [--ymin name --ymax name] -o <filename> -W float -H float [-c name ] [--ylim nums] [--xlim nums] [--xb nums] [--xl txts] [--cp colors] [-l txt] [--lt text] [--lfs num] [--es num] [--ew num] [--ds num] [--js num] [--logy text] [--logx text] [--xlab text] [--ylabe text | --ylab text] [--yticks nums] [--ec name] [--bc name] [--bw float] [--gt txts] [--cl txts] [--xo txts] [--rx int] [--nb] [--oob text] [-t text]
     ggBarDotErrorBar.R -h --help
 
 Options:
@@ -52,6 +52,7 @@ Options:
    -o <filename> Output file name, in pdf format. eg. example.pdf
    -W float      The width of the output figure.
    -H float      The height of the output figure.
+   -t text       Add plot title.
    --nb          No box border for plot, default with box border.
    --oob text    Set the value, squish|rescale_none, [squish]. 
                     `squish` alwasy set padding on x-axis.
@@ -219,10 +220,16 @@ cp = if(is.null(opts$cp)) 'jco' else {unlist(strsplit(opts$cp,'::'))}
 p = ggpar(p, palette = cp )
 
 if(length(xlim) > 0){p = p + xlim(xlim[1],xlim[2])}
-# if(length(ylim) > 0){p = p + ylim(ylim[1],ylim[2])}
+# Add title to plot.
+if(is.null(opts$t) == F){
+    p = p + ggtitle(opts$t)
+}
 
 # Change theme things.
 p = p + theme_pubr()
+# Make title align to center.
+# https://stackoverflow.com/questions/40675778/center-plot-title-in-ggplot2
+p = p + theme(plot.title = element_text(hjust = 0.5))
 # https://rpkgs.datanovia.com/ggpubr/reference/ggpar.html
 p = ggpar(p,legend=legend, legend.title = legendTitle)
 # change the font size for legend.
