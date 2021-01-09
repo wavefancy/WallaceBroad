@@ -53,6 +53,7 @@ dd = read.table(file("stdin"),header = T)
 dd = dd[,cols]
 # remove the rows with NA values.
 dd = na.omit(dd)
+
 if (bootn == 0){
     mycox <-(coxph(as.formula(model),data=dd))
     summary(mycox)
@@ -61,12 +62,14 @@ if (bootn == 0){
     plan(multicore, workers =ncpu)
     results = future_map_chr(1:bootn, 
         function(x){
+            set.seed(x)
             newdata = sample_n(dd, size=nrow(dd),replace = T)
             mycox <-(coxph(as.formula(model),data=newdata))
             print(summary(mycox))
             cat('-----------------------------\n')
             'DONE'
-        })
+        # https://www.r-bloggers.com/2020/09/future-1-19-1-making-sure-proper-random-numbers-are-produced-in-parallel-processing/
+        },.options = furrr_options(seed = TRUE))
     #print(results)
 }
 
