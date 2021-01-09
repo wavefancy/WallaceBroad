@@ -28,6 +28,7 @@ suppressMessages(library(data.table))
 suppressMessages(library(tidyverse))
 suppressMessages(library(stringr))
 suppressMessages(library(survival))
+# Version: >= furrr-0.2.1
 suppressMessages(library(furrr))
 
 opts <- docopt(doc)
