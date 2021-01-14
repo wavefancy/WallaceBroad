@@ -122,7 +122,7 @@ for (line in readLines(input)){
     genos
     if(binaryPheno){
         # SPA test for binary phenotype.
-        # If the number of carriers less than 3, skip the estimation.
+        # If the number of carriers less than 1, skip the estimation.
         if (rare_count < 1){
             out = c(out, "NA", "NA", "NA", "NA", "NA")
         }else{
@@ -145,16 +145,21 @@ for (line in readLines(input)){
         }
     }else{
         # Continuous phenotype use glm instead.
-        ped[['score']] = genos
-        g = glm(as.formula(fm),data = ped, family = 'gaussian')
-        r = coef(summary(g))
-        # print(coef(summary(g)))
-        # print(r['score',1])
-        beta = r['score',1]
-        beta_se = r['score',2]
-        t = r['score',3]
-        p = r['score',4]
-        out = c(out, mf(p), mf(beta), mf(beta_se), mf(t))
+        # If the number of carriers less than 1, skip the estimation, the estimation will fail if not carriers.
+        if (rare_count < 1){
+            out = c(out, "NA", "NA", "NA", "NA", "NA")
+        }else{
+            ped[['score']] = genos
+            g = glm(as.formula(fm),data = ped, family = 'gaussian')
+            r = coef(summary(g))
+            # print(coef(summary(g)))
+            # print(r['score',1])
+            beta = r['score',1]
+            beta_se = r['score',2]
+            t = r['score',3]
+            p = r['score',4]
+            out = c(out, mf(p), mf(beta), mf(beta_se), mf(t))
+        }
     }
     
     cat(out,sep="\t")
