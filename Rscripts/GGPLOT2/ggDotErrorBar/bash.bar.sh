@@ -11,7 +11,7 @@ wecho "
         #--cp 'black::white'
         --js 0.7
         --bar
-        --gt ymi
+        --gt ymi,yma::0
         --ec 'lightblue'
         -o test.bar.pdf
         --ylim 5,30

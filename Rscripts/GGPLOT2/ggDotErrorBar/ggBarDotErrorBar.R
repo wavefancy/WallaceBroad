@@ -46,9 +46,10 @@ Options:
    --logy text   Set up the log tranformation of Y axis, log2|log10|sqrt.
    --logx text   Set up the log tranformation of X axis, log2|log10|sqrt.
    --rx int      Rotate the x axis label of degree 'int'.
-   --gt txts     Add the text to the plot by geom_text, name[::value_y]. 
+   --gt txts     Add the text to the plot by geom_text, `name1[::value_y],name2[::value_y]`. 
                     Read the text from the name column. The default Y position is on each bar. 
                     But can set up the 'value_y' for the Y position, a single number, eg. 0.
+                    Specify multi-group of text separated by `,`.
    -o <filename> Output file name, in pdf format. eg. example.pdf
    -W float      The width of the output figure.
    -H float      The height of the output figure.
@@ -200,11 +201,13 @@ if(is.null(ymin)==F && is.null(ymax)==F){
 # Add text to the plot.
 # https://ggplot2.tidyverse.org/reference/geom_text.html
 if(is.null(opts$gt) == F){
-    gt = unlist(strsplit(opts$gt,'::'))
-    gt_y = if(length(gt)==2) gt[2] else y 
-    p = p + geom_text(aes_string(y = gt_y,label = gt[1], group=c), position = position_dodge(js), 
-        #fontface='bold', 
-        vjust=-0.25)
+    for(text in unlist(strsplit(opts$gt,','))){
+        gt = unlist(strsplit(text,'::'))
+        gt_y = if(length(gt)==2) gt[2] else y 
+        p = p + geom_text(aes_string(y = gt_y,label = gt[1], group=c), position = position_dodge(js), 
+            #fontface='bold', 
+            vjust=-0.25)
+    }
 }
 
 # Set the X and Y label.
