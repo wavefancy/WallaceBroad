@@ -10,7 +10,7 @@ Notes:
   * - Add "_n_" to make the title start a new line.
 
 Usage:
-  ForestPlot.R -o <filename> -W float -H float [--rp txts] [-g name] [-x xlabel] [--xlim nums] [--xr xratio]
+  ForestPlot.R -o <filename> -W float -H float [--rp txts] [-g name] [-x xlabel] [--xlim nums] [--xr xratio] [--pfl txt]
 
 Options:
   -o <filename> Output file name, in pdf format. eg. example.pdf
@@ -23,6 +23,7 @@ Options:
                   One value for two columns，two values for three columns.
                   *** two values, set the width for the first and last column.
                   default 0.8 for two columns or 0.60::0.2 for three three columns.
+  --pfl txt     P value format letter, default `e`. Can by any option `formatC` supported.
   --xlim nums   Set the xlim, eg. num1::num2
   ' -> doc
 
@@ -48,20 +49,21 @@ group      = if(is.null(opts$g)) NA else opts$g
 xname      = if(is.null(opts$x)) 'Odds Ratio' else opts$x
 myxlim     = if(is.null(opts$xlim)) NULL else as.numeric(unlist(strsplit(opts$xlim,'::')))
 rightpanel = if(is.null(opts$rp)) c() else unlist(strsplit(opts$rp,'::'))
+pfl        = if(is.null(opts$pfl)) 'e' else opts$pfl
 
 # check.names = F, to make the header can contain special characters.
 data = read.table(file("stdin"),header = T,sep="\t", check.names = FALSE)
 
 # Format P value.
 if ('_n_PVALUE' %in% colnames(data)){
-    data[,'_n_PVALUE'] = formatC(data[,'_n_PVALUE'], digits = 2, format = "e")
+    data[,'_n_PVALUE'] = formatC(data[,'_n_PVALUE'], digits = 2, format = pfl)
 }
 if ('PVALUE' %in% colnames(data)){
-    data[,'PVALUE'] = formatC(data[,'PVALUE'], digits = 2, format = "e")
+    data[,'PVALUE'] = formatC(data[,'PVALUE'], digits = 2, format = pfl)
 }
 
 if ('P Value' %in% colnames(data)){
-    data[,'P Value'] = formatC(data[,'P Value'], digits = 2, format = "e")
+    data[,'P Value'] = formatC(data[,'P Value'], digits = 2, format = pfl)
 }
 
 # Partition the data set up as three column display.
