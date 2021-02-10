@@ -30,6 +30,8 @@ suppressMessages(library(stringr))
 suppressMessages(library(survival))
 # Version: >= furrr-0.2.1
 suppressMessages(library(furrr))
+# Set the output width as 10000, no breaking of the lines in linux.
+options(width=10000)
 
 opts <- docopt(doc)
 # print(opts)
