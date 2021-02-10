@@ -59,7 +59,11 @@ dd = na.omit(dd)
 
 if (bootn == 0){
     mycox <-(coxph(as.formula(model),data=dd))
-    summary(mycox)
+    s = summary(mycox)
+    r = as.matrix(s$rsq)
+    rsq = data.frame(name=rownames(r),val=r[,1])
+    print(s)
+    print(rsq)
 }else{
     # bootstrapping the analysis 'bootn' times.
     plan(multicore, workers =ncpu)
@@ -68,7 +72,11 @@ if (bootn == 0){
             set.seed(x)
             newdata = sample_n(dd, size=nrow(dd),replace = T)
             mycox <-(coxph(as.formula(model),data=newdata))
-            print(summary(mycox))
+            s = summary(mycox)
+            r = as.matrix(s$rsq)
+            rsq = data.frame(name=rownames(r),val=r[,1])
+            print(s)
+            print(rsq)
             cat('-----------------------------\n')
             'DONE'
         # https://www.r-bloggers.com/2020/09/future-1-19-1-making-sure-proper-random-numbers-are-produced-in-parallel-processing/

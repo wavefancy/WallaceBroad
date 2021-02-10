@@ -3,5 +3,5 @@
 wecho "
     gunzip -dc survival.lung.txt.gz
     | /Users/minxian/Broad/Program/miniconda3/envs/forestplot2/bin/Rscript
-        ./CoxRegression.R  -f 'Surv(time, status) ~ age + sex + ph.ecog' --boot 3
+        ./CoxRegression.R  -f 'Surv(time, status) ~ age + sex + ph.ecog'
 "
