@@ -14,11 +14,13 @@
 Generate QQ plot based on input P values.
 
 Usage:
-    qqplot.R [-g <genes>] -o <filename> [--xlim nums] [--ylim nums] [--sy float] [--yb floats] [--ybl txts] [--tp float] [--l text]
+    qqplot.R [-g <genes>] -o <filename> [-H float] [-W float] [--xlim nums] [--ylim nums] [--sy float] [--yb floats] [--ybl txts] [--tp float] [--l text]
     qqplot.R -h [--help]
 
 Options:
    -g <genes>    Gene list to label in the figure. eg. gene1|gene1::gene2.
+   -H float      Set the HEIGHT for the plot figure, [5.5].
+   -W float      Set the WIDTH  for the plot figure, [5.5].
    --xlim nums   Set the xlim, num1::num2
    --ylim nums   Set the ylim, num1::mum2
    --yb floats   Set the tick breaks for Y axis, eg. 1,2,3,4.
@@ -71,6 +73,8 @@ if(is.null(opts$ybl) == F){
   ybl = as.numeric(unlist(strsplit(opts$ybl,',')))
 }
 lambda = if(is.null(opts$l)==F) unlist(strsplit(opts$l,'::')) else NULL
+pwidth  = if(is.null(opts$W)==F) as.numeric(opts$W) else 5.5
+pheight = if(is.null(opts$H)==F) as.numeric(opts$H) else 5.5
 
 dd = read.table(file("stdin"),header = T)
 
@@ -102,9 +106,10 @@ gg_qqplot = function(df, genes, ci=0.95) {
     theme_bw()+
     theme(
       text = element_text(color = "black"),
-      axis.title.x = element_text(vjust = -.5,size=20,face="bold",margin = unit(c(5, 0, 0, 0),'mm'),colour = 'black'),
-      axis.title.y = element_text(vjust = 1,size=20,,face="bold",margin = unit(c(0, 5, 0, 0),"mm"),colour = 'black'),
-      axis.text = element_text(size=16, colour = 'black'),
+      # margin as top, right, bottom,left.
+      axis.title.x = element_text(vjust = -.5,size=14,face="bold",margin = unit(c(1, 0, 0, 0),'mm'),colour = 'black'),
+      axis.title.y = element_text(vjust = 1,size=14,,face="bold",margin = unit(c(0, 1, 0, 0),"mm"),colour = 'black'),
+      axis.text = element_text(size=12, colour = 'black'),
       axis.ticks = element_line(colour = 'black', size = 1),
       # panel.grid.major = element_line(colour="gray", size=0.5,linetype = "dotted"),
       panel.grid.major = element_blank(),
@@ -143,6 +148,6 @@ gg_qqplot = function(df, genes, ci=0.95) {
   gg
 }
 
-pdf(ofile,width=5.5, height=5.5)
+pdf(ofile,width=pwidth, height=pheight)
 gg_qqplot(dd,genes)
 graphics.off()
