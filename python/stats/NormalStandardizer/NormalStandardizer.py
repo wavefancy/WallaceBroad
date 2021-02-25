@@ -16,7 +16,7 @@
         3. Column index start from 1.
 
     Options:
-        -c col        Column index for value to be normalized.
+        -c col        Column index|name for value to be normalized.
         -m mean       Specify mean, use this value other than estimated from data.
         -s sd         Specify sd, use this value other than estimated from data.
         --mz          Shift the the minimal value to 0. [x-min(x) for x in standardizedValues]
@@ -38,37 +38,79 @@ if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
     #print(args)
 
-    P.col = int(args['-c']) -1
+    WITH_TITLE = False
+    P.col = -1
+    try: 
+        P.col = int(args['-c']) -1
+    except:
+        WITH_TITLE = True
+    
     if args['--mz'] and args['-m']:
         sys.stderr.write('ERROR: --mz can not be used with -m.\n')
 
+    INDEXMAP = {}
     if args['-m']:
         P.mean = float(args['-m'])
         P.sd = float(args['-s'])
         for line in sys.stdin:
             line = line.strip()
             if line:
-                try:
+                if WITH_TITLE:
                     ss = line.split()
-                    vv = float(ss[P.col])
+                    for k,v in zip(ss, range(len(ss))):
+                        if k in INDEXMAP:
+                            sys.stderr.write('ERROR, Dupliciate values in title, can not use column name. DUP KEY: %s\n'%(k))
+                            sys.exit(-1)
+                        else:
+                            INDEXMAP[k] = v
+                    if args['-c'] in INDEXMAP:
+                        P.col = INDEXMAP[args['-c']]
+                    else:
+                        sys.stderr.write('ERROR, name "%s" not in title!'%(args['-c']))
+                        sys.exit(-1)
+                    # Output title
+                    sys.stdout.write('%s\tNormedValue\n'%(line))
+                    WITH_TITLE = False
 
-                    sys.stdout.write('%s\t%.4e\n'%(line, (vv - P.mean)/P.sd))
+                else:
+                    try:
+                        ss = line.split()
+                        vv = float(ss[P.col])
 
-                except ValueError:
-                    sys.stderr.write('Warning: parse value error at line (skiped): %s\n'%(line))
+                        sys.stdout.write('%s\t%.4e\n'%(line, (vv - P.mean)/P.sd))
+
+                    except ValueError:
+                        sys.stderr.write('Warning: parse value error at line (skiped): %s\n'%(line))
 
     else:
         content = [] # [(line, val),...]
         for line in sys.stdin:
             line = line.strip()
             if line:
-                try:
+                if WITH_TITLE:
                     ss = line.split()
-                    vv = float(ss[P.col])
+                    for k,v in zip(ss, range(len(ss))):
+                        if k in INDEXMAP:
+                            sys.stderr.write('ERROR, Dupliciate values in title, can not use column name. DUP KEY: %s\n'%(k))
+                            sys.exit(-1)
+                        else:
+                            INDEXMAP[k] = v
+                    if args['-c'] in INDEXMAP:
+                        P.col = INDEXMAP[args['-c']]
+                    else:
+                        sys.stderr.write('ERROR, name "%s" not in title!'%(args['-c']))
+                        sys.exit(-1)
+                    # Output title
+                    sys.stdout.write('%s\tNormedValue\n'%(line))
+                    WITH_TITLE = False
+                else:
+                    try:
+                        ss = line.split()
+                        vv = float(ss[P.col])
 
-                    content.append([line, vv])
-                except ValueError:
-                    sys.stderr.write('Warning: parse value error at line (skiped): %s\n'%(line))
+                        content.append([line, vv])
+                    except ValueError:
+                        sys.stderr.write('Warning: parse value error at line (skiped): %s\n'%(line))
 
         vals = [x[1] for x in content]
 
