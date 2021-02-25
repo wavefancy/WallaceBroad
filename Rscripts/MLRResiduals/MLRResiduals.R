@@ -11,7 +11,7 @@ Usage:
     MLRResiduals.R -h [--help]
 
 Options:
-   -f formula   Formula to run the cox model.
+   -f formula   Formula to run the lm model.
 
 Notes:
     1. Read data from stdin and output results to stdout.
