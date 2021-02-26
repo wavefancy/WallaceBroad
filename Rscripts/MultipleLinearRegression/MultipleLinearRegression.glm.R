@@ -52,6 +52,10 @@ if(oci){
     y
 }
 
+# for GLM, also possible by:
+# https://stats.stackexchange.com/questions/46345/how-to-calculate-goodness-of-fit-in-glm-r/46358
+# reg = glm(...)
+# with(summary(reg), 1 - deviance/null.deviance)
 if(rsq){
     suppressMessages(library(rsq))
     # ADJ = FALSE, the value is consistent with datamash ppearson
