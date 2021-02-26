@@ -1,5 +1,5 @@
 
-cat test.txt | Rscript MLRResiduals.R -f 'prestige~census+type'
+cat test.txt | /Users/minxian/Broad/Program/miniconda3/envs/forestplot2/bin/Rscript MLRResiduals.R -f 'prestige~census+type' -n rtest
 
 #prestige census type RESIDUALS
 #68.8 1113 prof 2.66730545059386
