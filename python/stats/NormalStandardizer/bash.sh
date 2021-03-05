@@ -1,5 +1,5 @@
 
-cat test.txt | ./NormalStandardizer.py -c c2
+cat test.txt | ./NormalStandardizer.py -c c2 -n N_NORM
 
 #X c2    NormedValue
 #X 3     -0.294884

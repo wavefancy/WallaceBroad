@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        NormalStandardizer.py -c col [(-m mean -s sd) | --mz]
+        NormalStandardizer.py -c col [(-m mean -s sd) | --mz] [-n name]
         NormalStandardizer.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -17,6 +17,7 @@
 
     Options:
         -c col        Column index|name for value to be normalized.
+        -n name       Specify the title name for the newly added column of normalized values. 
         -m mean       Specify mean, use this value other than estimated from data.
         -s sd         Specify sd, use this value other than estimated from data.
         --mz          Shift the the minimal value to 0. [x-min(x) for x in standardizedValues]
@@ -37,7 +38,7 @@ class P(object):
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
     #print(args)
-
+    N_NAME = args['-n'] if args['-n'] else 'NormedValue'
     WITH_TITLE = False
     P.col = -1
     try: 
@@ -69,7 +70,7 @@ if __name__ == '__main__':
                         sys.stderr.write('ERROR, name "%s" not in title!'%(args['-c']))
                         sys.exit(-1)
                     # Output title
-                    sys.stdout.write('%s\tNormedValue\n'%(line))
+                    sys.stdout.write('%s\t%s\n'%(line,N_NAME))
                     WITH_TITLE = False
 
                 else:
@@ -101,7 +102,7 @@ if __name__ == '__main__':
                         sys.stderr.write('ERROR, name "%s" not in title!'%(args['-c']))
                         sys.exit(-1)
                     # Output title
-                    sys.stdout.write('%s\tNormedValue\n'%(line))
+                    sys.stdout.write('%s\t%s\n'%(line,N_NAME))
                     WITH_TITLE = False
                 else:
                     try:
