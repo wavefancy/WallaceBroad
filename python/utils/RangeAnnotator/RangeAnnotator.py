@@ -6,7 +6,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        RangeAnnotator.py -p int -a file [-g int] [-n string]
+        RangeAnnotator.py -p int -a file (--lopen | --ropen | --both) [-g int] [-n string] 
         RangeAnnotator.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -24,6 +24,9 @@
         -n string     Title name for the annotation.
                         Add this string for those lines can not be parsed
                         as float in the position column. Default: ANN.
+        --lopen       Set the range annotation is left open,  (], do not include the left end point.
+        --ropen       Set the range annotation is right open, [), do not include the right end point.
+        --both        Set the range annotation includes both ends, [].
         -h --help     Show this screen.
         -v --version  Show version.
         -f --format   Show input/output file format example.
@@ -62,13 +65,20 @@ def ShowFormat():
 1	2	3	a2
 2	1	5	a3
 
-#output: -p 2 -a ann.2.txt -g 1 -n txt
+#output: -p 2 -a ann.2.txt -g 1 -n txt --both
 ------------------------
 1       2       a1,a2
 2       4       a3
 1       3       a2
 3       1       txt
-    ''');
+
+#cat test.txt | python ./RangeAnnotator.py -p 2 -a ann.2.txt -g 1 -n txt --lopen 
+------------------------
+1       2       a1
+2       4       a3
+1       3       a2
+3       1       txt
+''')
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
@@ -106,8 +116,15 @@ if __name__ == '__main__':
         re = []
         if gname in grangemap:
             for s,e,n in grangemap[gname]:
-                if pos>=s and pos <= e:
-                    re.append(n)
+                if args['--both']:
+                    if pos>=s and pos <= e:
+                        re.append(n)
+                if args['--lopen']:
+                    if pos>s and pos <= e:
+                        re.append(n)
+                if args['--ropen']:
+                    if pos>=s and pos < e:
+                        re.append(n)
         return re
 
     gname = 'g'
