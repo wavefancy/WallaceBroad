@@ -43,6 +43,7 @@ print(c("FORMULA:",form))
 #lr = lm(as.formula(form),data = dd)
 lr = glm(as.formula(form),data = dd,family="gaussian")
 summary(lr)
+summary(lr)$coefficients
 
 if(oci){
     # Calculate 95CI.
