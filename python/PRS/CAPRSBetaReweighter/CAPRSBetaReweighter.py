@@ -8,7 +8,7 @@
     @Author: wavefancy@gmail.com, Wallace Wang.
 
     Usage:
-        CAPRSBetaReweighter.py -b int -d int -a vals
+        CAPRSBetaReweighter.py -b int -d int -a vals [-m txt]
         CAPRSBetaReweighter.py -h | --help | --version | -f | --format
 
     Notes:
@@ -20,6 +20,8 @@
         -d int        Column index for the difference measure, values usually in [0,1].
         -a vals       The parameter values for the weight function,
                           Suggest values in the interval of [0-20], eg. 0,0.1,3,20.
+        -m txt        Set added value for entries don't have have a valid `-d` value, 
+                          Default [0].
         -h --help     Show this screen.
         --version     Show version.
         -f --format   Show input/output file format example.
@@ -58,8 +60,11 @@ if __name__ == '__main__':
     Beta_COL  = int(args['-b']) -1
     Diff_COL  = int(args['-d']) -1 
     VALS      = [float(x) for x in args['-a'].split(',')]
+    MVAL      = args['-m'] if args['-m'] else '0'
 
     TITLES    = ['a_%g'%(x) for x in VALS]
+    MVALs     = [MVAL] * len(TITLES)
+    FirstHit  = True
 
     for line in sys.stdin:
         line = line.strip()
@@ -72,7 +77,11 @@ if __name__ == '__main__':
 
                 out = ss + ['%g'%(beta * pow(diff,x)) for x in VALS]
             except:
-                out = ss + TITLES
+                if FirstHit:
+                    out = ss + TITLES
+                    FirstHit = False
+                else:
+                    out = ss + MVALs
 
             sys.stdout.write('%s\n'%('\t'.join(out)))
 

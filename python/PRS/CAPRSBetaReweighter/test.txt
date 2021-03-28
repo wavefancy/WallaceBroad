@@ -1,3 +1,4 @@
 RSID BETA A1 D
 R1 1 A 0.1
 R2 2 G 0.9
+R3 3 T NA
