@@ -1,5 +1,5 @@
 '
-Adjust the GWAS variant weight by LDpred2 algorithm.
+Adjust the GWAS variant weight by lasosum2 algorithm.
 
 Notes:
   * The GWAS summary must has the following columns:
@@ -8,7 +8,7 @@ Notes:
   * The LD reference panel were stored in separated chr, plink 1.0 bed/bim/fam format.
 
 Usage:
-  LDpred2.R -o prefix -g gwas -p bfile
+  Lasosum2.R -o prefix -g gwas -p bfile
 
 Options:
   -o prefix     Output file name prefix.
@@ -18,14 +18,18 @@ Options:
                         eur.ref.chr1.ref, eur.ref.chr2.ref ... eur.ref.chr22.ref
 ' -> doc
 
-# Pipeline for running LDpred2. bigsnpr version >= 1.7.1, tested in 1.7.1
+# Pipeline for running lassosum2, bigsnpr version >= 1.7.1, tested in 1.7.1
 # https://choishingwan.github.io/PRS-Tutorial/ldpred/
 # https://privefl.github.io/bigsnpr/articles/LDpred2.html
+# https://privefl.github.io/bigsnpr-extdoc/polygenic-scores-pgs.html#
 
 # Pipeline testing:
 # /medpop/esp2/wallace/tools/conda_build/ldpred2/example
 
 # conda install 
+# In the conda ENV.
+# # install.packages("remotes")
+# remotes::install_github("privefl/bigsnpr")
 
 suppressMessages(library(dplyr))
 suppressMessages(library(docopt))
@@ -124,36 +128,21 @@ setnames(fam.order,
         c("family.ID", "sample.ID"),
         c("FID", "IID"))
 
+
 # Perform LD score regression
 df_beta <- info_snp[,c("beta", "beta_se", "n_eff", "_NUM_ID_")]
-ldsc <- snp_ldsc(   ld, 
-                    length(ld), 
-                    chi2 = (df_beta$beta / df_beta$beta_se)^2,
-                    sample_size = df_beta$n_eff, 
-                    blocks = NULL)
-h2_est <- ldsc[["h2"]]
+beta_lassosum2 <- snp_lassosum2(corr, df_beta, ncores = NCORES)
 
-# Prepare data for grid model, using the default parameters.
-p_seq  <- signif(seq_log(1e-4, 1, length.out = 17), 2)
-h2_seq <- round(h2_est * c(0.7, 1, 1.4), 4)
-grid.param <-
-            expand.grid(p = p_seq,
-            h2 = h2_seq,
-            sparse = c(FALSE, TRUE))
+# Save the parameter values for lassosum2
+export(params2, paste0(outp,"lassosum2.param.values.tsv.gz"))
+
+# Get the name list for lassosum optimization
 grid.param.name <-
-     expand.grid(p = paste0('p:',p_seq),
-             h2 = paste0('h2:',c(0.7, 1, 1.4)),
-             sparse = c('F', 'T'))
+     expand.grid(s = paste0('s:',1:10/10),
+                 nlambda = paste0('nl:',1:20))
 gpn = do.call("paste", c(grid.param.name, sep = "_"))
 
-# Save the grid.param values, has the different heritability values.
-export(grid.param, paste0(outp,"grid.param.values.tsv"))
-
-# Get adjusted beta from grid model
-beta_grid <-
-    snp_ldpred2_grid(corr, df_beta, grid.param, ncores = NCORES)
-
 t = as.matrix(info_snp[,c('rsid','a1','a0')],ncol=3)
-out = cbind(t,beta_grid)
+out = cbind(t,beta_lassosum2)
 colnames(out) =  c(c('rsID','a1','a0'),gpn)
-export(out, paste0(outp,'beta_grid.tsv.gz'),quote=F)
+export(out, paste0(outp,'lassosum2_grid.tsv.gz'),quote=F)
