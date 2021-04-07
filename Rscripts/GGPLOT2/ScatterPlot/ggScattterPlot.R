@@ -13,7 +13,7 @@
 Create scatter plot using ggplot2
 
 Usage:
-    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num] [--revx] [--gtr txts] [--gtrs num]
+    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num] [--revx] [--gtr txts] [--gtrs num] [--logx txt]
     ggScattterPlot.R -h --help
 
 Options:
@@ -45,6 +45,7 @@ Options:
    --ab nums     Add abline to the plot, format: intercept,slop. eg. 0,1
    --abc color   Set the color of the abline, ['red'].
    --abs num     Set the the size for the abline, [1.5].
+   --logx txt   Set up the log tranformation of X axis, log2|log10|sqrt.
    --revx        Reverse the X axis.
    --gtr txts    Add text to plot by 'geom_text_repel',TSV,in as: filename::col_x::col_y::col_text.
    --gtrs num    Set the text size for the gtr texts,[4].
@@ -107,7 +108,7 @@ if(is.null(opts$xb) == F){
 if(is.null(opts$xl) == F){
   xticks = "unlist(strsplit(opts$xl,','))"
 }
-logx  = if(is.null(opts$logy)) "identity" else opts$logx
+logx  = if(is.null(opts$logx)) "identity" else opts$logx
 xlim = NULL
 if(is.null(opts$xlim) == F){
   xlim = as.numeric(unlist(strsplit(opts$xlim,',')))
