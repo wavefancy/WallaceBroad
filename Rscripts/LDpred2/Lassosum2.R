@@ -134,6 +134,7 @@ df_beta <- info_snp[,c("beta", "beta_se", "n_eff", "_NUM_ID_")]
 beta_lassosum2 <- snp_lassosum2(corr, df_beta, ncores = NCORES)
 
 # Save the parameter values for lassosum2
+params2 <- attr(beta_lassosum2, "grid_param")
 export(params2, paste0(outp,"lassosum2.param.values.tsv.gz"))
 
 # Get the name list for lassosum optimization
