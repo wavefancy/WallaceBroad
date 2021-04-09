@@ -81,6 +81,7 @@ if __name__ == '__main__':
     FMT_STRING_CACHE = ''
     DP_COL = -1
     TOTAL_MAKSED = 0
+    TOTAL_RECORDS = 0
 
     # Check this for each variants, avoid format change.
     def updateDPCOL(FMT_STRING):
@@ -130,6 +131,8 @@ if __name__ == '__main__':
         ss = str(variant).split()
         updateDPCOL(ss[FMT_COL])
 
+        TOTAL_RECORDS += (len(ss)-DATA_COL)
+
         # shift to the right pos for mask the genotype.
         if minDP > 0:
             # negative value already as missing, just skipped.
@@ -145,7 +148,7 @@ if __name__ == '__main__':
         # Finished genotype updates.
         sys.stdout.write('%s\n'%('\t'.join(ss)))
 
-    sys.stderr.write('VCFDPFilter.py: ' + 'TOTAL MASKED RECORDS: %d\n'%(TOTAL_MAKSED))
+    sys.stderr.write('VCFDPFilter.py: ' + 'TOTAL MASKED RECORDS: %d, of TOTAL: %d, Rate: %g\n'%(TOTAL_MAKSED, TOTAL_RECORDS,TOTAL_MAKSED*1.0/TOTAL_RECORDS))
     invcf.close()
 sys.stdout.flush()
 sys.stdout.close()
