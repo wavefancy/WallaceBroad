@@ -107,6 +107,8 @@ if __name__ == '__main__':
         # The above code do not support multi-allelic sites.
         # We support multi-allelic sites as below.
         dparray = variant.format('AD')
+        TOTAL_RECORDS += len(dparray)
+
          # set missing (negative value) to as 0.
         dparray[dparray<0] = 0
         # total DP.
@@ -136,8 +138,6 @@ if __name__ == '__main__':
         # gt_ref_depths is from the 'AD' field.
         ss = str(variant).split()
         updateDPCOL(ss[FMT_COL])
-
-        TOTAL_RECORDS += (len(ss)-DATA_COL)
 
         # shift to the right pos for mask the genotype.
         mask_pos = mask_pos + DATA_COL
