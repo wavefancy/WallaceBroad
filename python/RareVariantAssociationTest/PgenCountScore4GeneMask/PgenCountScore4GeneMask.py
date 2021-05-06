@@ -130,7 +130,10 @@ if __name__ == '__main__':
         for line in psam:
             ss = line.split()
             if IID_COL < 0:
-                IID_COL = ss.index('#IID')
+                try:
+                    IID_COL = ss.index('#IID')
+                except ValueError:
+                    IID_COL = ss.index('IID')
             else:
                 N_sample_psam += 1 # start from 0.
                 if ss[IID_COL] in sample_set:
