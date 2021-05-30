@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        BinaryGWASEffectiveSampleSize.py -t name1,name2
+        BinaryGWASEffectiveSampleSize.py -t name1,name2 [-i]
         BinaryGWASEffectiveSampleSize.py -h | --help | --version | -f | --format
 
     Notes:
@@ -16,6 +16,7 @@
 
     Options:
         -t name1,name2  Column name for the sample size of case and control.
+        -i              Force the output sample size estimation as INT.
         -h --help       Show this screen.
         --version       Show version.
         -f --format     Show input/output file format example.
@@ -47,6 +48,7 @@ def ShowFormat():
  10 20
 
 # OUTPUT:
+# cat test.txt | python ./BinaryGWASEffectiveSampleSize.py -t CASE,CONTROL
 # ----------------------
 CASE CONTROL    EffectiveSampleSize
 2 3     4.8
@@ -69,6 +71,7 @@ if __name__ == '__main__':
         sys.stderr.write('ERROR, please specify two columns separated by ","! YOUR INPUT: %s\n'%(args['-t']))
         sys.exit(-1)
 
+    force_int = True if args['-i'] else False
 
     INDEXMAP = {}
     KEYS = []
@@ -102,7 +105,10 @@ if __name__ == '__main__':
                 c2 = 1/(float(ss[KEYS[1]]))
                 Neff = 4/(c1 + c2)
 
-                sys.stdout.write('%s\t%g\n'%(line,Neff))
+                if force_int:
+                    sys.stdout.write('%s\t%d\n'%(line,Neff))
+                else:
+                    sys.stdout.write('%s\t%g\n'%(line,Neff))
 
 sys.stdout.flush()
 sys.stdout.close()
