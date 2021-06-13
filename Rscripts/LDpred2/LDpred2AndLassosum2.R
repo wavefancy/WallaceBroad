@@ -27,11 +27,25 @@ Options:
 
 # conda install 
 
-suppressMessages(library(dplyr))
-suppressMessages(library(docopt))
-suppressMessages(library(rio))
-suppressMessages(library(data.table))
-suppressMessages(library(magrittr))
+# suppressMessages(library(dplyr))
+# suppressMessages(library(docopt))
+# suppressMessages(library(rio))
+# suppressMessages(library(data.table))
+# suppressMessages(library(magrittr))
+# suppressMessages(library(bigsnpr))
+
+# update to auto-detect and install packages.
+# https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+# http://trinker.github.io/pacman/vignettes/Introduction_to_pacman.html
+if (!require("pacman"))  install.packages("pacman")
+if (!require("bigsnpr")) p_install_version(c("bigsnpr"),c("1.7.1"))
+pacman::p_load(dplyr, docopt, rio, data.table, magrittr, bigsnpr,
+    install = TRUE, update=FALSE)
+# require and install the minimal version.
+if (p_version(bigsnpr) < '1.7.1') p_install_version(c("bigsnpr"),c("1.7.1"))
+# On some server, you might need to first use the following code in order to run LDpred with multi-thread
+options(bigstatsr.check.parallel.blas = FALSE)
+options(default.nproc.blas = NULL)
 
 opts <- docopt(doc)
 # what are the options? Note that stripped versions of the parameters are added to the returned list
@@ -42,11 +56,6 @@ outp   = opts$o
 MSGE <- function(...) cat(sprintf(...), sep='', file=stderr())
 
 # END parse parameter
-
-# On some server, you might need to first use the following code in order to run LDpred with multi-thread
-suppressMessages(library(bigsnpr))
-options(bigstatsr.check.parallel.blas = FALSE)
-options(default.nproc.blas = NULL)
 
 sumstats <- bigreadr::fread2(gfile)
 
