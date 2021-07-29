@@ -1,3 +1,4 @@
+Gene	NA1 NA2
 N1	1 2
 N2	2 3
 N3	1 5
