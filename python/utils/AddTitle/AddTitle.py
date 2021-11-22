@@ -7,14 +7,16 @@
     @Author: wavefancy@gmail.com, Wallace Wang.
 
     Usage:
-        AddTitle.py [-d delimiter] <title>...
+        AddTitle.py [-d delimiter] [-s delimiter] <title>...
         AddTitle.py -h | --help | --version | -f | --format
 
     Notes:
         1. Read data from stdin, and output to stdout.
 
     Options:
-        -d delimiter  Set title delimiter, default tab.
+        -d delimiter  Set output title delimiter, default tab.
+        -s delimiter  Split each title element by 'delimiter', 
+                        and add as new title elements.
         -h --help     Show this screen.
         --version     Show version.
         -f --format   Show input/output file format example.
@@ -40,8 +42,14 @@ if __name__ == '__main__':
     # sys.exit(-1)
 
     DELIMITER = args['-d'] if args['-d'] else '\t'
+    TTs = []
+    if args['-s']:
+        for x in args['<title>']:
+            TTs += x.split(args['-s'])
+    else:
+        TTs = args['<title>']
 
-    sys.stdout.write('%s\n'%(DELIMITER.join(args['<title>'])))
+    sys.stdout.write('%s\n'%(DELIMITER.join(TTs)))
     for line in sys.stdin:
         sys.stdout.write(line)
 
