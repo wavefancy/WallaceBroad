@@ -7,7 +7,7 @@
     @Author: wavefancy@gmail.com
 
     Usage:
-        ColumnCorrelation.py [-c int] [-r string]
+        ColumnCorrelation.py (-c int | -a) [-r string]
         ColumnCorrelation.py -h | --help | -v | --version | -f | --format
 
     Notes:
@@ -16,6 +16,7 @@
 
     Options:
         -c int        Only calculate the correlation of this column with all the other columns.
+        -a            Compute the correlation between ALL pairs, output a correlation matrix.
         -r string     Set correlation name. pearson | kendall | spearman, default pearson.
         -h --help     Show this screen.
         -v --version  Show version.
@@ -45,6 +46,7 @@ if __name__ == '__main__':
     corrName = 'pearson'
     corrSet = set(['pearson' , 'kendall' , 'spearman'])
     oneColumn = int(args['-c'])-1 if args['-c'] else -100
+    ALL_PAIR = True if args['-a'] else False
     # print(oneColumn)
 
     if args['-r']:
@@ -56,14 +58,33 @@ if __name__ == '__main__':
 
     import pandas as pd
     df = pd.read_csv(sys.stdin, sep='\s+')
+    names = df.columns
+
     if oneColumn>=0:
         # print(oneColumn)
-        names = df.columns
         oname1 = names[oneColumn]
         for i in names:
             if i != oname1:
                 re = df[oname1].corr(df[i],method=corrName)
-                sys.stdout.write('%s\t%s\t%.4e\n'%(oname1,i,re))
+                sys.stdout.write('%s\t%s\t%.4g\n'%(oname1,i,re))
+
+    # Compute all pair, output as a correlation matrix.
+    if ALL_PAIR:
+        out = []
+        out.append(['NAME'] + list(names))
+        for i in names:
+            out.append([i] + ['']*len(names))
+        for x in range(0,len(names)):
+            for y in range(x,len(names)):
+                if x == y:
+                    out[x+1][y+1] = '%.4g'%(1.0)
+                else:
+                    re = df[names[x]].corr(df[names[y]],method=corrName)
+                    out[x+1][y+1] = '%.4g'%(re)
+                    out[y+1][x+1] = '%.4g'%(re)
+        #output results.
+        for i in out:
+            sys.stdout.write('%s\n'%('\t'.join(i)))
 
 sys.stdout.flush()
 sys.stdout.close()
