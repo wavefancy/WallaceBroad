@@ -119,6 +119,7 @@ for (line in readLines(input)){
    #  beta_se = r[,2]
    #  pvalue  = r[,4]
    #  h = rbind(beta, beta_se, pvalue) %>% as.vector(.) %>% mf(.)
+    h = formatC(h, digits = 4, format = "g")
     out = c(out, h)
 
     cat(out,sep="\t")
