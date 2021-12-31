@@ -12,7 +12,8 @@ Options:
   --family name Link function family, gaussian|binomial.
   -n int        Output the top `int` number of top results.
 ' -> doc
-
+# no line breaks.
+options(width = 10000)
 # Example for feature selection.
 # https://github.com/RudolfJagdhuber/ExhaustiveSearch
 
