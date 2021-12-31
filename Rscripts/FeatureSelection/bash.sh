@@ -1,7 +1,7 @@
 
 wecho "
 	cat ../LogisticRegression/./test.txt 
-	| Rscript ./FSExhaustiveSearch.R 
+	| /Users/minxianwang/miniconda3/envs/R/bin/Rscript ./FSExhaustiveSearch.R 
 		-f 'c~lot1+lot2+G'
 		#-f 'c~.'
 		--family binomial -n 3
