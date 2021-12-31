@@ -1,0 +1,28 @@
+
++-------------------------------------------------+
+|            Exhaustive Search Results            |
++-------------------------------------------------+
+Model family:          binomial 
+Intercept:             TRUE 
+Performance measure:   AIC 
+Models fitted on:      training set (n = 10)
+Models evaluated on:   training set (n = 10)
+Models evaluated:      7  
+Models saved:          7 
+Total runtime:         00d 00h 00m 00s 
+Number of threads:     4 
+
++-------------------------------------------------+
+|                Top Feature Sets                 |
++-------------------------------------------------+
+       AIC   Combination
+1 17.11291          lot1
+2 17.13570          lot2
+3 17.46023            GB
+4 19.07102   lot1 + lot2
+5 19.10198     lot1 + GB 
+
+       AIC Combination
+1 17.11291        lot1
+2 17.13570        lot2
+3 17.46023          GB
