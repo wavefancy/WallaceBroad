@@ -13,7 +13,7 @@
 Create scatter plot using ggplot2
 
 Usage:
-    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num] [--revx] [--gtr txts] [--gtrs num] [--logx txt]
+    ggScattterPlot.R -x name -y name -o <filename> -W float -H float [-c name ] [--sp txt] [--ylim nums] [--xlim nums] [--cp colors] [-l txt] [--lt text] [--cl txts] [--lfs num] [-s nums] [-a nums] [--xlab text] [--ylab text] [--rx int] [--xb nums] [--xl txts] [--gl] [--gls int] [--ab nums] [--abc color] [--abs num] [--revx] [--gtr txts] [--gtrs num] [--logx txt] [--vl nums] [--vc color] [--vs num]
     ggScattterPlot.R -h --help
 
 Options:
@@ -42,10 +42,13 @@ Options:
    --rx int      Rotate the x axis label of degree 'int'.
    --xb nums     Set the breaks for x axis.
    --xl txts     Set the x labels for breaks, [--xb]. 
-   --ab nums     Add abline to the plot, format: intercept,slop. eg. 0,1
+   --ab nums     Add abline (horizontal) to the plot, format: intercept,slop. eg. 0,1
    --abc color   Set the color of the abline, ['red'].
    --abs num     Set the the size for the abline, [1.5].
-   --logx txt   Set up the log tranformation of X axis, log2|log10|sqrt.
+   --vl nums     Add vertical lines to the plot.
+   --vc color    Set the color of the vertical lines, ['orange'].
+   --vs num      Set the the size for the vertical lines, [1.5].
+   --logx txt    Set up the log tranformation of X axis, log2|log10|sqrt.
    --revx        Reverse the X axis.
    --gtr txts    Add text to plot by 'geom_text_repel',TSV,in as: filename::col_x::col_y::col_text.
    --gtrs num    Set the text size for the gtr texts,[4].
@@ -145,10 +148,22 @@ if (gl==T){
     p = p + geom_line(aes_string(color=c),size=gls)
 }
 
-#add abline
+#add abline horizontal line
 if(is.null(ab) == F ){
     p = p+ geom_abline(intercept = ab[1], slope = ab[2], color=abc, 
                       linetype="dashed", size=abs)
+}
+
+# add vertical lines.
+# https://www.statology.org/ggplot2-vertical-line/#:~:text=You%20can%20quickly%20add%20vertical%20lines%20to%20ggplot2,xintercept%3A%20Location%20to%20add%20line%20on%20the%20x-intercept.
+# xintercept, one or multiple values.
+# geom_vline(xintercept, linetype, color, size)
+vl_values   = if(is.null(opts$vl))  NULL else {as.numeric(unlist(strsplit(opts$vl,',')))}
+vc  = if(is.null(opts$vc)) 'orange' else {opts$vc}
+vs  = if(is.null(opts$vs)) 1.5 else {as.numeric(opts$vs)}
+#add vertical line
+if(is.null(vl_values) == F ){
+    p = p+ geom_vline(xintercept=vl_values, linetype='dashed', color=vc, size=vs)
 }
 
 # https://mran.microsoft.com/snapshot/2017-08-20/web/packages/ggrepel/vignettes/ggrepel.html
