@@ -60,7 +60,7 @@ pref   = opts$p %>% strsplit(.,'#') %>% unlist
 outp   = opts$o
 # send message to std error.
 MSGE <- function(...) cat(sprintf(...), sep='', file=stderr())
-myformat <- function(x) formatC(x, digits = 4, format = "g")
+myformat <- function(x) formatC(x, digits = 6, format = "g")
 
 # END parse parameter
 
@@ -182,11 +182,12 @@ export(grid.param, paste0(outp,"ldpred2.param.values.tsv.gz"))
 # Get adjusted beta from grid model
 beta_grid <-
     snp_ldpred2_grid(corr, df_beta, grid.param, ncores = NCORES)
+beta_grid = myformat(beta_grid)
 
 t = as.matrix(info_snp[,c('rsid','a1','a0')],ncol=3)
 out = cbind(t,beta_grid)
 colnames(out) =  c(c('rsID','a1','a0'),gpn)
-export(myformat(out), paste0(outp,'ldpred2_grid.tsv.gz'),quote=F)
+export(out, paste0(outp,'ldpred2_grid.tsv.gz'),quote=F)
 
 ### ------------------------------------------------------
 ### END of LDpred2 algorithm, start lassosum2 prediction.
@@ -196,6 +197,7 @@ beta_lassosum2 <- snp_lassosum2(corr, df_beta, ncores = NCORES,
         # The default setting in version 1.9.2.
         delta = signif(seq_log(0.001, 3, 6), 1), nlambda = 20
     )
+beta_lassosum2 = myformat(beta_lassosum2)
 
 # Save the parameter values for lassosum2
 params2 <- attr(beta_lassosum2, "grid_param")
@@ -211,7 +213,7 @@ gpn = do.call("paste", c(grid.param.name, sep = "_"))
 t = as.matrix(info_snp[,c('rsid','a1','a0')],ncol=3)
 out = cbind(t,beta_lassosum2)
 colnames(out) =  c(c('rsID','a1','a0'),gpn)
-export(myformat(out), paste0(outp,'lassosum2_grid.tsv.gz'),quote=F)
+export(out, paste0(outp,'lassosum2_grid.tsv.gz'),quote=F)
 
 # cleanup
 file.remove(paste0(tmp, ".sbk"))
